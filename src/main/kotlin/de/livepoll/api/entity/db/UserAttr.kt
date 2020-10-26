@@ -1,4 +1,4 @@
-package de.livepoll.api.entity
+package de.livepoll.api.entity.db
 
 import com.sun.istack.NotNull
 import javax.persistence.Entity
@@ -6,19 +6,20 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name="Open_Text_Item")
-class OpenTextItem(
+@Table(name= "User_Attr")
+class UserAttr(
         @Id
         @NotNull
         var id: Int,
 
         @NotNull
-        var pollId: Int,
+        var userId: Int,
 
         @NotNull
-        var position: Int,
+        var key1: String,
 
         @NotNull
-        var question: String
-) {
+        var value: String
+){
+
 }

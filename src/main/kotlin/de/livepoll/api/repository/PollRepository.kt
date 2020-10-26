@@ -1,6 +1,6 @@
 package de.livepoll.api.repository
 
-import de.livepoll.api.entity.Poll
+import de.livepoll.api.entity.db.Poll
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface PollRepository: JpaRepository<Poll, Int> {

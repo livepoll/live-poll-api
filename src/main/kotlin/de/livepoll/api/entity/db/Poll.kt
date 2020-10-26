@@ -1,24 +1,29 @@
-package de.livepoll.api.entity
+package de.livepoll.api.entity.db
 
 import com.sun.istack.NotNull
+import java.util.*
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name="Quiz_Item")
-class QuizItem(
+@Table(name="Poll")
+class Poll(
         @Id
         @NotNull
         var id: Int,
 
         @NotNull
-        var pollId: Int,
+        var userId: Int,
 
         @NotNull
-        var pos:Int,
+        var name:String,
 
         @NotNull
-        var question:String
+        var startDate: Date,
+
+        @NotNull
+        var endDate: Date
 ) {
+
 }

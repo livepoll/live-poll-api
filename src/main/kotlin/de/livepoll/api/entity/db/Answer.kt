@@ -1,4 +1,4 @@
-package de.livepoll.api.entity
+package de.livepoll.api.entity.db
 
 import com.sun.istack.NotNull
 import javax.persistence.Entity
