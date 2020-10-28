@@ -23,7 +23,10 @@ class Poll(
         var startDate: Date,
 
         @NotNull
-        var endDate: Date
+        var endDate: Date,
+
+        @NotNull
+        val pollItems: List<PollItem>
 ) {
 
 }

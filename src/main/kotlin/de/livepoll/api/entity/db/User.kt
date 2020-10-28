@@ -10,7 +10,6 @@ import javax.persistence.*
 open class User(
 
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
         @NotNull
         var id: Int,
 
@@ -27,15 +26,12 @@ open class User(
         var accountStatus: Boolean,
 
         @NotNull
-        var roles: String
+        var roles: String,
+
+        @NotNull
+        val polls: List<Poll>
 ){
-        constructor(user: User){
-                id = user.id
-                username = user.username
-                email = user.email
-                password = user.password
-                accountStatus = user.accountStatus
-                roles = user.roles;
+        constructor(user: User): this(user.id, user.username, user.email, user.password, user.accountStatus, user.roles, user.polls){
         }
 
         fun getRoleList(): List<String> {

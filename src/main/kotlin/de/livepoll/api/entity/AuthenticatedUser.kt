@@ -2,11 +2,12 @@ package de.livepoll.api.entity
 
 import de.livepoll.api.entity.db.User
 import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.security.core.userdetails.UserDetails
 
 
+
 class AuthenticatedUser(var user: User): User(user), UserDetails{
+
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         TODO("Not yet implemented")
     }

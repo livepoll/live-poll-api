@@ -19,6 +19,9 @@ class QuizItem(
         var pos:Int,
 
         @NotNull
-        var question:String
+        var question:String,
+
+        @NotNull
+        val answers: List<Answer>
 ) {
 }

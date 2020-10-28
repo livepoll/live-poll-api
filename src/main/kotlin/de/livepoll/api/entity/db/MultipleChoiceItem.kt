@@ -19,7 +19,10 @@ class MultipleChoiceItem(
         var position: Int,
 
         @NotNull
-        var question: String
+        var question: String,
+
+        @NotNull
+        val answers: List<Answer>
 ) {
 
 }
