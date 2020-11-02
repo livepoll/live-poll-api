@@ -3,11 +3,12 @@ package de.livepoll.api.entity.db
 import com.sun.istack.NotNull
 import javax.persistence.Entity
 import javax.persistence.Id
+import javax.persistence.OneToMany
 import javax.persistence.Table
 
 @Entity
 @Table(name="Quiz_Item")
-class QuizItem(
+data class QuizItem(
         @Id
         @NotNull
         var id: Int,
@@ -21,7 +22,8 @@ class QuizItem(
         @NotNull
         var question:String,
 
-        @NotNull
-        val answers: List<Answer>
+      /*  @NotNull
+        @OneToMany(mappedBy="pollItemId")
+        val answers: List<Answer>*/
 ) {
 }

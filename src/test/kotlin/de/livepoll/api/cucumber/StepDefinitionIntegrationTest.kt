@@ -7,12 +7,12 @@ import junit.framework.Assert.assertEquals
 
 class StepDefinitionIntegrationTest : SpringIntegrationTest(){
 
-    var version=0.0
+    var version:String="0.0"
 
     @When("^the client calls /version$")
     @Throws(Throwable::class)
     fun the_client_issues_GET_version() {
-        version = 1.0
+        this.version = "1.0"
 
     }
 
@@ -29,7 +29,7 @@ class StepDefinitionIntegrationTest : SpringIntegrationTest(){
     }
     @When("^a")
     fun a(){
-        version = 1.0
+        version = "1.0"
     }
 
 }

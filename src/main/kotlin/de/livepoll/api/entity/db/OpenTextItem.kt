@@ -7,7 +7,7 @@ import javax.persistence.Table
 
 @Entity
 @Table(name="Open_Text_Item")
-class OpenTextItem(
+data class OpenTextItem(
         @Id
         @NotNull
         var id: Int,

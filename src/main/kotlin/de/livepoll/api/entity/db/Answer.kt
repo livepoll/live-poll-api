@@ -7,7 +7,7 @@ import javax.persistence.Table
 
 @Entity
 @Table(name="Answer")
-class Answer(
+data class Answer(
         @Id
         @NotNull
         var id: Int,

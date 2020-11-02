@@ -29,6 +29,7 @@ open class User(
         var roles: String,
 
         @NotNull
+        @OneToMany(mappedBy = "userId")
         val polls: List<Poll>
 ){
         constructor(user: User): this(user.id, user.username, user.email, user.password, user.accountStatus, user.roles, user.polls){

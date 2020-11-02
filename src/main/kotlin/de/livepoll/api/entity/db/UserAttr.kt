@@ -7,7 +7,7 @@ import javax.persistence.Table
 
 @Entity
 @Table(name= "User_Attr")
-class UserAttr(
+data class UserAttr(
         @Id
         @NotNull
         var id: Int,
