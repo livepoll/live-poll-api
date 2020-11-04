@@ -1,6 +1,6 @@
 package de.livepoll.api.controller
 
-import de.livepoll.api.entity.Poll
+import de.livepoll.api.entity.db.Poll
 import de.livepoll.api.repository.PollRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping

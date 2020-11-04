@@ -1,15 +1,15 @@
-package de.livepoll.api.entity
+package de.livepoll.api.entity.db
 
 import com.sun.istack.NotNull
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
-@Table(name="Multiple_Choice_Item")
-class MultipleChoiceItem(
+@Table(name="open_Text_Item")
+data class OpenTextItem(
         @Id
         @NotNull
+        @GeneratedValue(strategy= GenerationType.IDENTITY)
+        @Column(name="open_text_item_id")
         var id: Int,
 
         @NotNull
@@ -21,5 +21,4 @@ class MultipleChoiceItem(
         @NotNull
         var question: String
 ) {
-
 }
