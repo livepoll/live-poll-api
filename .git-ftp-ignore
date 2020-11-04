@@ -1,0 +1,13 @@
+.github/*
+.mvn/*
+media/*
+src/*
+.gitignore
+.git-ftp-ignore
+.git-ftp-include
+Dockerfile
+mvnw
+mvnw.cmd
+pom.xml
+README.md
+SECURITY.md

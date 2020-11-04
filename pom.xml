@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.4.RELEASE</version>
+		<version>2.3.5.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>de.live-poll</groupId>
@@ -17,6 +17,7 @@
 	<properties>
 		<java.version>11</java.version>
 		<kotlin.version>1.4.10</kotlin.version>
+		<dokka.version>1.4.10.2</dokka.version>
 	</properties>
 
 	<dependencies>
@@ -91,6 +92,11 @@
 			<artifactId>cucumber-spring</artifactId>
 			<version>6.8.0</version>
 			<scope>test</scope>
+    </dependency>
+    <dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-boot-starter</artifactId>
+			<version>3.0.0</version>
 		</dependency>
 	</dependencies>
 
@@ -127,7 +133,36 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+			<plugin>
+				<groupId>org.jetbrains.dokka</groupId>
+				<artifactId>dokka-maven-plugin</artifactId>
+				<version>${dokka.version}</version>
+				<executions>
+					<execution>
+						<phase>pre-site</phase>
+						<goals>
+							<goal>dokka</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<dokkaPlugins>
+						<plugin>
+							<groupId>org.jetbrains.dokka</groupId>
+							<artifactId>kotlin-as-java-plugin</artifactId>
+							<version>${dokka.version}</version>
+						</plugin>
+					</dokkaPlugins>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
+	<pluginRepositories>
+		<pluginRepository>
+			<id>jcenter</id>
+			<name>JCenter</name>
+			<url>https://jcenter.bintray.com/</url>
+		</pluginRepository>
+	</pluginRepositories>
 </project>
