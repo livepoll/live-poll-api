@@ -1,6 +1,5 @@
 package de.livepoll.api.config
 
-import de.livepoll.api.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -8,9 +7,10 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import javax.sql.DataSource
+import kotlin.jvm.Throws
 
 
 @Configuration
@@ -18,7 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 class SecurityConfiguration: WebSecurityConfigurerAdapter() {
 
     @Autowired
-    lateinit var userDetailsService: UserDetailsService
+    private val dataSource: DataSource? = null
 
     override fun configure(http: HttpSecurity) {
         http
@@ -31,10 +31,9 @@ class SecurityConfiguration: WebSecurityConfigurerAdapter() {
                 .httpBasic();
     }
 
-    @Autowired
     @Throws(Exception::class)
-    fun globalSecurityConfiguration(auth: AuthenticationManagerBuilder) {
-        auth.userDetailsService(userDetailsService)
+    override fun configure(auth: AuthenticationManagerBuilder) {
+        auth.jdbcAuthentication().dataSource(dataSource)
     }
 
     @Bean

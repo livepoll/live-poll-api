@@ -1,26 +1,29 @@
 package de.livepoll.api.entity.db
 
 import com.sun.istack.NotNull
+import org.hibernate.type.descriptor.sql.TinyIntTypeDescriptor
 import java.util.*
 import javax.persistence.*
 
 
 @Entity
-@Table(name = "User")
+@Table(name = "users")
 open class User(
 
         @Id
         @NotNull
+        @GeneratedValue(strategy=GenerationType.IDENTITY)
+        @Column(name="user_id")
         var id: Int,
 
         @NotNull
-        private var username: String,
+        var username: String,
 
         @NotNull
         var email: String,
 
         @NotNull
-        private var password: String,
+        var password: String,
 
         @NotNull
         var accountStatus: Boolean,
@@ -29,11 +32,13 @@ open class User(
         var roles: String,
 
         @NotNull
-        @OneToMany(mappedBy = "userId")
-        val polls: List<Poll>
+        var enabled: TinyIntTypeDescriptor,
+
+        @NotNull
+        @OneToMany(mappedBy = "user")
+        var polls: List<Poll>
 ){
-        constructor(user: User): this(user.id, user.username, user.email, user.password, user.accountStatus, user.roles, user.polls){
-        }
+
 
         fun getRoleList(): List<String> {
                 return if (roles.length > 0){
@@ -43,12 +48,6 @@ open class User(
                 }
         }
 
-        open fun getUsername(): String{
-                return username
-        }
 
-        open fun getPassword(): String{
-                return password
-        }
 
 }

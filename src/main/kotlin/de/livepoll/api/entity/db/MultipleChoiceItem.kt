@@ -1,16 +1,15 @@
 package de.livepoll.api.entity.db
 
 import com.sun.istack.NotNull
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.OneToMany
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
-@Table(name="Multiple_Choice_Item")
+@Table(name="multiple_Choice_Item")
 data class MultipleChoiceItem(
         @Id
         @NotNull
+        @GeneratedValue(strategy= GenerationType.IDENTITY)
+        @Column(name="multiple_choice_item_id")
         var id: Int,
 
         @NotNull

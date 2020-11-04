@@ -2,20 +2,21 @@ package de.livepoll.api.entity.db
 
 import com.sun.istack.NotNull
 import java.util.*
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.OneToMany
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
-@Table(name="Poll")
+@Table(name="poll")
 data class Poll(
         @Id
         @NotNull
+        @GeneratedValue(strategy= GenerationType.IDENTITY)
+        @Column(name="poll_id")
         var id: Int,
 
         @NotNull
-        var userId: Int,
+        @ManyToOne
+        @JoinColumn(name="user_id")
+        var user: User,
 
         @NotNull
         var name:String,
