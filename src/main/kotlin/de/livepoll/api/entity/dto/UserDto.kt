@@ -2,7 +2,7 @@ package de.livepoll.api.entity.dto
 
 import com.sun.istack.NotNull
 
-class UserDto(
+data class UserDto(
         @NotNull
         var id:Int,
 
@@ -15,6 +15,4 @@ class UserDto(
         @NotNull
         var password: String
 
-) {
-
-}
+)

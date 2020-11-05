@@ -20,5 +20,4 @@ data class OpenTextItem(
 
         @NotNull
         var question: String
-) {
-}
+)

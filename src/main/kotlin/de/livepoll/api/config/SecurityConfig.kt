@@ -8,22 +8,17 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.password.PasswordEncoder
 import javax.sql.DataSource
-import kotlin.jvm.Throws
-
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfiguration: WebSecurityConfigurerAdapter() {
+class SecurityConfig: WebSecurityConfigurerAdapter() {
 
     @Autowired
     private val dataSource: DataSource? = null
 
     override fun configure(http: HttpSecurity) {
-        http
-
-                .authorizeRequests()
+        http.authorizeRequests()
                 .antMatchers("/helloworld").permitAll()
                 .anyRequest().authenticated()
                 .and()
@@ -37,7 +32,5 @@ class SecurityConfiguration: WebSecurityConfigurerAdapter() {
     }
 
     @Bean
-    fun getPasswordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder()
-    }
+    fun getPasswordEncoder() = BCryptPasswordEncoder()
 }

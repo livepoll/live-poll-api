@@ -17,6 +17,4 @@ data class Answer(
 
         @NotNull
         var answer: String
-) {
-
-}
+)

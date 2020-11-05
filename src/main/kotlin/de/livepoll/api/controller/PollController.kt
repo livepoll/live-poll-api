@@ -13,8 +13,7 @@ class PollController {
     lateinit var pollRepository: PollRepository
 
     @GetMapping("/polls")
-    fun getAllPolls(): List<Poll>{
-        val pollsList: List<Poll> = pollRepository.findAll();
-        return pollsList;
+    fun getAllPolls(): List<Poll> {
+        return pollRepository.findAll()
     }
 }

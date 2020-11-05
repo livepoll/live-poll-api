@@ -30,6 +30,4 @@ data class Poll(
         @NotNull
         @OneToMany(mappedBy="pollId")
         val pollItems: List<MultipleChoiceItem>
-) {
-
-}
+)

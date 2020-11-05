@@ -24,5 +24,4 @@ data class QuizItem(
       /*  @NotNull
         @OneToMany(mappedBy="pollItemId")
         val answers: List<Answer>*/
-) {
-}
+)

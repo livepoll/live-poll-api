@@ -22,6 +22,4 @@ data class UserAttr(
 
         @NotNull
         var value: String
-){
-
-}
+)

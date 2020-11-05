@@ -37,17 +37,12 @@ open class User(
         @NotNull
         @OneToMany(mappedBy = "user")
         var polls: List<Poll>
-){
-
-
+) {
         fun getRoleList(): List<String> {
-                return if (roles.length > 0){
+                return if (roles.isNotEmpty()){
                         roles.split(",")
-                }else{
+                } else{
                         return ArrayList<String>()
                 }
         }
-
-
-
 }

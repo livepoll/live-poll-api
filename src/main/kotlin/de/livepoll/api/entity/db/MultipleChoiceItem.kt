@@ -24,6 +24,4 @@ data class MultipleChoiceItem(
         @NotNull
         @OneToMany(mappedBy="pollItemId")
         val answers: List<Answer>
-) {
-
-}
+)
