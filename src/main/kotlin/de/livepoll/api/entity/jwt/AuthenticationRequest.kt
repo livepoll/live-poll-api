@@ -1,7 +1,6 @@
 package de.livepoll.api.entity.jwt
 
-class AuthenticationRequest(
+data class AuthenticationRequest(
         var username: String,
-        var password: String) {
-
-}
+        var password: String
+)
