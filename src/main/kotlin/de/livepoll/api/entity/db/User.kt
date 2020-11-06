@@ -8,7 +8,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "users")
-open class User(
+data class User(
 
         @Id
         @NotNull
@@ -17,6 +17,7 @@ open class User(
         var id: Int,
 
         @NotNull
+        @Column(name="username")
         var username: String,
 
         @NotNull
