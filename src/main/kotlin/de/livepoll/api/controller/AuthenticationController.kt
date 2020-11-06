@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 
-
 @Controller
 class AuthenticationController {
 
@@ -30,13 +29,9 @@ class AuthenticationController {
             authenticationManager.authenticate(
                     UsernamePasswordAuthenticationToken(authRequest.username, authRequest.password)
             )
-        } catch (ex: Exception) {
-        }finally {
+        } finally {
             val userDetails = jwtUserDetailsService.loadUserByUsername(authRequest.username)
             return ResponseEntity.ok(jwtUtil.generateToken(userDetails))
         }
-
     }
-
-
 }

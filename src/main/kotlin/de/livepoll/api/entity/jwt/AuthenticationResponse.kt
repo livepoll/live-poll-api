@@ -1,6 +1,5 @@
 package de.livepoll.api.entity.jwt
 
-class AuthenticationResponse(
+data class AuthenticationResponse(
         var jwt: String
-) {
-}
+)

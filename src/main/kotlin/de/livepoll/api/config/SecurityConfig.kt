@@ -13,15 +13,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import javax.sql.DataSource
-
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig: WebSecurityConfigurerAdapter() {
 
-    @Autowired
-    private lateinit var dataSource: DataSource
+    //@Autowired
+    //private lateinit var dataSource: DataSource
 
     @Autowired
     private lateinit var  jwtUserDetailsService: JwtUserDetailsService
@@ -45,12 +43,8 @@ class SecurityConfig: WebSecurityConfigurerAdapter() {
     }
 
     @Bean
-    fun passwordEncoder(): BCryptPasswordEncoder {
-        return BCryptPasswordEncoder()
-    }
+    fun passwordEncoder() = BCryptPasswordEncoder()
 
     @Bean
-    override fun authenticationManagerBean(): AuthenticationManager {
-        return super.authenticationManagerBean()
-    }
+    override fun authenticationManagerBean(): AuthenticationManager = super.authenticationManagerBean()
 }
