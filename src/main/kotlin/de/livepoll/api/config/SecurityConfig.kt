@@ -41,7 +41,7 @@ class SecurityConfig: WebSecurityConfigurerAdapter() {
     @Throws(Exception::class)
     override fun configure(auth: AuthenticationManagerBuilder) {
         //auth.jdbcAuthentication().dataSource(dataSource)
-        auth.userDetailsService(jwtUserDetailsService)
+        auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder())
     }
 
     @Bean

@@ -30,10 +30,10 @@ class AuthenticationController {
             authenticationManager.authenticate(
                     UsernamePasswordAuthenticationToken(authRequest.username, authRequest.password)
             )
-        } catch (ex: Exception) {
-        }finally {
             val userDetails = jwtUserDetailsService.loadUserByUsername(authRequest.username)
             return ResponseEntity.ok(jwtUtil.generateToken(userDetails))
+        }catch (ex:Exception){
+            throw Exception("Wrong password")
         }
 
     }
