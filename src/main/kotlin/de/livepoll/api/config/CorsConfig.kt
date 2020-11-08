@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 class CorsConfig: WebMvcConfigurer {
 
     private val allowedOrigins = setOf(
-            "http://192.168.0.52:4200",
+            System.getenv("LIVE_POLL_DEV_URL"),
             "https://dev.live-poll.de",
             "https://live-poll.de"
     )
