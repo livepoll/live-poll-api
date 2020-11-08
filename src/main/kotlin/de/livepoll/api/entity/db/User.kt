@@ -33,7 +33,7 @@ data class User(
         var roles: String,
 
         @NotNull
-        var enabled: TinyIntTypeDescriptor,
+        var enabled: Boolean,
 
         @NotNull
         @OneToMany(mappedBy = "user")
