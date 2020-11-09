@@ -10,4 +10,10 @@ interface UserRepository: JpaRepository<User, Int> {
 
    @Query("SELECT u FROM User u WHERE u.username = ?1")
    fun findByUsername(username: String): User
+
+   @Query("SELECT COUNT(u.id) FROM User u WHERE u.username = ?1")
+   fun countUsersWithUsername(username: String): Int
+
+   @Query("SELECT COUNT(u.id) FROM User u WHERE u.email = ?1")
+   fun countUsersWithEmail(email: String): Int
 }
