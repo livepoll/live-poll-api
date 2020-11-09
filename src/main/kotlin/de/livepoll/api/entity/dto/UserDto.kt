@@ -1,6 +1,6 @@
 package de.livepoll.api.entity.dto
 
-import com.sun.istack.NotNull
+import org.jetbrains.annotations.NotNull
 
 data class UserDto(
         @NotNull
