@@ -7,12 +7,10 @@ import de.livepoll.api.repository.UserRepository
 import de.livepoll.api.repository.VerificationTokenRepository
 import de.livepoll.api.util.OnCreateAccountEvent
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
-import javax.persistence.GenerationType
 
 @RestController
 class UserService{
@@ -42,8 +40,8 @@ class UserService{
     }
 
     fun createVerificationToken(user: User, token: String){
-        val verficationToken = VerificationToken(0, token, user.username, calculateExpiryDate(60*24))
-        verificationTokenRepository.saveAndFlush(verficationToken)
+        val verificationToken = VerificationToken(0, token, user.username, calculateExpiryDate())
+        verificationTokenRepository.saveAndFlush(verificationToken)
     }
 
     fun confirmAccount(token: String){
@@ -55,9 +53,9 @@ class UserService{
         }
     }
 
-    private fun calculateExpiryDate(expiryTimeInMinutes: Int): Date {
+    private fun calculateExpiryDate(): Date {
         val cal = Calendar.getInstance()
-        cal.add(Calendar.MINUTE, expiryTimeInMinutes)
+        cal.add(Calendar.MINUTE, 60*24)
         return cal.time
     }
 
