@@ -17,10 +17,11 @@ data class User(
         var id: Int,
 
         @NotNull
-        @Column(name="username")
+        @Column(name="username", unique = true)
         var username: String,
 
         @NotNull
+        @Column(unique = true)
         var email: String,
 
         @NotNull
@@ -31,9 +32,6 @@ data class User(
 
         @NotNull
         var roles: String,
-
-        @NotNull
-        var enabled: TinyIntTypeDescriptor,
 
         @NotNull
         @OneToMany(mappedBy = "user")

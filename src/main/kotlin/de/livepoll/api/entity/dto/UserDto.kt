@@ -1,18 +1,8 @@
 package de.livepoll.api.entity.dto
 
-import com.sun.istack.NotNull
-
 data class UserDto(
-        @NotNull
-        var id:Int,
-
-        @NotNull
-        var name:String,
-
-        @NotNull
+        var id: Int?,
+        var username:String,
         var email:String,
-
-        @NotNull
         var password: String
-
 )
