@@ -1,10 +1,8 @@
 package de.livepoll.api.entity.db
 
 import com.sun.istack.NotNull
-import org.hibernate.type.descriptor.sql.TinyIntTypeDescriptor
 import java.util.*
 import javax.persistence.*
-
 
 @Entity
 @Table(name = "user")
@@ -17,10 +15,11 @@ data class User(
         var id: Int,
 
         @NotNull
-        @Column(name = "username")
+        @Column(name = "username", unique = true)
         var username: String,
 
         @NotNull
+        @Column(unique = true)
         var email: String,
 
         @NotNull
@@ -31,9 +30,6 @@ data class User(
 
         @NotNull
         var roles: String,
-
-        @NotNull
-        var enabled: TinyIntTypeDescriptor,
 
         @NotNull
         @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])

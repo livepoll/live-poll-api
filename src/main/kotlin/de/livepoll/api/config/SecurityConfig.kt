@@ -28,7 +28,9 @@ class SecurityConfig: WebSecurityConfigurerAdapter() {
     private lateinit var jwtRequestFilter: JwtRequestFilter
 
     override fun configure(http: HttpSecurity) {
-        http.csrf().disable().authorizeRequests()
+        http.cors().and().csrf().disable().authorizeRequests()
+                .antMatchers("/accountConfirm").permitAll()
+                .antMatchers("/register").permitAll()
                 .antMatchers("/authenticate").permitAll()
                 .anyRequest().authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
