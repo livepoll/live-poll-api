@@ -7,14 +7,12 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class HomeController {
 
-    @Value("\${app.version}")
-    private val appVersion: String = "undefined"
+    @Value("\${api.version}")
+    private val apiVersion: String = "undefined"
 
     @GetMapping("/version")
     fun getStatus(): Map<String, String> {
-        val hashMap: HashMap<String, String> = HashMap()
-        hashMap["api-version"] = appVersion
-        return hashMap
+        return mapOf("api-version" to apiVersion)
     }
 
 }
