@@ -7,17 +7,17 @@ import javax.persistence.*
 
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 data class User(
 
         @Id
         @NotNull
-        @GeneratedValue(strategy=GenerationType.IDENTITY)
-        @Column(name="user_id")
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "user_id")
         var id: Int,
 
         @NotNull
-        @Column(name="username")
+        @Column(name = "username")
         var username: String,
 
         @NotNull
@@ -36,14 +36,14 @@ data class User(
         var enabled: TinyIntTypeDescriptor,
 
         @NotNull
-        @OneToMany(mappedBy = "user")
+        @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
         var polls: List<Poll>
 ) {
-        fun getRoleList(): List<String> {
-                return if (roles.isNotEmpty()){
-                        roles.split(",")
-                } else{
-                        return ArrayList<String>()
-                }
+    fun getRoleList(): List<String> {
+        return if (roles.isNotEmpty()) {
+            roles.split(",")
+        } else {
+            return ArrayList<String>()
         }
+    }
 }
