@@ -1,0 +1,20 @@
+# Workflow for SonarQube
+
+name: SonarQube Checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: SonarQube Scan
+      uses: kitabisa/sonarqube-action@master
+      with:
+        host: ${{ secrets.SONARQUBE_HOST }}
+        login: ${{ secrets.SONARQUBE_TOKEN }}

@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
 
-@Controller
+@RestController
 class AuthenticationController {
 
     @Autowired
@@ -31,7 +31,7 @@ class AuthenticationController {
             )
             val userDetails = jwtUserDetailsService.loadUserByUsername(authRequest.username)
             return ResponseEntity.ok(jwtUtil.generateToken(userDetails))
-        }catch (ex:Exception){
+        } catch (ex:Exception) {
             throw Exception("Wrong password")
         }
     }
