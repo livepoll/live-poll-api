@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.Query
 interface VerificationTokenRepository: JpaRepository<VerificationToken, String> {
 
     @Query("SELECT u FROM VerificationToken u WHERE u.token = ?1")
-    fun findByToken(toke: String): VerificationToken
+    fun findByToken(token: String): VerificationToken
 }
