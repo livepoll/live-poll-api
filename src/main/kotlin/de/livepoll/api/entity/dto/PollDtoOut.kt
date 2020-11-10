@@ -1,6 +1,6 @@
 package de.livepoll.api.entity.dto
 
-import java.util.*
+import java.util.Date
 
 data class PollDtoOut(
         val name: String,

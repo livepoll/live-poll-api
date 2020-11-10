@@ -28,15 +28,15 @@ class AccountService {
     private lateinit var verificationTokenRepository: VerificationTokenRepository
 
     fun createAccount(user: User): User {
-        if (userRepository.countUsersWithUsername(user.username) != 0 || userRepository.countUsersWithEmail(user.email) != 0) {
-            throw UserExistsException("Username or email already exists")
+        return user.apply {
+            if (userRepository.existsByUsername(username) || userRepository.existsByEmail(email))
+                throw UserExistsException("Username or email already exists")
+            password = passwordEncoder.encode(password)
+            accountStatus = false
+            roles = "ROLE_USER"
+            userRepository.saveAndFlush(this)
+            eventPublisher.publishEvent(OnCreateAccountEvent(this, ""))
         }
-        user.password = passwordEncoder.encode(user.password)
-        user.accountStatus = false
-        user.roles = "ROLE_USER"
-        userRepository.saveAndFlush(user)
-        eventPublisher.publishEvent(OnCreateAccountEvent(user, ""))
-        return user
     }
 
     fun createVerificationToken(user: User, token: String) {
@@ -44,19 +44,20 @@ class AccountService {
         verificationTokenRepository.saveAndFlush(verificationToken)
     }
 
-    fun confirmAccount(token: String) {
+    fun confirmAccount(token: String): Boolean {
         val verificationToken = verificationTokenRepository.findByToken(token)
-        if (verificationToken.expiryDate.after(Date())) {
+        return if (verificationToken.expiryDate.after(Date())) {
             val user = userRepository.findByUsername(verificationToken.username)
             user.accountStatus = true
             verificationTokenRepository.delete(verificationToken)
-        }
+            true
+        } else false
     }
 
     private fun calculateExpiryDate(): Date {
-        val cal = Calendar.getInstance()
-        cal.add(Calendar.MINUTE, 60 * 24)
-        return cal.time
+        return Calendar.getInstance().run {
+            add(Calendar.MINUTE, 60 * 24)
+            time
+        }
     }
-
 }

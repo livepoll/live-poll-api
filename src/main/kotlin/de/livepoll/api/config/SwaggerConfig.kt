@@ -10,13 +10,9 @@ import springfox.documentation.spi.DocumentationType
 import springfox.documentation.spring.web.plugins.Docket
 import springfox.documentation.swagger.web.UiConfiguration
 import springfox.documentation.swagger.web.UiConfigurationBuilder
-import javax.servlet.ServletContext
 
 @Configuration
 class SwaggerConfig {
-
-    // Variables as objects
-    private lateinit var context: ServletContext
 
     @Bean
     fun api(): Docket = Docket(DocumentationType.OAS_30)

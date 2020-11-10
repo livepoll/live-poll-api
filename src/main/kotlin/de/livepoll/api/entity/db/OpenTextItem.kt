@@ -4,7 +4,7 @@ import com.sun.istack.NotNull
 import javax.persistence.*
 
 @Entity
-@Table(name="open_Text_Item")
+@Table(name = "open_Text_Item")
 data class OpenTextItem(
         @Id
         @NotNull

@@ -31,5 +31,4 @@ class AuthenticationController(
             throw Exception("Wrong password")
         }
     }
-
 }

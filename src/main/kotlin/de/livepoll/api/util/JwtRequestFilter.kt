@@ -22,7 +22,6 @@ class JwtRequestFilter: OncePerRequestFilter() {
     @Autowired
     private lateinit var jwtUtil: JwtUtil
 
-
     override fun doFilterInternal(httpServletRequest: HttpServletRequest, httpServletResponse: HttpServletResponse, filterChain: FilterChain) {
         val authorizationHeader = httpServletRequest.getHeader("Authorization")
         var token: String? = null
@@ -36,12 +35,12 @@ class JwtRequestFilter: OncePerRequestFilter() {
         if (userName != null && SecurityContextHolder.getContext().authentication == null) {
             val userDetails: UserDetails = jwtUserDetailsService.loadUserByUsername(userName)
             if (jwtUtil.validateToken(token, userDetails)) {
-                val usernamePasswordAuthenticationToken = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
-                usernamePasswordAuthenticationToken.details = WebAuthenticationDetailsSource().buildDetails(httpServletRequest)
-                SecurityContextHolder.getContext().authentication = usernamePasswordAuthenticationToken
+                SecurityContextHolder.getContext().authentication =
+                        UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities).apply {
+                    details = WebAuthenticationDetailsSource().buildDetails(httpServletRequest)
+                }
             }
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse)
-
     }
 }

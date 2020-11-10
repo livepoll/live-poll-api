@@ -4,7 +4,7 @@ import com.sun.istack.NotNull
 import javax.persistence.*
 
 @Entity
-@Table(name="answer")
+@Table(name = "answer")
 data class Answer(
         @Id
         @NotNull
