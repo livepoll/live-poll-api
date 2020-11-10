@@ -6,14 +6,17 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
-interface UserRepository: JpaRepository<User, Int> {
+interface UserRepository : JpaRepository<User, Int> {
 
-   @Query("SELECT u FROM User u WHERE u.username = ?1")
-   fun findByUsername(username: String): User
+    //   @Query("SELECT u FROM User u WHERE u.username = ?1")
+    fun findByUsername(username: String): User
 
-   @Query("SELECT COUNT(u.id) FROM User u WHERE u.username = ?1")
-   fun countUsersWithUsername(username: String): Int
+    // TODO: try to replace with query DSL later
+    @Query("SELECT COUNT(u.id) FROM User u WHERE u.username = ?1")
+    fun countUsersWithUsername(username: String): Int
 
-   @Query("SELECT COUNT(u.id) FROM User u WHERE u.email = ?1")
-   fun countUsersWithEmail(email: String): Int
+    // TODO: try to replace with query DSL later
+    @Query("SELECT COUNT(u.id) FROM User u WHERE u.email = ?1")
+    fun countUsersWithEmail(email: String): Int
+
 }

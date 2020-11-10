@@ -1,40 +1,35 @@
 package de.livepoll.api.controller
 
-import de.livepoll.api.entity.db.User
-import de.livepoll.api.entity.dto.UserDto
-import de.livepoll.api.exception.UserExistsException
-import de.livepoll.api.service.UserService
-import org.modelmapper.ModelMapper
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
+import de.livepoll.api.entity.dto.PollDtoIn
+import de.livepoll.api.entity.dto.PollDtoOut
+import de.livepoll.api.entity.dto.UserDtoOut
+import de.livepoll.api.repository.UserRepository
+import de.livepoll.api.service.PollService
+import de.livepoll.api.service.toDtoOut
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.server.ResponseStatusException
 
 @RestController
-class UserController {
+@RequestMapping("/v0/users")
+class UserController(
+        private val userRepository: UserRepository,
+        private val pollService: PollService
+) {
 
-    @Autowired
-    private lateinit var userService: UserService
-
-    @PostMapping("/register")
-    fun createNewAccount(@RequestBody newUser: UserDto): ResponseEntity<*>{
-        try{
-            userService.createAccount(userDtoToDao(newUser))
-        }catch (e: UserExistsException){
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Username or email already exists", e)
-        }
-        return ResponseEntity.ok("Please confirm email")
+    @GetMapping("/{id}")
+    fun getUser(@PathVariable id: Int): UserDtoOut {
+        return userRepository.getOne(id).toDtoOut()
     }
 
-    @GetMapping("/accountConfirm")
-    fun accountConfirmation(@RequestParam("token") token: String): String{
-        userService.confirmAccount(token)
-        return "Your account has been confirmed"
+    @GetMapping("/{id}/polls")
+    fun getPollsForUser(@PathVariable(name = "id") userId: Int): List<PollDtoOut> {
+        return userRepository.getOne(userId).polls.map { it.toDtoOut() }
     }
 
-    private fun userDtoToDao(userDto: UserDto): User {
-        val mapper = ModelMapper()
-        return mapper.map(userDto, User::class.java)
+    @PostMapping("/{id}/poll")
+    fun createPollForUser(@PathVariable(name = "id") userId: Int, @RequestBody newPoll: PollDtoIn): ResponseEntity<*> {
+        pollService.createPollEntity(newPoll, userId)
+        return ResponseEntity.ok("Poll created")
     }
+
 }

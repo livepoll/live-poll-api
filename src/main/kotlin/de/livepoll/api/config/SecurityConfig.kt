@@ -2,7 +2,6 @@ package de.livepoll.api.config
 
 import de.livepoll.api.service.JwtUserDetailsService
 import de.livepoll.api.util.JwtRequestFilter
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -16,22 +15,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig: WebSecurityConfigurerAdapter() {
-
-    //@Autowired
-    //private lateinit var dataSource: DataSource
-
-    @Autowired
-    private lateinit var  jwtUserDetailsService: JwtUserDetailsService
-
-    @Autowired
-    private lateinit var jwtRequestFilter: JwtRequestFilter
+class SecurityConfig(
+        private val jwtUserDetailsService: JwtUserDetailsService,
+        private val jwtRequestFilter: JwtRequestFilter
+) : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity) {
         http.cors().and().csrf().disable().authorizeRequests()
-                .antMatchers("/accountConfirm").permitAll()
-                .antMatchers("/register").permitAll()
-                .antMatchers("/authenticate").permitAll()
+                .antMatchers("/v0/account/register").permitAll()
+                .antMatchers("/v0/account/confirm").permitAll()
+                .antMatchers("/v0/authenticate").permitAll()
                 .anyRequest().authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 

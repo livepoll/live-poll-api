@@ -4,9 +4,6 @@ import io.cucumber.junit.Cucumber
 import io.cucumber.junit.CucumberOptions
 import org.junit.runner.RunWith
 
-
-
-
 @RunWith(Cucumber::class)
 @CucumberOptions(
         strict=true,
@@ -14,7 +11,4 @@ import org.junit.runner.RunWith
         stepNotifications = true,
         features = ["src/test/resources/features"],
         plugin = ["pretty"])
-class CucumberIntegrationTest: SpringIntegrationTest(){
-
-}
-
+class CucumberIntegrationTest: SpringIntegrationTest()
