@@ -29,7 +29,7 @@ class UserController(
 
     @PostMapping("/{id}/poll")
     fun createPollForUser(@PathVariable(name = "id") userId: Int, @RequestBody newPoll: PollDtoIn): ResponseEntity<*> {
-        pollService.create(newPoll, userId)
+        pollService.createPollEntity(newPoll, userId)
         return ResponseEntity.ok("Poll created")
     }
 
