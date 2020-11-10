@@ -6,12 +6,11 @@ import de.livepoll.api.entity.dto.UserDtoOut
 import de.livepoll.api.repository.UserRepository
 import de.livepoll.api.service.PollService
 import de.livepoll.api.service.toDtoOut
-import de.livepoll.api.util.apiVersion
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/v$apiVersion/users")
+@RequestMapping("/v0/users")
 class UserController(
         private val userRepository: UserRepository,
         private val pollService: PollService

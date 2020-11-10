@@ -4,14 +4,13 @@ import de.livepoll.api.entity.dto.UserDtoIn
 import de.livepoll.api.exception.UserExistsException
 import de.livepoll.api.service.AccountService
 import de.livepoll.api.service.toDbEntity
-import de.livepoll.api.util.apiVersion
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 
 @RestController
-@RequestMapping("/v$apiVersion/account")
+@RequestMapping("/v0/account")
 class AccountController(
         private val accountService: AccountService
 ) {
