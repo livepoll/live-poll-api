@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 class JwtUserDetailsService: UserDetailsService {
 
     @Autowired
-    private lateinit var userRepository: UserRepository;
+    private lateinit var userRepository: UserRepository
 
     override fun loadUserByUsername(username: String): UserDetails {
         val user = userRepository.findByUsername(username)

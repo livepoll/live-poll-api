@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.*
 
 @RestController
-class UserService{
+class UserService {
 
     @Autowired
     private lateinit var passwordEncoder: PasswordEncoder
@@ -28,36 +28,35 @@ class UserService{
     private lateinit var verificationTokenRepository: VerificationTokenRepository
 
     fun createAccount(user: User): User {
-        if(userRepository.countUsersWithUsername(user.username)!=0 || userRepository.countUsersWithEmail(user.email)!=0){
+        if (userRepository.countUsersWithUsername(user.username) != 0 || userRepository.countUsersWithEmail(user.email) != 0) {
             throw UserExistsException("Username or email already exists")
         }
         user.password = passwordEncoder.encode(user.password)
         user.accountStatus = false
-        user.roles="ROLE_USER"
+        user.roles = "ROLE_USER"
         userRepository.saveAndFlush(user)
-        eventPublisher.publishEvent(OnCreateAccountEvent(user,""))
-        return user;
+        eventPublisher.publishEvent(OnCreateAccountEvent(user, ""))
+        return user
     }
 
-    fun createVerificationToken(user: User, token: String){
+    fun createVerificationToken(user: User, token: String) {
         val verificationToken = VerificationToken(0, token, user.username, calculateExpiryDate())
         verificationTokenRepository.saveAndFlush(verificationToken)
     }
 
-    fun confirmAccount(token: String){
+    fun confirmAccount(token: String) {
         val verificationToken = verificationTokenRepository.findByToken(token)
-        if(verificationToken.expiryDate.after(Date())){
+        if (verificationToken.expiryDate.after(Date())) {
             val user = userRepository.findByUsername(verificationToken.username)
-            user.accountStatus = true;
+            user.accountStatus = true
             verificationTokenRepository.delete(verificationToken)
         }
     }
 
     private fun calculateExpiryDate(): Date {
         val cal = Calendar.getInstance()
-        cal.add(Calendar.MINUTE, 60*24)
+        cal.add(Calendar.MINUTE, 60 * 24)
         return cal.time
     }
 
-   
 }
