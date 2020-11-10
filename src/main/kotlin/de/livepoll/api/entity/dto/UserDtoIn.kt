@@ -1,8 +1,7 @@
 package de.livepoll.api.entity.dto
 
-data class UserDto(
-        var id: Int?,
+data class UserDtoIn(
         var username: String,
         var email: String,
-        var password: String
+        var password: String,
 )

@@ -1,6 +1,6 @@
 package de.livepoll.api.util
 
-import de.livepoll.api.service.UserService
+import de.livepoll.api.service.AccountService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationListener
 import org.springframework.mail.SimpleMailMessage
@@ -14,7 +14,7 @@ class AccountListener: ApplicationListener<OnCreateAccountEvent> {
     private val serverUrl = System.getenv("LIVE_POLL_SERVER_URL")
 
     @Autowired
-    private lateinit var userService: UserService
+    private lateinit var accountService: AccountService
 
     @Autowired
     private lateinit var javaMailSender: JavaMailSender
@@ -26,7 +26,7 @@ class AccountListener: ApplicationListener<OnCreateAccountEvent> {
     private fun confirmCreateAccount(event: OnCreateAccountEvent){
         val user = event.user
         val token = UUID.randomUUID().toString()
-        userService.createVerificationToken(user, token)
+        accountService.createVerificationToken(user, token)
 
         val recipientAddress = user.email
         val subject = "Account Confirmation Live-Poll"

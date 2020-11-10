@@ -1,50 +1,36 @@
 package de.livepoll.api.controller
 
-import de.livepoll.api.entity.db.Poll
-import de.livepoll.api.entity.dto.UserDto
-import de.livepoll.api.exception.UserExistsException
+import de.livepoll.api.entity.dto.PollDtoIn
+import de.livepoll.api.entity.dto.PollDtoOut
+import de.livepoll.api.entity.dto.UserDtoOut
 import de.livepoll.api.repository.UserRepository
-import de.livepoll.api.service.UserService
+import de.livepoll.api.service.PollService
+import de.livepoll.api.service.toDtoOut
 import de.livepoll.api.util.apiVersion
-import de.livepoll.api.util.toDao
-import de.livepoll.api.util.toDto
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.server.ResponseStatusException
 
 @RestController
-@RequestMapping("/api/v${apiVersion}/users")
+@RequestMapping("/v$apiVersion/users")
 class UserController(
-        private val repository: UserRepository,
-        private val userService: UserService
+        private val userRepository: UserRepository,
+        private val pollService: PollService
 ) {
 
     @GetMapping("/{id}")
-    fun getUser(@PathVariable id: Int): UserDto {
-        return repository.findById(id).get().toDto()
+    fun getUser(@PathVariable id: Int): UserDtoOut {
+        return userRepository.getOne(id).toDtoOut()
     }
 
     @GetMapping("/{id}/polls")
-    fun getPollsForUser(@PathVariable id: Int): List<Poll> {
-        return repository.getOne(id).polls
+    fun getPollsForUser(@PathVariable(name = "id") userId: Int): List<PollDtoOut> {
+        return userRepository.getOne(userId).polls.map { it.toDtoOut() }
     }
 
-    @PostMapping("/register")
-    fun createNewAccount(@RequestBody newUser: UserDto): ResponseEntity<*> {
-        try {
-            userService.createAccount(newUser.toDao())
-        } catch (e: UserExistsException) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Username or email already exists", e)
-        }
-        return ResponseEntity.ok("Please confirm email")
-    }
-
-    @GetMapping("/accountConfirm")
-    fun accountConfirmation(@RequestParam("token") token: String): String {
-        userService.confirmAccount(token)
-        return "Your account has been confirmed"
+    @PostMapping("/{id}/poll")
+    fun createPollForUser(@PathVariable(name = "id") userId: Int, @RequestBody newPoll: PollDtoIn): ResponseEntity<*> {
+        pollService.create(newPoll, userId)
+        return ResponseEntity.ok("Poll created")
     }
 
 }

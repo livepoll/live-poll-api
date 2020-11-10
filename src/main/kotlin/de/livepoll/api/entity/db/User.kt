@@ -1,6 +1,6 @@
 package de.livepoll.api.entity.db
 
-import com.sun.istack.NotNull
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.util.*
 import javax.persistence.*
 
@@ -9,32 +9,27 @@ import javax.persistence.*
 data class User(
 
         @Id
-        @NotNull
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "user_id")
-        var id: Int,
+        val id: Int,
 
-        @NotNull
         @Column(name = "username", unique = true)
         var username: String,
 
-        @NotNull
         @Column(unique = true)
         var email: String,
 
-        @NotNull
         var password: String,
 
-        @NotNull
         var accountStatus: Boolean,
 
-        @NotNull
         var roles: String,
 
-        @NotNull
+        @JsonIgnore
         @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
         var polls: List<Poll>
 ) {
+
     fun getRoleList(): List<String> {
         return if (roles.isNotEmpty()) {
             roles.split(",")
@@ -42,4 +37,5 @@ data class User(
             return ArrayList<String>()
         }
     }
+
 }
