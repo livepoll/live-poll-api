@@ -5,9 +5,13 @@ import de.livepoll.api.entity.db.VerificationToken
 import de.livepoll.api.exception.UserExistsException
 import de.livepoll.api.repository.UserRepository
 import de.livepoll.api.repository.VerificationTokenRepository
+import de.livepoll.api.util.JwtUtil
 import de.livepoll.api.util.OnCreateAccountEvent
+import de.livepoll.api.util.jwtCookie.CookieUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.http.HttpHeaders
+import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
@@ -26,6 +30,15 @@ class AccountService {
 
     @Autowired
     private lateinit var verificationTokenRepository: VerificationTokenRepository
+
+    @Autowired
+    private lateinit var cookieUtil: CookieUtil
+
+    @Autowired
+    private lateinit var jwtUtil: JwtUtil
+
+    @Autowired
+    private lateinit var jwtUserDetailsService: JwtUserDetailsService
 
     fun createAccount(user: User): User {
         return user.apply {
@@ -48,7 +61,7 @@ class AccountService {
         val verificationToken = verificationTokenRepository.findByToken(token)
         return if (verificationToken.expiryDate.after(Date())) {
             val user = userRepository.findByUsername(verificationToken.username)
-            user.accountStatus = true
+            user?.accountStatus = true
             verificationTokenRepository.delete(verificationToken)
             true
         } else false
@@ -59,5 +72,12 @@ class AccountService {
             add(Calendar.MINUTE, 60 * 24)
             time
         }
+    }
+
+    fun login(username: String): ResponseEntity<*>{
+        val userDetails = jwtUserDetailsService.loadUserByUsername(username)
+        val responseHeaders = HttpHeaders()
+        responseHeaders.add(HttpHeaders.SET_COOKIE, cookieUtil.createAccessTokenCookie(jwtUtil.generateToken(userDetails), calculateExpiryDate().time).toString())
+        return ResponseEntity.ok().headers(responseHeaders).body("Authentication successful")
     }
 }
