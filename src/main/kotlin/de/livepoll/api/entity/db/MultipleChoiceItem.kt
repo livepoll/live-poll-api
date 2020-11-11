@@ -4,7 +4,7 @@ import com.sun.istack.NotNull
 import javax.persistence.*
 
 @Entity
-@Table(name="multiple_Choice_Item")
+@Table(name = "multiple_Choice_Item")
 data class MultipleChoiceItem(
         @Id
         @NotNull

@@ -17,10 +17,7 @@ class JwtUtil {
 
     fun extractExpiration(token: String?): Date = extractClaim(token) { obj: Claims -> obj.expiration }
 
-    fun <T> extractClaim(token: String?, claimsResolver: Function<Claims, T>): T {
-        val claims = extractAllClaims(token)
-        return claimsResolver.apply(claims)
-    }
+    fun <T> extractClaim(token: String?, claimsResolver: Function<Claims, T>) = claimsResolver.apply(extractAllClaims(token))
 
     private fun extractAllClaims(token: String?): Claims {
         return Jwts.parser().setSigningKey(secret)
@@ -40,8 +37,6 @@ class JwtUtil {
                 .signWith(SignatureAlgorithm.HS256, secret).compact()
     }
 
-    fun validateToken(token: String?, userDetails: UserDetails): Boolean {
-        val username = extractUsername(token)
-        return username == userDetails.username && !isTokenExpired(token)
-    }
+    fun validateToken(token: String?, userDetails: UserDetails)
+            = extractUsername(token) == userDetails.username && !isTokenExpired(token)
 }
