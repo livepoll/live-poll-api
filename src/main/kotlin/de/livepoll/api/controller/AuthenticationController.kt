@@ -1,22 +1,18 @@
 package de.livepoll.api.controller
 
+import com.sun.mail.iap.Response
 import de.livepoll.api.entity.jwt.AuthenticationRequest
 import de.livepoll.api.exception.EmailNotConfirmedException
 import de.livepoll.api.service.AccountService
-import de.livepoll.api.service.JwtUserDetailsService
-import de.livepoll.api.util.JwtUtil
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/v0/authenticate")
@@ -39,5 +35,10 @@ class AuthenticationController(
         } catch (ex: Exception) {
             throw Exception("Wrong password")
         }
+    }
+
+    @GetMapping("/logout")
+    fun logout(httpServletRequest: HttpServletRequest): ResponseEntity<*> {
+        return accountService.logout(httpServletRequest)
     }
 }

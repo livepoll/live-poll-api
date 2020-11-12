@@ -1,5 +1,6 @@
 package de.livepoll.api.util
 
+import de.livepoll.api.repository.BlockedTokenRepository
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -9,7 +10,9 @@ import java.util.*
 import java.util.function.Function
 
 @Service
-class JwtUtil {
+class JwtUtil(
+        val blockedTokenRepository: BlockedTokenRepository
+) {
 
     private val secret = System.getenv("LIVE_POLL_JWT_SECRET")
 
@@ -38,5 +41,12 @@ class JwtUtil {
     }
 
     fun validateToken(token: String?, userDetails: UserDetails)
-            = extractUsername(token) == userDetails.username && !isTokenExpired(token)
+            = extractUsername(token) == userDetails.username && !isTokenExpired(token) && !isTokenBlocked(token)
+
+    private fun isTokenBlocked(token: String?): Boolean {
+        blockedTokenRepository.findByToken(token)?.run {
+            return true;
+        }
+        return false;
+    }
 }

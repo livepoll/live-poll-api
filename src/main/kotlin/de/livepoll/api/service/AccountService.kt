@@ -1,22 +1,27 @@
 package de.livepoll.api.service
 
+import de.livepoll.api.entity.db.BlockedToken
 import de.livepoll.api.entity.db.User
 import de.livepoll.api.entity.db.VerificationToken
 import de.livepoll.api.exception.EmailNotConfirmedException
 import de.livepoll.api.exception.UserExistsException
+import de.livepoll.api.repository.BlockedTokenRepository
 import de.livepoll.api.repository.UserRepository
 import de.livepoll.api.repository.VerificationTokenRepository
 import de.livepoll.api.util.JwtUtil
 import de.livepoll.api.util.OnCreateAccountEvent
+import de.livepoll.api.util.jwtCookie.CookieCipher
 import de.livepoll.api.util.jwtCookie.CookieUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpHeaders
+import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
+import javax.servlet.http.HttpServletRequest
 
 @RestController
 class AccountService {
@@ -41,6 +46,12 @@ class AccountService {
 
     @Autowired
     private lateinit var jwtUserDetailsService: JwtUserDetailsService
+
+    @Autowired
+    private lateinit var cookieCipher: CookieCipher
+
+    @Autowired
+    private lateinit var blockedTokenRepository: BlockedTokenRepository
 
     fun createAccount(user: User): User {
         return user.apply {
@@ -85,5 +96,18 @@ class AccountService {
             }
         }
         throw UsernameNotFoundException("User not found")
+    }
+
+    fun logout(request: HttpServletRequest): ResponseEntity<*> {
+        val accessTokenCookieName = System.getenv("LIVE_POLL_JWT_AUTH_COOKIE_NAME")
+        request.cookies.forEach {
+            if (accessTokenCookieName == it.name) {
+                val token = cookieCipher.decrypt(it.value)
+                blockedTokenRepository.saveAndFlush(BlockedToken(0, token, jwtUtil.extractExpiration(token)))
+            }
+        }
+        val responseHeaders = HttpHeaders()
+        responseHeaders.add(HttpHeaders.SET_COOKIE, cookieUtil.deleteAccessTokenCookie().toString())
+        return ResponseEntity.ok().headers(responseHeaders).body("Logout successful")
     }
 }
