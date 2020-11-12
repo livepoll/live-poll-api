@@ -1,5 +1,6 @@
 package de.livepoll.api.util.jwtCookie
 
+import de.livepoll.api.util.TOKEN_DURATION
 import org.springframework.http.HttpCookie
 import org.springframework.http.ResponseCookie
 import org.springframework.stereotype.Component
@@ -14,10 +15,11 @@ class CookieUtil(
     private val isDevServer = System.getenv("LIVE_POLL_SERVER_URL").contains("localhost")
     private val domain = if(isDevServer) "localhost" else "live-poll.de"
 
-    fun createAccessTokenCookie(token: String, duration: Long): HttpCookie? {
-        val encryptedToken: String = cookieCipher.encrypt(token)
+    fun createAccessTokenCookie(token: String): HttpCookie? {
+
+        val encryptedToken = cookieCipher.encrypt(token)
         return ResponseCookie.from(accessTokenCookieName, encryptedToken)
-                .maxAge(duration)
+                .maxAge(TOKEN_DURATION)
                 .httpOnly(true)
                 // Secure is only supported with https
                 .secure(isTLSEncrypted)

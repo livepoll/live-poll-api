@@ -69,12 +69,7 @@ class AccountService {
         } else false
     }
 
-    private fun calculateExpiryDate(): Date {
-        return Calendar.getInstance().run {
-            add(Calendar.MINUTE, 60 * 24)
-            time
-        }
-    }
+    private fun calculateExpiryDate() = Calendar.getInstance().apply { add(Calendar.MINUTE, 60 * 24) }.time
 
     fun login(username: String): ResponseEntity<*> {
         val user = userRepository.findByUsername(username) ?: userRepository.findByEmail(username)
@@ -83,7 +78,7 @@ class AccountService {
                 val userDetails = jwtUserDetailsService.loadUserByUsername(username)
                 val responseHeaders = HttpHeaders()
                 responseHeaders.add(HttpHeaders.SET_COOKIE, cookieUtil.createAccessTokenCookie(
-                        jwtUtil.generateToken(userDetails), calculateExpiryDate().time).toString())
+                        jwtUtil.generateToken(userDetails)).toString())
                 return ResponseEntity.ok().headers(responseHeaders).body("Authentication successful")
             } else {
                 throw EmailNotConfirmedException("Email is not confirmed")
