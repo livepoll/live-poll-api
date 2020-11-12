@@ -33,7 +33,7 @@ class JwtUtil {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject).setIssuedAt(Date(System.currentTimeMillis()))
-                .setExpiration(Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .setExpiration(Date(System.currentTimeMillis() + TOKEN_DURATION * 1000))
                 .signWith(SignatureAlgorithm.HS256, secret).compact()
     }
 
