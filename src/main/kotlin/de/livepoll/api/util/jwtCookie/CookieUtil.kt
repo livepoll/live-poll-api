@@ -11,13 +11,18 @@ class CookieUtil(
 
     private val accessTokenCookieName = System.getenv("LIVE_POLL_JWT_AUTH_COOKIE_NAME")
     private val isTLSEncrypted = System.getenv("LIVE_POLL_SERVER_URL").startsWith("https://")
+    private val isDevServer = System.getenv("LIVE_POLL_SERVER_URL").contains("localhost")
+    private val domain = if(isDevServer) "localhost" else "live-poll.de"
 
     fun createAccessTokenCookie(token: String, duration: Long): HttpCookie? {
         val encryptedToken: String = cookieCipher.encrypt(token)
         return ResponseCookie.from(accessTokenCookieName, encryptedToken)
                 .maxAge(duration)
                 .httpOnly(true)
+                // Secure is only supported with https
                 .secure(isTLSEncrypted)
+                // Use top level domain. Subdomains are included automatically (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie)
+                .domain(domain)
                 .path("/")
                 .build()
     }
@@ -27,7 +32,10 @@ class CookieUtil(
         return ResponseCookie.from(accessTokenCookieName, "")
                 .maxAge(0)
                 .httpOnly(true)
+                // Secure is only supported with https
                 .secure(isTLSEncrypted)
+                // Use top level domain. Subdomains are included automatically (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie)
+                .domain(domain)
                 .path("/")
                 .build()
     }
