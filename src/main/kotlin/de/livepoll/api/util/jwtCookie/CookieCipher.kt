@@ -1,5 +1,6 @@
 package de.livepoll.api.util.jwtCookie
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.security.NoSuchAlgorithmException
 import javax.crypto.spec.SecretKeySpec
@@ -12,7 +13,7 @@ import java.util.Base64
 @Component
 class CookieCipher {
 
-    private val KEYVALUE = "secureKey"
+    private val KEYVALUE = System.getenv("JWT_COOKIE_KEYVALUE")
     private var secretKey: SecretKeySpec? = null
     private var key: ByteArray? = null
 
