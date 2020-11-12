@@ -1,25 +1,23 @@
 package de.livepoll.api.util.jwtCookie
 
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import java.security.NoSuchAlgorithmException
-import javax.crypto.spec.SecretKeySpec
-import javax.crypto.Cipher
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
-import java.util.Arrays
-import java.util.Base64
+import java.security.NoSuchAlgorithmException
+import java.util.*
+import javax.crypto.Cipher
+import javax.crypto.spec.SecretKeySpec
 
 @Component
 class CookieCipher {
 
-    private val KEYVALUE = System.getenv("JWT_COOKIE_KEYVALUE")
+    private val KEY_VALUE = System.getenv("LIVE_POLL_JWT_COOKIE_KEY_VALUE")
     private var secretKey: SecretKeySpec? = null
     private var key: ByteArray? = null
 
     fun setKey() {
         try {
-            key = MessageDigest.getInstance("SHA-1").digest(KEYVALUE.toByteArray(StandardCharsets.UTF_8))
+            key = MessageDigest.getInstance("SHA-1").digest(KEY_VALUE.toByteArray(StandardCharsets.UTF_8))
             key = Arrays.copyOf(key, 16)
             secretKey = SecretKeySpec(key, "AES")
         } catch (e: NoSuchAlgorithmException) {

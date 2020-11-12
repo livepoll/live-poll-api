@@ -1,22 +1,19 @@
 package de.livepoll.api.util.jwtCookie
 
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpCookie
 import org.springframework.http.ResponseCookie
 import org.springframework.stereotype.Component
-
 
 @Component
 class CookieUtil(
         private val cookieCipher: CookieCipher
 ) {
 
-    @Value("\${JWT_AUTHENTICATION_COOKIE_NAME}")
-    private val accessTokenCookieName: String? = null
+    private val accessTokenCookieName = System.getenv("LIVE_POLL_JWT_AUTH_COOKIE_NAME")
 
     fun createAccessTokenCookie(token: String, duration: Long): HttpCookie? {
         val encryptedToken: String = cookieCipher.encrypt(token)
-        return ResponseCookie.from(accessTokenCookieName!!, encryptedToken)
+        return ResponseCookie.from(accessTokenCookieName, encryptedToken)
                 .maxAge(duration)
                 .httpOnly(true)
                 .path("/")
@@ -25,6 +22,10 @@ class CookieUtil(
 
 
     fun deleteAccessTokenCookie(): HttpCookie? {
-        return ResponseCookie.from(accessTokenCookieName!!, "").maxAge(0).httpOnly(true).path("/").build()
+        return ResponseCookie.from(accessTokenCookieName, "")
+                .maxAge(0)
+                .httpOnly(true)
+                .path("/")
+                .build()
     }
 }

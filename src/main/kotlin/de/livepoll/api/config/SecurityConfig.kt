@@ -4,6 +4,7 @@ import de.livepoll.api.service.JwtUserDetailsService
 import de.livepoll.api.util.JwtRequestFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
@@ -41,7 +42,7 @@ class SecurityConfig(
     fun passwordEncoder() = BCryptPasswordEncoder()
 
     @Bean
-    override fun authenticationManagerBean() = super.authenticationManagerBean()
+    override fun authenticationManagerBean(): AuthenticationManager = super.authenticationManagerBean()
 
     @Throws(java.lang.Exception::class)
     override fun configure(web: WebSecurity) {
@@ -49,6 +50,7 @@ class SecurityConfig(
                 "/v3/api-docs",
                 "/swagger-resources/**",
                 "/swagger-ui/**",
-                "/")
+                "/"
+        )
     }
 }

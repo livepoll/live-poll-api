@@ -15,9 +15,7 @@ class JwtUserDetailsService: UserDetailsService {
     private lateinit var userRepository: UserRepository
 
     override fun loadUserByUsername(username: String): UserDetails {
-        var user = userRepository.findByUsername(username)
-        user?.run { return User(this.username, this.password, ArrayList()) }
-        user = userRepository.findByEmail(username)
+        val user = userRepository.findByUsername(username) ?: userRepository.findByEmail(username)
         user?.run { return User(this.username, this.password, ArrayList()) }
         throw UsernameNotFoundException("User does not exist")
     }

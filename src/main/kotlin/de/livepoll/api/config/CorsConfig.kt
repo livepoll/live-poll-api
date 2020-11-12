@@ -25,8 +25,5 @@ class CorsConfig : WebMvcConfigurer {
     }
 
     @Bean
-    fun defaultViewResolver(): InternalResourceViewResolver? {
-        return InternalResourceViewResolver()
-    }
-
+    fun defaultViewResolver() = InternalResourceViewResolver()
 }

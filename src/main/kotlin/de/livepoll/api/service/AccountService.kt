@@ -12,12 +12,10 @@ import de.livepoll.api.util.jwtCookie.CookieUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
 @RestController
@@ -79,23 +77,18 @@ class AccountService {
     }
 
     fun login(username: String): ResponseEntity<*> {
-        var user = userRepository.findByUsername(username)
-        if (user == null) {
-            user = userRepository.findByEmail(username)
-        }
-        return if (user != null) {
+        val user = userRepository.findByUsername(username) ?: userRepository.findByEmail(username)
+        user?.run {
             if (user.accountStatus) {
                 val userDetails = jwtUserDetailsService.loadUserByUsername(username)
                 val responseHeaders = HttpHeaders()
-                responseHeaders.add(HttpHeaders.SET_COOKIE, cookieUtil.createAccessTokenCookie(jwtUtil.generateToken(userDetails), calculateExpiryDate().time).toString())
-                ResponseEntity.ok().headers(responseHeaders).body("Authentication successful")
+                responseHeaders.add(HttpHeaders.SET_COOKIE, cookieUtil.createAccessTokenCookie(
+                        jwtUtil.generateToken(userDetails), calculateExpiryDate().time).toString())
+                return ResponseEntity.ok().headers(responseHeaders).body("Authentication successful")
             } else {
                 throw EmailNotConfirmedException("Email is not confirmed")
             }
-        } else {
-            throw UsernameNotFoundException("User not found")
         }
-
-
+        throw UsernameNotFoundException("User not found")
     }
 }

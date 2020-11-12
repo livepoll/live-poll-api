@@ -2,9 +2,7 @@ package de.livepoll.api.util
 
 import de.livepoll.api.service.JwtUserDetailsService
 import de.livepoll.api.util.jwtCookie.CookieCipher
-import de.livepoll.api.util.jwtCookie.CookieUtil
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
@@ -12,7 +10,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import javax.servlet.FilterChain
-import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -28,8 +25,7 @@ class JwtRequestFilter(
     @Autowired
     private lateinit var jwtUtil: JwtUtil
 
-    @Value("\${JWT_AUTHENTICATION_COOKIE_NAME}")
-    private val accessTokenCookieName: String? = null
+    private val accessTokenCookieName = System.getenv("LIVE_POLL_JWT_AUTH_COOKIE_NAME")
 
     override fun doFilterInternal(httpServletRequest: HttpServletRequest, httpServletResponse: HttpServletResponse, filterChain: FilterChain) {
         var token: String? = null
@@ -67,11 +63,10 @@ class JwtRequestFilter(
     }
 
     private fun getJwtFromCookie(request: HttpServletRequest): String? {
-        val cookies: Array<Cookie> = request.cookies
-        for (cookie in cookies) {
-            if (accessTokenCookieName.equals(cookie.getName())) {
+        request.cookies.forEach {
+            if (accessTokenCookieName == it.name) {
                 println("Token found")
-                val accessToken: String = cookie.getValue() ?: return null
+                val accessToken = it.value ?: return null
                 return cookieCipher.decrypt(accessToken)
             }
         }
