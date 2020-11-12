@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse
 @Component
 class JwtRequestFilter(
         private val cookieCipher: CookieCipher
-): OncePerRequestFilter() {
+) : OncePerRequestFilter() {
 
     @Autowired
     private lateinit var jwtUserDetailsService: JwtUserDetailsService
@@ -35,10 +35,12 @@ class JwtRequestFilter(
         var token: String? = null
         var userName: String? = null
 
-        if(httpServletRequest.cookies!=null){
+        if (httpServletRequest.cookies != null) {
             token = this.getJwtToken(httpServletRequest, true)
-            userName = jwtUtil.extractUsername(token)
-        }else if(httpServletRequest.getHeader("Authorization")!=null){
+            if (token != null) {
+                userName = jwtUtil.extractUsername(token)
+            }
+        } else if (httpServletRequest.getHeader("Authorization") != null) {
             token = this.getJwtToken(httpServletRequest, false)
             userName = jwtUtil.extractUsername(token)
         }
@@ -48,8 +50,8 @@ class JwtRequestFilter(
             if (jwtUtil.validateToken(token, userDetails)) {
                 SecurityContextHolder.getContext().authentication =
                         UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities).apply {
-                    details = WebAuthenticationDetailsSource().buildDetails(httpServletRequest)
-                }
+                            details = WebAuthenticationDetailsSource().buildDetails(httpServletRequest)
+                        }
             }
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse)

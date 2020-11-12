@@ -2,6 +2,7 @@ package de.livepoll.api.service
 
 import de.livepoll.api.entity.db.User
 import de.livepoll.api.entity.db.VerificationToken
+import de.livepoll.api.exception.EmailNotConfirmedException
 import de.livepoll.api.exception.UserExistsException
 import de.livepoll.api.repository.UserRepository
 import de.livepoll.api.repository.VerificationTokenRepository
@@ -11,9 +12,12 @@ import de.livepoll.api.util.jwtCookie.CookieUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
 @RestController
@@ -74,10 +78,24 @@ class AccountService {
         }
     }
 
-    fun login(username: String): ResponseEntity<*>{
-        val userDetails = jwtUserDetailsService.loadUserByUsername(username)
-        val responseHeaders = HttpHeaders()
-        responseHeaders.add(HttpHeaders.SET_COOKIE, cookieUtil.createAccessTokenCookie(jwtUtil.generateToken(userDetails), calculateExpiryDate().time).toString())
-        return ResponseEntity.ok().headers(responseHeaders).body("Authentication successful")
+    fun login(username: String): ResponseEntity<*> {
+        var user = userRepository.findByUsername(username)
+        if (user == null) {
+            user = userRepository.findByEmail(username)
+        }
+        return if (user != null) {
+            if (user.accountStatus) {
+                val userDetails = jwtUserDetailsService.loadUserByUsername(username)
+                val responseHeaders = HttpHeaders()
+                responseHeaders.add(HttpHeaders.SET_COOKIE, cookieUtil.createAccessTokenCookie(jwtUtil.generateToken(userDetails), calculateExpiryDate().time).toString())
+                ResponseEntity.ok().headers(responseHeaders).body("Authentication successful")
+            } else {
+                throw EmailNotConfirmedException("Email is not confirmed")
+            }
+        } else {
+            throw UsernameNotFoundException("User not found")
+        }
+
+
     }
 }
