@@ -10,12 +10,14 @@ class CookieUtil(
 ) {
 
     private val accessTokenCookieName = System.getenv("LIVE_POLL_JWT_AUTH_COOKIE_NAME")
+    private val isTLSEncrypted = System.getenv("LIVE_POLL_SERVER_URL").startsWith("https://")
 
     fun createAccessTokenCookie(token: String, duration: Long): HttpCookie? {
         val encryptedToken: String = cookieCipher.encrypt(token)
         return ResponseCookie.from(accessTokenCookieName, encryptedToken)
                 .maxAge(duration)
                 .httpOnly(true)
+                .secure(isTLSEncrypted)
                 .path("/")
                 .build()
     }
@@ -25,6 +27,7 @@ class CookieUtil(
         return ResponseCookie.from(accessTokenCookieName, "")
                 .maxAge(0)
                 .httpOnly(true)
+                .secure(isTLSEncrypted)
                 .path("/")
                 .build()
     }
