@@ -17,6 +17,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpHeaders
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.RestController
@@ -99,6 +100,7 @@ class AccountService {
     }
 
     fun logout(request: HttpServletRequest): ResponseEntity<*> {
+        SecurityContextHolder.getContext().authentication = null
         val accessTokenCookieName = System.getenv("LIVE_POLL_JWT_AUTH_COOKIE_NAME")
         request.cookies.forEach {
             if (accessTokenCookieName == it.name) {
