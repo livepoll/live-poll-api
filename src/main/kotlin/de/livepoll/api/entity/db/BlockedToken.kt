@@ -11,5 +11,4 @@ data class BlockedToken(
         val id: Int,
         val token: String,
         val expiryDate: Date
-) {
-}
+)

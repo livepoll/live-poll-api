@@ -7,7 +7,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.view.InternalResourceViewResolver
 
-
 @Configuration
 @EnableWebMvc
 class CorsConfig : WebMvcConfigurer {
@@ -15,8 +14,7 @@ class CorsConfig : WebMvcConfigurer {
     private val allowedOrigins = setOf(
             System.getenv("LIVE_POLL_DEV_URL"),
             "https://dev.live-poll.de",
-            "https://live-poll.de",
-            "http://localhost:4200"
+            "https://live-poll.de"
     )
 
     override fun addCorsMappings(registry: CorsRegistry) {

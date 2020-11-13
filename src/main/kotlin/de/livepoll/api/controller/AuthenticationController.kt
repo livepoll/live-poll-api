@@ -11,7 +11,11 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import javax.servlet.http.HttpServletRequest
 
@@ -26,7 +30,7 @@ class AuthenticationController(
     @PostMapping
     fun createAuthenticationToken(@RequestBody authRequest: AuthenticationRequest): ResponseEntity<*>? {
         try {
-            val authentication = authenticationManager.authenticate(
+            authenticationManager.authenticate(
                     UsernamePasswordAuthenticationToken(authRequest.username, authRequest.password)
             )
             return accountService.login(authRequest.username)

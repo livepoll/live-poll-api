@@ -13,10 +13,10 @@ class BlockedTokenConfig(
 ) {
 
     @Scheduled(cron = "0 0 12 * * ?")
-    fun clearBlockedTokens(){
+    fun clearBlockedTokens() {
         val blockedTokens = blockedTokenRepository.findAll()
-        blockedTokens.forEach{
-            if(it.expiryDate.before(Date())){
+        blockedTokens.forEach {
+            if (it.expiryDate.before(Date())) {
                 blockedTokenRepository.delete(it)
             }
         }
