@@ -12,7 +12,7 @@ class BlockedTokenConfig(
         val blockedTokenRepository: BlockedTokenRepository
 ) {
 
-    @Scheduled(cron = "0 12 * * ?")
+    @Scheduled(cron = "0 0 12 * * ?")
     fun clearBlockedTokens(){
         val blockedTokens = blockedTokenRepository.findAll()
         blockedTokens.forEach{
