@@ -85,7 +85,7 @@
 		<dependency>
 			<groupId>io.cucumber</groupId>
 			<artifactId>cucumber-spring</artifactId>
-			<version>6.8.2</version>
+			<version>6.9.0</version>
 			<scope>test</scope>
     </dependency>
     <dependency>
