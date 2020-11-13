@@ -1,24 +1,26 @@
 package de.livepoll.api.controller
 
-import com.sun.mail.iap.Response
 import de.livepoll.api.entity.jwt.AuthenticationRequest
 import de.livepoll.api.exception.EmailNotConfirmedException
+import de.livepoll.api.repository.UserRepository
 import de.livepoll.api.service.AccountService
+import de.livepoll.api.util.toDtoOut
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/v0/authenticate")
 class AuthenticationController(
         private val accountService: AccountService,
-        private val authenticationManager: AuthenticationManager
+        private val authenticationManager: AuthenticationManager,
+        private val userRepository: UserRepository
 ) {
 
     @PostMapping
@@ -40,5 +42,11 @@ class AuthenticationController(
     @GetMapping("/logout")
     fun logout(httpServletRequest: HttpServletRequest): ResponseEntity<*> {
         return accountService.logout(httpServletRequest)
+    }
+
+    @GetMapping("/init")
+    fun loadInitialUser(httpServletRequest: HttpServletRequest): ResponseEntity<*> {
+        val user = userRepository.findByUsername(SecurityContextHolder.getContext().authentication.name)
+        return ResponseEntity.ok().body(user?.toDtoOut())
     }
 }
