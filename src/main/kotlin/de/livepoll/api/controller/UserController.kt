@@ -26,8 +26,8 @@ class UserController(
     @GetMapping("/{id}")
     fun getUser(@PathVariable(name = "id") userId: Int, response: HttpServletResponse): ResponseEntity<*> {
         val user = userRepository.getOne(userId).toDtoOut()
-        return if (user.username.equals(SecurityContextHolder.getContext().authentication.name)) {
-            ResponseEntity.ok().body(user)
+        if (user.username == SecurityContextHolder.getContext().authentication.name) {
+            return ResponseEntity.ok().body(user)
         } else {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this user")
         }
@@ -36,8 +36,8 @@ class UserController(
     @GetMapping("/{id}/polls")
     fun getPollsForUser(@PathVariable(name = "id") userId: Int): ResponseEntity<*> {
         val user = userRepository.getOne(userId)
-        return if (user.username.equals(SecurityContextHolder.getContext().authentication.name)) {
-            ResponseEntity.ok().body(user.polls.map { it.toDtoOut() })
+        if (user.username == SecurityContextHolder.getContext().authentication.name) {
+            return ResponseEntity.ok().body(user.polls.map { it.toDtoOut() })
         } else {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this user")
         }
@@ -46,14 +46,12 @@ class UserController(
     @PostMapping("/{id}/poll")
     fun createPollForUser(@PathVariable(name = "id") userId: Int, @RequestBody newPoll: PollDtoIn): ResponseEntity<*> {
         val user = userRepository.getOne(userId)
-        return if (user.username.equals(SecurityContextHolder.getContext().authentication.name)) {
+        if (user.username == SecurityContextHolder.getContext().authentication.name) {
             pollService.createPollEntity(newPoll, userId)
             return ResponseEntity.ok("Poll created")
         } else {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this user")
         }
-
-
     }
 
 }
