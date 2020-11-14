@@ -15,7 +15,6 @@ import de.livepoll.api.util.jwtCookie.CookieUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpHeaders
-import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UsernameNotFoundException

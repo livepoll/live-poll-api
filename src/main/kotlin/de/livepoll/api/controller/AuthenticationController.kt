@@ -35,11 +35,11 @@ class AuthenticationController(
                     UsernamePasswordAuthenticationToken(authRequest.username, authRequest.password)
             )
             return accountService.login(authRequest.username)
-        } catch (e1: EmailNotConfirmedException) {
+        } catch (_: EmailNotConfirmedException) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Please confirm your email")
-        } catch (e2: UsernameNotFoundException) {
+        } catch (_: UsernameNotFoundException) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Username is wrong")
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             throw Exception("Wrong password")
         }
     }

@@ -10,32 +10,27 @@ data class User(
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "user_id")
+        @Column(name = "user_id", nullable = false)
         val id: Int,
 
-        @Column(name = "username", unique = true)
+        @Column(name = "username", unique = true, nullable = false)
         var username: String,
 
-        @Column(unique = true)
+        @Column(unique = true, nullable = false)
         var email: String,
 
+        @Column(nullable = false)
         var password: String,
 
+        @Column(nullable = false)
         var accountStatus: Boolean,
 
+        @Column(nullable = false)
         var roles: String,
 
         @JsonIgnore
         @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
         var polls: List<Poll>
 ) {
-
-    fun getRoleList(): List<String> {
-        return if (roles.isNotEmpty()) {
-            roles.split(",")
-        } else {
-            return ArrayList<String>()
-        }
-    }
-
+    fun getRoleList() = if (roles.isNotEmpty()) roles.split(",") else emptyList()
 }

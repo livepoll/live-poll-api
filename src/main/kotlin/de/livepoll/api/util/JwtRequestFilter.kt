@@ -65,7 +65,6 @@ class JwtRequestFilter(
     private fun getJwtFromCookie(request: HttpServletRequest): String? {
         request.cookies.forEach {
             if (accessTokenCookieName == it.name) {
-                println("Token found")
                 val accessToken = it.value ?: return null
                 return cookieCipher.decrypt(accessToken)
             }

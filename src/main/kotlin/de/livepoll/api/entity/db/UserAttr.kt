@@ -7,19 +7,17 @@ import javax.persistence.*
 @Table(name = "user_Attr")
 data class UserAttr(
         @Id
-        @NotNull
         @GeneratedValue(strategy= GenerationType.IDENTITY)
-        @Column(name="user_attr_id")
+        @Column(name="user_attr_id", nullable = false)
         var id: Int,
 
-        @NotNull
         @OneToOne
         @JoinColumn(name="user_id")
         var user: User,
 
-        @NotNull
+        @Column(nullable = false)
         var key1: String,
 
-        @NotNull
+        @Column(nullable = false)
         var value: String
 )

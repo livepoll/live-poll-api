@@ -7,17 +7,16 @@ import javax.persistence.*
 @Table(name = "open_Text_Item")
 data class OpenTextItem(
         @Id
-        @NotNull
         @GeneratedValue(strategy= GenerationType.IDENTITY)
-        @Column(name="open_text_item_id")
+        @Column(name="open_text_item_id", nullable = false)
         var id: Int,
 
-        @NotNull
+        @Column(nullable = false)
         var pollId: Int,
 
-        @NotNull
+        @Column(nullable = false)
         var position: Int,
 
-        @NotNull
+        @Column(nullable = false)
         var question: String
 )
