@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -27,7 +28,7 @@ class AuthenticationController(
         private val userRepository: UserRepository
 ) {
 
-    @PostMapping
+    @PostMapping("/login")
     fun createAuthenticationToken(@RequestBody authRequest: AuthenticationRequest): ResponseEntity<*>? {
         try {
             authenticationManager.authenticate(
@@ -43,7 +44,7 @@ class AuthenticationController(
         }
     }
 
-    @GetMapping("/logout")
+    @PutMapping("/logout")
     fun logout(httpServletRequest: HttpServletRequest): ResponseEntity<*> {
         return accountService.logout(httpServletRequest)
     }
