@@ -21,6 +21,7 @@ class CorsConfig : WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedMethods("GET", "HEAD", "POST", "PUT")
                 .allowedOrigins(*allowedOrigins.toTypedArray())
+                .allowCredentials(true)
     }
 
     @Bean
