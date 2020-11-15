@@ -14,7 +14,7 @@ class PollService(
 
     fun createPollEntity(pollDto: PollDtoIn, userId: Int) {
         userRepository.findById(userId).orElseGet { null }.run {
-            val poll = Poll(this, pollDto.name, pollDto.startDate, pollDto.endDate)
+            val poll = Poll(0, this, pollDto.name, pollDto.startDate, pollDto.endDate)
             pollRepository.saveAndFlush(poll)
         }
     }

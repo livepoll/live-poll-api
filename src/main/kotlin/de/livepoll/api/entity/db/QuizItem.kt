@@ -7,21 +7,16 @@ import javax.persistence.*
 @Table(name = "quiz_Item")
 data class QuizItem(
         @Id
-        @NotNull
         @GeneratedValue(strategy= GenerationType.IDENTITY)
-        @Column(name="quiz_item_id")
+        @Column(name="quiz_item_id", nullable = false)
         var id: Int,
 
-        @NotNull
+        @Column(nullable = false)
         var pollId: Int,
 
-        @NotNull
+        @Column(nullable = false)
         var pos:Int,
 
-        @NotNull
-        var question:String,
-
-      /*  @NotNull
-        @OneToMany(mappedBy="pollItemId")
-        val answers: List<Answer>*/
+        @Column(nullable = false)
+        var question:String
 )

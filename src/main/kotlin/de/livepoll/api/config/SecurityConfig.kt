@@ -26,7 +26,7 @@ class SecurityConfig(
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers("/v0/account/register").permitAll()
                 .antMatchers("/v0/account/confirm").permitAll()
-                .antMatchers("/v0/authenticate").permitAll()
+                .antMatchers("/v0/authenticate/login").permitAll()
                 .anyRequest().authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 

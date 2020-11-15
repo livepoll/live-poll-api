@@ -9,12 +9,12 @@ data class Answer(
         @Id
         @NotNull
         @GeneratedValue(strategy=GenerationType.IDENTITY)
-        @Column(name="answer_id")
+        @Column(name="answer_id", nullable = false)
         var id: Int,
 
-        @NotNull
+        @Column(nullable = false)
         var pollItemId: Int,
 
-        @NotNull
+        @Column(nullable = false)
         var answer: String
 )

@@ -53,5 +53,4 @@ class UserController(
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this user")
         }
     }
-
 }

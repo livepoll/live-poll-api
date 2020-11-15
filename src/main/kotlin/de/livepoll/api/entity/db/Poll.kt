@@ -7,11 +7,17 @@ import javax.persistence.*
 @Entity
 @Table(name = "poll")
 data class Poll(
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "poll_id", nullable = false)
+        var id: Int,
+
         @ManyToOne
         @JsonIgnore
         @JoinColumn(name = "user_id")
         var user: User,
 
+        @Column(nullable = false)
         var name: String,
 
         var startDate: Date,
@@ -19,10 +25,5 @@ data class Poll(
         var endDate: Date,
 
         @OneToMany(mappedBy = "pollId")
-        var pollItems: List<MultipleChoiceItem> = emptyList(),
-
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "poll_id")
-        var id: Int = 0
+        var pollItems: List<MultipleChoiceItem> = emptyList()
 )
