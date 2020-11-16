@@ -14,7 +14,7 @@ class CorsConfig : WebMvcConfigurer {
     private val allowedOrigins = setOf(
             System.getenv("LIVE_POLL_DEV_URL"),
             "https://dev.live-poll.de",
-            "https://live-poll.de"
+            "https://www.live-poll.de"
     )
 
     override fun addCorsMappings(registry: CorsRegistry) {
