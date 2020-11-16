@@ -18,7 +18,7 @@ class CookieUtil(
     fun deleteAccessTokenCookie() = buildCookie("")
 
     fun buildCookie(content: String) = ResponseCookie.from(accessTokenCookieName, content)
-            .maxAge(TOKEN_DURATION)
+            .maxAge(if (content.isBlank()) 0 else TOKEN_DURATION)
             .httpOnly(true)
             // Secure is only supported with https
             .secure(isTLSEncrypted)

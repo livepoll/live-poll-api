@@ -15,7 +15,7 @@ fun Poll.toDtoOut(): PollDtoOut {
 // --------------------------------------------------- User mappers ----------------------------------------------------
 
 fun User.toDtoOut(): UserDtoOut {
-    return UserDtoOut(0, this.username, this.email, this.password, this.polls)
+    return UserDtoOut(this.id, this.username, this.email, this.polls)
 }
 
 fun UserDtoIn.toDbEntity(): User {
