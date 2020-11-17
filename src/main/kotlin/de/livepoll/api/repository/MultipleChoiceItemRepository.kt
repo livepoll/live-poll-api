@@ -5,4 +5,4 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface MultipleChoiceItemRepository: JpaRepository<MultipleChoiceItem, Int>
+interface MultipleChoiceItemRepository: PollItemRepository<MultipleChoiceItem, Int>

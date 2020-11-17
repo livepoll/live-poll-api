@@ -25,5 +25,5 @@ data class Poll(
         var endDate: Date,
 
         @OneToMany(mappedBy = "pollId")
-        var pollItems: List<MultipleChoiceItem> = emptyList()
+        var pollItems: MutableList<PollItem>
 )
