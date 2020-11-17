@@ -8,16 +8,10 @@ import de.livepoll.api.entity.dto.UserDtoOut
 
 // --------------------------------------------------- Poll mappers ----------------------------------------------------
 
-fun Poll.toDtoOut(): PollDtoOut {
-    return PollDtoOut(this.name, this.startDate, this.endDate)
-}
+fun Poll.toDtoOut() = PollDtoOut(this.id, this.name, this.startDate, this.endDate)
 
 // --------------------------------------------------- User mappers ----------------------------------------------------
 
-fun User.toDtoOut(): UserDtoOut {
-    return UserDtoOut(this.id, this.username, this.email, this.polls)
-}
+fun User.toDtoOut() = UserDtoOut(this.id, this.username, this.email, this.polls)
 
-fun UserDtoIn.toDbEntity(): User {
-    return User(0, this.username, this.email, this.password, false, "", emptyList())
-}
+fun UserDtoIn.toDbEntity() = User(0, this.username, this.email, this.password, false, "", emptyList())
