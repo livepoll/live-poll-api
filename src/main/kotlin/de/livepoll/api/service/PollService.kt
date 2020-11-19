@@ -29,16 +29,10 @@ class PollService(
 
     fun addMultipleChoiceItem(item: MultipleChoiceItemDtoIn): MultipleChoiceItem{
         pollRepository.findById(item.pollId).orElseGet { null }.run {
-            val multipleChoiceItem =MultipleChoiceItem(0, item.pollId, item.question, item.position, emptyList())
-            val answers = emptyList<Answer>().toMutableList()
-            item.answers.forEach{
-                answers.add(Answer(0, item.pollId, it))
-            }
+            val multipleChoiceItem = MultipleChoiceItem(0, item.pollId, item.question, item.position, emptyList())
+            val answers = item.answers.map { Answer(0, item.pollId, it) }
             answerRepository.saveAll(answers)
             return multipleChoiceItemRepository.saveAndFlush(multipleChoiceItem)
-
         }
-
-
     }
 }
