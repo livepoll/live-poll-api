@@ -1,5 +1,6 @@
 package de.livepoll.api.entity.db
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence.*
 
 @Entity
@@ -11,8 +12,10 @@ open class PollItem(
         @Column(name = "poll_item_id")
         open val id: Int,
 
-        @Column(nullable = false)
-        open val pollId: Int,
+        @ManyToOne
+        @JsonIgnore
+        @JoinColumn(name = "poll_id")
+        open val poll: Poll,
 
         @Column(nullable = false)
         open val question: String,
