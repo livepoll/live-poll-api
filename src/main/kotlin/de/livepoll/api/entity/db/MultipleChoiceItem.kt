@@ -1,26 +1,15 @@
 package de.livepoll.api.entity.db
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.sun.istack.NotNull
 import javax.persistence.*
 
 @Entity
 @Table(name = "multiple_Choice_Item")
-data class MultipleChoiceItem(
-        @Id
-        @GeneratedValue(strategy= GenerationType.IDENTITY)
-        @Column(name="multiple_choice_item_id", nullable = false)
-        var id: Int,
+class MultipleChoiceItem(
+        id: Int, poll: Poll, question: String, position: Int,
 
-        @Column(nullable = false)
-        var pollId: Int,
-
-        @Column(nullable = false)
-        var position: Int,
-
-        @Column(nullable = false)
-        var question: String,
-
-        @Column(nullable = false)
-        @OneToMany(mappedBy="pollItemId")
+        @JsonIgnore
+        @OneToMany(mappedBy = "pollItem", cascade = [CascadeType.ALL])
         val answers: List<Answer>
-)
+) : PollItem(id, poll, question, position)

@@ -12,8 +12,9 @@ data class Answer(
         @Column(name="answer_id", nullable = false)
         var id: Int,
 
-        @Column(nullable = false)
-        var pollItemId: Int,
+        @ManyToOne
+        @JoinColumn(name="poll_item_id")
+        var pollItem: PollItem,
 
         @Column(nullable = false)
         var answer: String
