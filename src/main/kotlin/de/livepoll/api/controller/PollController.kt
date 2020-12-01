@@ -19,11 +19,6 @@ class PollController(
         private val pollItemService: PollItemService
 ) {
 
-    @GetMapping("/{id}")
-    fun getPoll(@PathVariable(name = "id") pollId: Int): ResponseEntity<*>{
-        return ResponseEntity.ok().body(pollService.getPoll(pollId))
-    }
-
     @PostMapping("/{id}/multiplechoiceitem")
     fun addMultipleChoiceItem(@PathVariable(name = "id") pollId: Int, @RequestBody newItem: MultipleChoiceItemDtoIn): ResponseEntity<*> {
         if (pollId != newItem.pollId) {
