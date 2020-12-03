@@ -7,3 +7,4 @@ data class PollDtoIn(
         val startDate: Date,
         val endDate: Date
 )
+
