@@ -43,6 +43,11 @@ class UserController(
         }
     }
 
+    @GetMapping("/{id}/polls/{pollId}")
+    fun getPoll(@PathVariable(name = "id") userId: Int, @PathVariable(name = "pollId") pollId: Int): ResponseEntity<*>{
+        return ResponseEntity.ok().body(pollService.getPoll(pollId))
+    }
+
     @PostMapping("/{id}/poll")
     fun createPollForUser(@PathVariable(name = "id") userId: Int, @RequestBody newPoll: PollDtoIn): ResponseEntity<*> {
         val user = userRepository.getOne(userId)
