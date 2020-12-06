@@ -24,7 +24,7 @@ import javax.net.ssl.SSLContext
 @RunWith(SpringRunner::class)
 @CucumberContextConfiguration
 @SpringBootTest(classes = [LivePollApplication::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class SpringCucumberIntegrationTests(userRepository: UserRepository) {
+class CucumberIntegrationTestContext(userRepository: UserRepository) {
     companion object {
         private const val AUTHENTICATION_ENDPOINT = "/v0/authenticate/login"
     }
