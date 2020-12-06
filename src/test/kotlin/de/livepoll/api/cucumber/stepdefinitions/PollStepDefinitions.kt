@@ -1,6 +1,6 @@
-package de.livepoll.api.cucumber.poll
+package de.livepoll.api.cucumber.stepdefinitions
 
-import de.livepoll.api.cucumber.SpringCucumberIntegrationTests
+import de.livepoll.api.cucumber.CucumberIntegrationTestContext
 import de.livepoll.api.entity.dto.PollDtoIn
 import de.livepoll.api.entity.dto.PollDtoOut
 import de.livepoll.api.repository.PollRepository
@@ -15,7 +15,7 @@ import org.springframework.http.*
 import org.springframework.web.client.exchange
 import java.sql.Date
 
-class PollStepDefinitions(userRepository: UserRepository) : SpringCucumberIntegrationTests(userRepository) {
+class PollStepDefinitions(userRepository: UserRepository) : CucumberIntegrationTestContext(userRepository) {
     @Autowired
     private lateinit var pollRepository: PollRepository
 
