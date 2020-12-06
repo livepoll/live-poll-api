@@ -8,6 +8,7 @@ import io.cucumber.spring.CucumberContextConfiguration
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.runner.RunWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
@@ -18,7 +19,6 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
 import java.security.cert.X509Certificate
 import javax.net.ssl.SSLContext
-import org.assertj.core.api.Assertions.assertThat
 
 // https://github.com/Mhverma/spring-cucumber-example/blob/master/src/test/java/com/manoj/training/app/SpringCucumberIntegrationTests.java
 @RunWith(SpringRunner::class)
@@ -38,7 +38,29 @@ class SpringCucumberIntegrationTests(userRepository: UserRepository) {
     @LocalServerPort
     protected var port = 0
 
-    protected var restTemplate: RestTemplate = RestTemplate()
+    protected final var restTemplate: RestTemplate
+
+    init {
+        // https://stackoverflow.com/a/42689331/9655481
+        // Disable SSL certificate checking with Spring RestTemplate
+        // ⚠ only do this for Cucumber testing purposes against https://localhost
+        val acceptingTrustStrategy = { chain: Array<X509Certificate?>?, authType: String? -> true }
+
+        val sslContext: SSLContext = org.apache.http.ssl.SSLContexts.custom()
+                .loadTrustMaterial(null, acceptingTrustStrategy)
+                .build()
+
+        val csf = SSLConnectionSocketFactory(sslContext)
+
+        val httpClient: CloseableHttpClient = HttpClients.custom()
+                .setSSLSocketFactory(csf)
+                .build()
+
+        val requestFactory = HttpComponentsClientHttpRequestFactory()
+
+        requestFactory.httpClient = httpClient
+        restTemplate = RestTemplate(requestFactory)
+    }
 
     protected fun logInWithTestUser(): Pair<HttpStatus, String> {
         // https://springbootdev.com/2017/11/21/spring-resttemplate-exchange-method/
