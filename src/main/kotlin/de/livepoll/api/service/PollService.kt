@@ -3,7 +3,9 @@ package de.livepoll.api.service
 import de.livepoll.api.entity.db.*
 import de.livepoll.api.entity.dto.MultipleChoiceItemDtoIn
 import de.livepoll.api.entity.dto.PollDtoIn
+import de.livepoll.api.entity.dto.PollDtoOut
 import de.livepoll.api.repository.*
+import de.livepoll.api.util.toDtoOut
 import org.springframework.stereotype.Service
 
 @Service
@@ -40,5 +42,9 @@ class PollService(
             answerRepository.saveAll(answers)
             return quizItem
         }
+    }
+
+    fun getPoll(id: Int): PollDtoOut{
+        return pollRepository.getOne(id).toDtoOut()
     }
 }

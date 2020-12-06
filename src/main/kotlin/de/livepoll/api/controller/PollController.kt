@@ -4,15 +4,12 @@ import de.livepoll.api.entity.dto.MultipleChoiceItemDtoIn
 import de.livepoll.api.repository.PollRepository
 import de.livepoll.api.service.PollItemService
 import de.livepoll.api.service.PollService
-import io.swagger.annotations.ApiImplicitParam
-import io.swagger.annotations.ApiImplicitParams
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiParam
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
+import org.springframework.web.bind.annotation.GetMapping
 
 @RestController
 @RequestMapping("/v0/polls")
