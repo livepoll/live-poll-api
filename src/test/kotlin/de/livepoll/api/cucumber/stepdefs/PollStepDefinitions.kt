@@ -1,7 +1,6 @@
 package de.livepoll.api.cucumber.stepdefs
 
 import de.livepoll.api.cucumber.SpringCucumberIntegrationTests
-import de.livepoll.api.entity.db.Poll
 import de.livepoll.api.entity.dto.PollDtoIn
 import de.livepoll.api.entity.dto.PollDtoOut
 import de.livepoll.api.repository.PollRepository
@@ -23,7 +22,7 @@ class PollStepDefinitions(userRepository: UserRepository) : SpringCucumberIntegr
     private val POLLS_ENDPOINT = "/v0/users/${testUser.id}/polls"
     private val CREATE_POLL_ENDPOINT = "/v0/users/${testUser.id}/poll"
     var sessionCookie: String = ""
-    var myPolls: ArrayList<PollDtoOut> = ArrayList()
+    lateinit var myPolls: ArrayList<PollDtoOut>
 
     @Given("I am logged in as test user")
     fun beLoggedInAsSpecificUser() {
@@ -39,23 +38,36 @@ class PollStepDefinitions(userRepository: UserRepository) : SpringCucumberIntegr
 
     @When("I create {int} new dummy polls")
     fun createNewPolls(numberOfPolls: Int) {
-        val url = "${SERVER_URL}:$port$CREATE_POLL_ENDPOINT"
         for (i in 1..numberOfPolls) {
-            // request body params & headers
-            val pollPostRequest = PollDtoIn("DummyPoll_$i", Date(0), Date(0))
-            val headers = HttpHeaders()
-            headers["Cookie"] = sessionCookie
-            val requestEntity: HttpEntity<PollDtoIn> = HttpEntity(pollPostRequest, headers)
-
-            // make request
-            val responseEntity: ResponseEntity<Any> = restTemplate.exchange(
-                    url,
-                    HttpMethod.POST,
-                    requestEntity
-            )
-
-            assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.CREATED)
+            createNewDummyPoll("DummyPoll_$i")
         }
+    }
+
+    private fun createNewDummyPoll(pollName: String) {
+        // Make sure we start with a new ArrayList for myPolls
+        myPolls = ArrayList()
+
+        val url = "${SERVER_URL}:$port$CREATE_POLL_ENDPOINT"
+
+        // request body params & headers
+        val pollPostRequest = PollDtoIn(pollName, Date(0), Date(0))
+        val headers = HttpHeaders()
+        headers["Cookie"] = sessionCookie
+        val requestEntity: HttpEntity<PollDtoIn> = HttpEntity(pollPostRequest, headers)
+
+        // make request
+        val responseEntity: ResponseEntity<Any> = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                requestEntity
+        )
+
+        assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.CREATED)
+    }
+
+    @When("I create a poll named {string}")
+    fun createNamedPoll(pollName: String) {
+        createNewDummyPoll(pollName)
     }
 
     @And("I retrieve my polls")
@@ -83,6 +95,11 @@ class PollStepDefinitions(userRepository: UserRepository) : SpringCucumberIntegr
     @Then("I get back exactly {int} polls")
     fun getBackPolls(numberOfPolls: Int) {
         assertThat(myPolls.size).isEqualTo(numberOfPolls)
+    }
+
+    @And("I get back a poll named {string}")
+    fun getBackNamedPoll(pollName: String) {
+        assertThat(myPolls.get(0).name).isEqualTo(pollName)
     }
 
 }
