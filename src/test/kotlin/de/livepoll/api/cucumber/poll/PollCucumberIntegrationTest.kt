@@ -1,4 +1,4 @@
-package de.livepoll.api.cucumber
+package de.livepoll.api.cucumber.poll
 
 import io.cucumber.junit.Cucumber
 import io.cucumber.junit.CucumberOptions

@@ -1,4 +1,4 @@
-package de.livepoll.api.cucumber.stepdefs
+package de.livepoll.api.cucumber.poll
 
 import de.livepoll.api.cucumber.SpringCucumberIntegrationTests
 import de.livepoll.api.entity.dto.PollDtoIn
