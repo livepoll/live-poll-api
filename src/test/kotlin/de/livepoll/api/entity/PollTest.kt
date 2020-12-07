@@ -11,11 +11,11 @@ class PollTest(
         val entityManager: TestEntityManager,
         val pollRepository: PollRepository
 ) {
-    @Test
-    @Throws
-    fun testFind() {
-        val poll = pollRepository.getOne(1)
-        assertNotNull(poll)
-    }
+//    @Test
+//    @Throws
+//    fun testFind() {
+//        val poll = pollRepository.getOne(1)
+//        assertNotNull(poll)
+//    }
 
 }
