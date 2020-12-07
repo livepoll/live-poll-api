@@ -20,6 +20,23 @@ jobs:
           java-version: 1.11
       - name: Build with Maven
         run: mvn -B package --file pom.xml
+        env:
+          LIVE_POLL_MYSQL_URL: ${{ secrets.API_LIVE_POLL_MYSQL_URL }}
+          LIVE_POLL_MYSQL_USER: ${{ secrets.API_LIVE_POLL_MYSQL_USER }}
+          LIVE_POLL_MYSQL_PASSWORD: ${{ secrets.API_LIVE_POLL_MYSQL_PASSWORD }}
+          LIVE_POLL_DEV_URL: ${{ secrets.API_LIVE_POLL_DEV_URL }}
+          LIVE_POLL_SERVER_URL: ${{ secrets.API_LIVE_POLL_SERVER_URL }}
+          LIVE_POLL_MAIL_HOST: ${{ secrets.API_LIVE_POLL_MAIL_HOST }}
+          LIVE_POLL_MAIL_PORT: ${{ secrets.API_LIVE_POLL_MAIL_PORT }}
+          LIVE_POLL_MAIL_USERNAME: ${{ secrets.API_LIVE_POLL_MAIL_USERNAME }}
+          LIVE_POLL_MAIL_PASSWORD: ${{ secrets.API_LIVE_POLL_MAIL_PASSWORD }}
+          LIVE_POLL_JWT_AUTH_COOKIE_NAME: ${{ secrets.API_LIVE_POLL_JWT_AUTH_COOKIE_NAME }}
+          LIVE_POLL_JWT_COOKIE_KEY_VALUE: ${{ secrets.API_LIVE_POLL_JWT_COOKIE_KEY_VALUE }}
+          LIVE_POLL_HTTPS_ENABLED: ${{ secrets.API_LIVE_POLL_HTTPS_ENABLED }}
+          LIVE_POLL_HTTPS_CERT_PASSWORD: ${{ secrets.API_LIVE_POLL_HTTPS_CERT_PASSWORD }}
+          LIVE_POLL_H2_URL: ${{ secrets.API_LIVE_POLL_H2_URL }}
+          TEST_USER_NAME: ${{ secrets.API_TEST_USER_NAME }}
+          TEST_USER_PASSWORD: ${{ secrets.API_TEST_USER_PASSWORD }}
       - name: CodeCov report deploy
         run: bash <(curl -s https://codecov.io/bash)
       - name: Prepare environment
