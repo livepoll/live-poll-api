@@ -112,6 +112,8 @@ class AccountService {
         }
         val responseHeaders = HttpHeaders()
         responseHeaders.add(HttpHeaders.SET_COOKIE, cookieUtil.deleteAccessTokenCookie().toString())
-        return ResponseEntity.ok().headers(responseHeaders).body("Logout successful")
+        val response: HashMap<String, String> = HashMap()
+        response["message"] = "Logout successful"
+        return ResponseEntity.ok().headers(responseHeaders).body(response)
     }
 }
