@@ -20,12 +20,15 @@ class UserController(
 
     @GetMapping("/{id}")
     fun getUser(@PathVariable(name = "id") userId: Int, response: HttpServletResponse): ResponseEntity<*> {
-        val user = userRepository.getOne(userId).toDtoOut()
-        if (user.username == SecurityContextHolder.getContext().authentication.name) {
-            return ResponseEntity.ok().body(user)
-        } else {
-            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this user")
+        val user = userRepository.findById(userId)
+        if (user.isPresent) {
+            val userOut = user.get().toDtoOut()
+            if (userOut.username == SecurityContextHolder.getContext().authentication.name) {
+                return ResponseEntity.ok().body(userOut)
+            }
         }
+        // Send unauthorized even if the user does not exist (to avoid exploitation of this endpoint)
+        throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this user")
     }
 
     @GetMapping("/{id}/polls")
