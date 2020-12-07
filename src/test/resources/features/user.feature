@@ -9,3 +9,7 @@ Feature: User endpoint
     And I am authorized to retrieve information about my own user
     And I am not authorized to retrieve information about a different user
 
+    Scenario: User logs out and can't access any data anymore
+      Given I am logged in as test user
+      When I log myself out
+      Then I can't access any data anymore

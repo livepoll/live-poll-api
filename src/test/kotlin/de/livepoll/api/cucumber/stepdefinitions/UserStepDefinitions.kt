@@ -7,12 +7,14 @@ import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
 import org.assertj.core.api.Assertions.assertThat
-import org.springframework.http.HttpStatus
+import org.springframework.http.*
 import org.springframework.web.client.RestClientResponseException
+import org.springframework.web.client.exchange
 
 class UserStepDefinitions(userRepository: UserRepository) : CucumberIntegrationTestContext(userRepository) {
     private val USER_ENDPOINT = "/v0/users/${testUser.id}"
     private val USER_ENDPOINT_ANOTHER = "/v0/users/${testUser.id + 1}"
+    private val LOGOUT_ENDPOINT = "/v0/authenticate/logout"
 
     lateinit var status: HttpStatus
     var alreadyConfirmed = false
@@ -51,10 +53,40 @@ class UserStepDefinitions(userRepository: UserRepository) : CucumberIntegrationT
         val url = "${SERVER_URL}:$port$USER_ENDPOINT_ANOTHER"
         try {
             val userResponseEntity = makeGetRequestWithSessionCookie<Any>(url, SessionCookieUtil.sessionCookie)
-            assertThat(userResponseEntity.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
+            assertThat(userResponseEntity.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
         } catch (e: RestClientResponseException) {
-            assertThat(e.rawStatusCode).isEqualTo(HttpStatus.UNAUTHORIZED.value())
+            assertThat(e.rawStatusCode).isEqualTo(HttpStatus.FORBIDDEN.value())
         }
+    }
+
+    @When("I log myself out")
+    fun logTestUserOut() {
+        val url = "${SERVER_URL}:$port$LOGOUT_ENDPOINT"
+        // request body params & headers
+        val headers = HttpHeaders()
+        headers["Cookie"] = SessionCookieUtil.sessionCookie
+        val logOutRequestEntity: HttpEntity<String> = HttpEntity("", headers)
+
+        // make request
+        val logOutResponseEntity: ResponseEntity<Any> = restTemplate.exchange(
+                url,
+                HttpMethod.PUT,
+                logOutRequestEntity
+        )
+        assertThat(logOutResponseEntity.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Then("I can't access any data anymore")
+    fun tryToGetInfoAboutSomeUsers() {
+        val url = "${SERVER_URL}:$port$USER_ENDPOINT"
+        try {
+            val userResponseEntity = makeGetRequestWithSessionCookie<Any>(url, SessionCookieUtil.sessionCookie)
+            assertThat(userResponseEntity.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
+        } catch (e: RestClientResponseException) {
+            assertThat(e.rawStatusCode).isEqualTo(HttpStatus.FORBIDDEN.value())
+        }
+
+        getInfoAboutDifferentUser()
     }
 
 }
