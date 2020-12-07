@@ -28,7 +28,7 @@ class UserController(
             }
         }
         // Send unauthorized even if the user does not exist (to avoid exploitation of this endpoint)
-        throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this user")
+        throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to access this user")
     }
 
     @GetMapping("/{id}/polls")
@@ -37,7 +37,7 @@ class UserController(
         if (user.username == SecurityContextHolder.getContext().authentication.name) {
             return ResponseEntity.ok().body(user.polls.map { it.toDtoOut() })
         } else {
-            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this user")
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to access this user")
         }
     }
 
@@ -56,7 +56,7 @@ class UserController(
             response["message"] = "Poll created"
             return ResponseEntity(response, HttpStatus.CREATED)
         } else {
-            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this user")
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to access this user")
         }
     }
 }
