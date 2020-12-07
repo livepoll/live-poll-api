@@ -1,6 +1,7 @@
 Feature: Polls endpoint for a user
 
   Background:
+    Given A test user exists
     Given I am logged in as test user
     Given I have no polls created yet
 

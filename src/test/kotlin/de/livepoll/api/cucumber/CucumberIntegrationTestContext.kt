@@ -20,6 +20,7 @@ import org.springframework.web.client.exchange
 import java.security.cert.X509Certificate
 import javax.net.ssl.SSLContext
 
+
 // https://github.com/Mhverma/spring-cucumber-example/blob/master/src/test/java/com/manoj/training/app/SpringCucumberIntegrationTests.java
 @RunWith(SpringRunner::class)
 @CucumberContextConfiguration
@@ -27,6 +28,10 @@ import javax.net.ssl.SSLContext
 class CucumberIntegrationTestContext(userRepository: UserRepository) {
     companion object {
         private const val AUTHENTICATION_ENDPOINT = "/v0/authenticate/login"
+    }
+
+    object SessionCookieUtil {
+        lateinit var sessionCookie: String
     }
 
     protected final var testUser: User = userRepository.findByUsername(System.getenv("TEST_USER_NAME"))!!
@@ -82,6 +87,20 @@ class CucumberIntegrationTestContext(userRepository: UserRepository) {
         val setCookie: String? = responseEntity.headers.getFirst(HttpHeaders.SET_COOKIE)
         assertThat(setCookie).isNotNull
         return Pair(responseEntity.statusCode, setCookie!!)
+    }
+
+    protected final inline fun <reified T> makeGetRequestWithSessionCookie(url: String, sessionCookie: String): ResponseEntity<T> {
+        // request body params & headers
+        val headers = HttpHeaders()
+        headers["Cookie"] = sessionCookie
+        val requestEntity: HttpEntity<String> = HttpEntity("", headers)
+
+        // make request
+        return restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                requestEntity
+        )
     }
 
 }
