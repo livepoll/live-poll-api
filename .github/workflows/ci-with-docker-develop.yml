@@ -33,7 +33,7 @@ jobs:
         with:
           name: target
           path: target
-      - name: docker build and push
+      - name: Docker build and push
         run: |
           echo ${CR_PAT} | docker login ghcr.io -u ${GITHUB_REPOSITORY_OWNER} --password-stdin
           docker build -t ghcr.io/livepoll/${ARTIFACT_ID}-dev:${VERSION} -t ghcr.io/livepoll/${ARTIFACT_ID}-dev:latest .
