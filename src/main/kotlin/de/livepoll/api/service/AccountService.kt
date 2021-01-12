@@ -90,7 +90,10 @@ class AccountService {
                 val responseHeaders = HttpHeaders()
                 responseHeaders.add(HttpHeaders.SET_COOKIE, cookieUtil.createAccessTokenCookie(
                         jwtUtil.generateToken(userDetails)).toString())
-                return ResponseEntity.ok().headers(responseHeaders).body("Authentication successful")
+
+                val response: HashMap<String, String> = HashMap()
+                response["message"] = "Authentication successful"
+                return ResponseEntity.ok().headers(responseHeaders).body(response)
             } else {
                 throw EmailNotConfirmedException("Email is not confirmed")
             }
@@ -109,6 +112,8 @@ class AccountService {
         }
         val responseHeaders = HttpHeaders()
         responseHeaders.add(HttpHeaders.SET_COOKIE, cookieUtil.deleteAccessTokenCookie().toString())
-        return ResponseEntity.ok().headers(responseHeaders).body("Logout successful")
+        val response: HashMap<String, String> = HashMap()
+        response["message"] = "Logout successful"
+        return ResponseEntity.ok().headers(responseHeaders).body(response)
     }
 }

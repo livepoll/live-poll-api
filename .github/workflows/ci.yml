@@ -13,10 +13,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
     - name: Set up JDK 1.11
       uses: actions/setup-java@v1
       with:
         java-version: 1.11
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+    - name: Build and test project with Maven
+      run: mvn -B package --file pom.xml --batch-mode --update-snapshots clean verify
+      env:
+          LIVE_POLL_MYSQL_URL: ${{ secrets.API_LIVE_POLL_MYSQL_URL }}
+          LIVE_POLL_MYSQL_USER: ${{ secrets.API_LIVE_POLL_MYSQL_USER }}
+          LIVE_POLL_MYSQL_PASSWORD: ${{ secrets.API_LIVE_POLL_MYSQL_PASSWORD }}
+          LIVE_POLL_DEV_URL: ${{ secrets.API_LIVE_POLL_DEV_URL }}
+          LIVE_POLL_SERVER_URL: ${{ secrets.API_LIVE_POLL_SERVER_URL }}
+          LIVE_POLL_MAIL_HOST: ${{ secrets.API_LIVE_POLL_MAIL_HOST }}
+          LIVE_POLL_MAIL_PORT: ${{ secrets.API_LIVE_POLL_MAIL_PORT }}
+          LIVE_POLL_MAIL_USERNAME: ${{ secrets.API_LIVE_POLL_MAIL_USERNAME }}
+          LIVE_POLL_MAIL_PASSWORD: ${{ secrets.API_LIVE_POLL_MAIL_PASSWORD }}
+          LIVE_POLL_JWT_AUTH_COOKIE_NAME: ${{ secrets.API_LIVE_POLL_JWT_AUTH_COOKIE_NAME }}
+          LIVE_POLL_JWT_COOKIE_KEY_VALUE: ${{ secrets.API_LIVE_POLL_JWT_COOKIE_KEY_VALUE }}
+          LIVE_POLL_HTTPS_ENABLED: ${{ secrets.API_LIVE_POLL_HTTPS_ENABLED }}
+          LIVE_POLL_HTTPS_CERT_PASSWORD: ${{ secrets.API_LIVE_POLL_HTTPS_CERT_PASSWORD }}
+          LIVE_POLL_H2_URL: ${{ secrets.API_LIVE_POLL_H2_URL }}
+          TEST_USER_NAME: ${{ secrets.API_TEST_USER_NAME }}
+          TEST_USER_PASSWORD: ${{ secrets.API_TEST_USER_PASSWORD }}

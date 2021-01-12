@@ -7,12 +7,7 @@ import de.livepoll.api.util.toDtoOut
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import javax.servlet.http.HttpServletResponse
 
@@ -25,12 +20,15 @@ class UserController(
 
     @GetMapping("/{id}")
     fun getUser(@PathVariable(name = "id") userId: Int, response: HttpServletResponse): ResponseEntity<*> {
-        val user = userRepository.getOne(userId).toDtoOut()
-        if (user.username == SecurityContextHolder.getContext().authentication.name) {
-            return ResponseEntity.ok().body(user)
-        } else {
-            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this user")
+        val user = userRepository.findById(userId)
+        if (user.isPresent) {
+            val userOut = user.get().toDtoOut()
+            if (userOut.username == SecurityContextHolder.getContext().authentication.name) {
+                return ResponseEntity.ok().body(userOut)
+            }
         }
+        // Send unauthorized even if the user does not exist (to avoid exploitation of this endpoint)
+        throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to access this user")
     }
 
     @GetMapping("/{id}/polls")
@@ -39,8 +37,13 @@ class UserController(
         if (user.username == SecurityContextHolder.getContext().authentication.name) {
             return ResponseEntity.ok().body(user.polls.map { it.toDtoOut() })
         } else {
-            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this user")
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to access this user")
         }
+    }
+
+    @GetMapping("/{id}/polls/{pollId}")
+    fun getPoll(@PathVariable(name = "id") userId: Int, @PathVariable(name = "pollId") pollId: Int): ResponseEntity<*> {
+        return ResponseEntity.ok().body(pollService.getPoll(pollId))
     }
 
     @PostMapping("/{id}/poll")
@@ -48,9 +51,12 @@ class UserController(
         val user = userRepository.getOne(userId)
         if (user.username == SecurityContextHolder.getContext().authentication.name) {
             pollService.createPollEntity(newPoll, userId)
-            return ResponseEntity.ok("Poll created")
+
+            val response: HashMap<String, String> = HashMap()
+            response["message"] = "Poll created"
+            return ResponseEntity(response, HttpStatus.CREATED)
         } else {
-            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this user")
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to access this user")
         }
     }
 }

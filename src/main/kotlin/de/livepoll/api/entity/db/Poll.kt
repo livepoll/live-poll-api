@@ -24,6 +24,7 @@ data class Poll(
 
         var endDate: Date,
 
-        @OneToMany(mappedBy = "pollId")
-        var pollItems: List<MultipleChoiceItem> = emptyList()
+        @JsonIgnore
+        @OneToMany(mappedBy = "poll", cascade = [CascadeType.ALL])
+        var pollItems: MutableList<PollItem>
 )
