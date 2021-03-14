@@ -6,7 +6,12 @@ import de.livepoll.api.entity.dto.PollDtoIn
 import de.livepoll.api.entity.dto.PollDtoOut
 import de.livepoll.api.repository.*
 import de.livepoll.api.util.toDtoOut
+import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 
 @Service
 class PollService(
@@ -14,7 +19,8 @@ class PollService(
         private val pollRepository: PollRepository,
         private val multipleChoiceItemRepository: MultipleChoiceItemRepository,
         private val answerRepository: AnswerRepository,
-        private val quizItemRepository: QuizItemRepository
+        private val quizItemRepository: QuizItemRepository,
+        private val openTextItemRepository: OpenTextItemRepository
 ) {
 
     fun createPollEntity(pollDto: PollDtoIn, userId: Int) {
@@ -44,7 +50,35 @@ class PollService(
         }
     }
 
-    fun getPoll(id: Int): PollDtoOut{
-        return pollRepository.getOne(id).toDtoOut()
+    fun getPoll(id: Int): ResponseEntity<*> {
+        pollRepository.findById(id).orElseGet {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "This poll does not exist")
+        }.run {
+            return ResponseEntity.ok().body(this.toDtoOut())
+        }
+
+    }
+
+    fun deletePoll(id: Int) {
+        pollRepository.findById(id).orElseGet { null }.run {
+            if (this.user.username == SecurityContextHolder.getContext().authentication.name) {
+                try {
+                    pollRepository.deleteById(id)
+                } catch (ex: EmptyResultDataAccessException) {
+                }
+                try {
+                    multipleChoiceItemRepository.deleteById(id)
+                } catch (ex: EmptyResultDataAccessException) {
+                }
+                try {
+                    quizItemRepository.deleteById(id)
+                } catch (ex: EmptyResultDataAccessException) {
+                }
+                try {
+                    openTextItemRepository.deleteById(id)
+                } catch (ex: EmptyResultDataAccessException) {
+                }
+            }
+        }
     }
 }

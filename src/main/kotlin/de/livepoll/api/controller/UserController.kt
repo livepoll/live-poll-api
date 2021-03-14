@@ -43,7 +43,7 @@ class UserController(
 
     @GetMapping("/{id}/polls/{pollId}")
     fun getPoll(@PathVariable(name = "id") userId: Int, @PathVariable(name = "pollId") pollId: Int): ResponseEntity<*> {
-        return ResponseEntity.ok().body(pollService.getPoll(pollId))
+        return pollService.getPoll(pollId)
     }
 
     @PostMapping("/{id}/poll")

@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping
 @RequestMapping("/v0/polls")
 class PollController(
         private val pollService: PollService,
-        private val pollRepository: PollRepository,
-        private val pollItemService: PollItemService
+        private val pollRepository: PollRepository
 ) {
 
     @PostMapping("/{id}/multiplechoiceitem")
@@ -43,5 +42,10 @@ class PollController(
         } else {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not allowed to access this user")
         }
+    }
+
+    @DeleteMapping("/{id}")
+    fun deletePoll(@PathVariable(name = "id") pollId: Int) {
+        return pollService.deletePoll(pollId)
     }
 }

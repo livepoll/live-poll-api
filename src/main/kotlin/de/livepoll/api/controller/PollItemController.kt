@@ -20,6 +20,11 @@ class PollItemController(
 
             @ApiParam(name = "id", type = "Int", value = "Poll-item id", example = "1", required = true)
             @PathVariable(name = "id") pollItemId: Int): ResponseEntity<*> {
-        return ResponseEntity.ok().body(pollItemService.getPollItem(pollItemId, itemType))
+        return pollItemService.getPollItem(pollItemId, itemType)
+    }
+
+    @DeleteMapping("/{id}")
+    fun deletePollItem(@PathVariable(name = "id") itemId: Int, @RequestParam(name = "type") itemType: String) {
+        pollItemService.deleteItem(itemId, itemType)
     }
 }
