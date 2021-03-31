@@ -33,7 +33,7 @@ class PollItemService(
                     if (userHasAccess(this)) {
                         return ResponseEntity.ok().body(this.toDtoOut())
                     } else {
-                        throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorzied")
+                        throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized")
                     }
                 }
             }
@@ -44,7 +44,7 @@ class PollItemService(
                     if (userHasAccess(this)) {
                         return ResponseEntity.ok().body(this.toDtoOut())
                     } else {
-                        throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorzied")
+                        throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized")
                     }
                 }
             }
