@@ -26,10 +26,12 @@ class SecurityConfig(
 ) : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity) {
-        http.cors().and().csrf().disable().authorizeRequests()
-                .antMatchers("/v0/account/register").permitAll()
-                .antMatchers("/v0/account/confirm").permitAll()
-                .antMatchers("/v0/authenticate/login").permitAll()
+        http.cors().and().csrf().disable()
+            .authorizeRequests()
+                .antMatchers("/v1/account/register").permitAll()
+                .antMatchers("/v1/account/confirm").permitAll()
+                .antMatchers("/v1/account/login").permitAll()
+    //                .antMatchers("/admin").hasRole("ADMIN") // TODO: introduce ROLE_ADMIN authority later on
                 .anyRequest().authenticated()
                 .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
