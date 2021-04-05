@@ -4,7 +4,6 @@ import de.livepoll.api.service.JwtUserDetailsService
 import de.livepoll.api.util.JwtRequestFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
@@ -13,13 +12,17 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.authentication.AuthenticationManager
+
+
+
 
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-        private val jwtUserDetailsService: JwtUserDetailsService,
-        private val jwtRequestFilter: JwtRequestFilter
+    private val jwtUserDetailsService: JwtUserDetailsService,
+    private val jwtRequestFilter: JwtRequestFilter
 ) : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity) {
@@ -28,7 +31,8 @@ class SecurityConfig(
                 .antMatchers("/v0/account/confirm").permitAll()
                 .antMatchers("/v0/authenticate/login").permitAll()
                 .anyRequest().authenticated()
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter::class.java)
     }
@@ -41,16 +45,17 @@ class SecurityConfig(
     @Bean
     fun passwordEncoder() = BCryptPasswordEncoder()
 
+    // https://github.com/spring-projects/spring-boot/issues/11136
     @Bean
     override fun authenticationManagerBean(): AuthenticationManager = super.authenticationManagerBean()
 
-    @Throws(java.lang.Exception::class)
     override fun configure(web: WebSecurity) {
         web.ignoring().antMatchers(
-                "/v3/api-docs",
-                "/swagger-resources/**",
-                "/swagger-ui/**",
-                "/"
+            "/v3/api-docs",
+            "/swagger-resources/**",
+            "/swagger-ui/**",
+            "/"
         )
     }
+
 }
