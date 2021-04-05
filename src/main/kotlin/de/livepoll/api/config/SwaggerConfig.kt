@@ -2,6 +2,7 @@ package de.livepoll.api.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import springfox.documentation.builders.PathSelectors
 import springfox.documentation.builders.RequestHandlerSelectors
 import springfox.documentation.service.ApiInfo
@@ -16,6 +17,7 @@ class SwaggerConfig {
 
     @Bean
     fun api(): Docket = Docket(DocumentationType.OAS_30)
+            .ignoredParameterTypes(AuthenticationPrincipal::class.java)
             .host("api.live-poll.de")
             .enableUrlTemplating(true)
             .select()
