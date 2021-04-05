@@ -7,6 +7,5 @@ data class PollDtoOut(
         val id: Int,
         val name: String,
         val startDate: Date,
-        val endDate: Date,
-        val pollItems: List<PollItemDtoOut>
+        val endDate: Date
 )

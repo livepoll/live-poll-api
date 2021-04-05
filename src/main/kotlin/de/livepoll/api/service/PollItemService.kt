@@ -26,7 +26,7 @@ class PollItemService(
 
     fun getPollItem(pollItemId: Int, itemType: String): ResponseEntity<*> {
         when (itemType.toLowerCase()) {
-            "multiplechoiceitem" -> {
+            "multiple-choice" -> {
                 multipleChoiceItemRepository.findById(pollItemId).orElseGet {
                     throw ResponseStatusException(HttpStatus.NOT_FOUND, "This poll item does not exist")
                 }.run {
@@ -37,7 +37,7 @@ class PollItemService(
                     }
                 }
             }
-            "quizitem" -> {
+            "quiz" -> {
                 quizItemRepository.findById(pollItemId).orElseGet {
                     throw ResponseStatusException(HttpStatus.NOT_FOUND, "This poll item does not exist")
                 }.run {
@@ -63,7 +63,7 @@ class PollItemService(
 
     fun deleteItem(itemId: Int, itemType: String) {
         when (itemType.toLowerCase()) {
-            "multiplechoiceitem" -> {
+            "multiple-choice" -> {
                 val item = multipleChoiceItemRepository.getOne(itemId)
                 if (userHasAccess(item)) {
                     try {
@@ -74,7 +74,7 @@ class PollItemService(
                     throw Exception("Not authorzied")
                 }
             }
-            "quizitem" -> {
+            "quiz" -> {
                 val item = quizItemRepository.getOne(itemId)
                 if (userHasAccess(item)) {
                     try {
