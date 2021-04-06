@@ -4,6 +4,7 @@ import de.livepoll.api.entity.db.*
 import de.livepoll.api.entity.dto.MultipleChoiceItemDtoIn
 import de.livepoll.api.entity.dto.PollDtoIn
 import de.livepoll.api.entity.dto.PollDtoOut
+import de.livepoll.api.entity.dto.QuizItemDtoIn
 import de.livepoll.api.repository.*
 import de.livepoll.api.util.toDtoOut
 import org.springframework.dao.EmptyResultDataAccessException
@@ -30,7 +31,7 @@ class PollService(
         }
     }
 
-    fun addMultipleChoiceItem(item: MultipleChoiceItemDtoIn): MultipleChoiceItem {
+    fun createMultipleChoiceItem(item: MultipleChoiceItemDtoIn): MultipleChoiceItem {
         pollRepository.findById(item.pollId).orElseGet { null }.run {
             val multipleChoiceItem = MultipleChoiceItem(0, this, item.question, item.position, emptyList())
             val answers = item.answers.map { Answer(0, multipleChoiceItem, it) }
@@ -40,7 +41,7 @@ class PollService(
         }
     }
 
-    fun addQuizItem(item: MultipleChoiceItemDtoIn): QuizItem {
+    fun createQuizItem(item: QuizItemDtoIn): QuizItem {
         pollRepository.findById(item.pollId).orElseGet { null }.run {
             val quizItem = QuizItem(0, this, item.question, item.position, emptyList())
             val answers = item.answers.map { Answer(0, quizItem, it) }
@@ -56,7 +57,15 @@ class PollService(
         }.run {
             return ResponseEntity.ok().body(this.toDtoOut())
         }
+    }
 
+    fun getPollItemsForPoll(pollId: Int): ResponseEntity<*> {
+        pollRepository.findById(pollId).orElseGet {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "This poll does not exist")
+        }.run{
+            val pollItemsOut = this.pollItems.map { it.toDtoOut() }
+            return ResponseEntity.ok().body(pollItemsOut)
+        }
     }
 
     fun deletePoll(id: Int) {

@@ -58,7 +58,7 @@ class AccountService {
             if (userRepository.existsByUsername(username) || userRepository.existsByEmail(email))
                 throw UserExistsException("Username or email already exists")
             password = passwordEncoder.encode(password)
-            accountStatus = false
+            isAccountEnabled = false
             roles = "ROLE_USER"
             userRepository.saveAndFlush(this)
             eventPublisher.publishEvent(OnCreateAccountEvent(this, ""))
@@ -74,7 +74,7 @@ class AccountService {
         val verificationToken = verificationTokenRepository.findByToken(token)
         return if (verificationToken.expiryDate.after(Date())) {
             val user = userRepository.findByUsername(verificationToken.username)
-            user?.accountStatus = true
+            user?.isAccountEnabled = true
             verificationTokenRepository.delete(verificationToken)
             true
         } else false
@@ -85,11 +85,14 @@ class AccountService {
     fun login(username: String): ResponseEntity<*> {
         val user = userRepository.findByUsername(username) ?: userRepository.findByEmail(username)
         user?.run {
-            if (user.accountStatus) {
+            if (user.isAccountEnabled) {
                 val userDetails = jwtUserDetailsService.loadUserByUsername(username)
                 val responseHeaders = HttpHeaders()
-                responseHeaders.add(HttpHeaders.SET_COOKIE, cookieUtil.createAccessTokenCookie(
-                        jwtUtil.generateToken(userDetails)).toString())
+                responseHeaders.add(
+                    HttpHeaders.SET_COOKIE, cookieUtil.createAccessTokenCookie(
+                        jwtUtil.generateToken(userDetails)
+                    ).toString()
+                )
 
                 val response: HashMap<String, String> = HashMap()
                 response["message"] = "Authentication successful"
@@ -116,4 +119,5 @@ class AccountService {
         response["message"] = "Logout successful"
         return ResponseEntity.ok().headers(responseHeaders).body(response)
     }
+
 }
