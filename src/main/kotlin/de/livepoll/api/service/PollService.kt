@@ -26,7 +26,7 @@ class PollService(
 
     fun createPollEntity(pollDto: PollDtoIn, userId: Int) {
         userRepository.findById(userId).orElseGet { null }.run {
-            val poll = Poll(0, this, pollDto.name, pollDto.startDate, pollDto.endDate, java.util.UUID.randomUUID().toString(), emptyList<PollItem>().toMutableList())
+            val poll = Poll(0, this, pollDto.name, pollDto.startDate, pollDto.endDate, java.util.UUID.randomUUID().toString(), null ,emptyList<PollItem>().toMutableList())
             pollRepository.saveAndFlush(poll)
         }
     }
@@ -99,6 +99,9 @@ class PollService(
             this.startDate = poll.startDate
             this.endDate = endDate
             this.slug = slug
+            if(poll.currentItem != null){
+                this.currentItem = poll.currentItem
+            }
             pollRepository.saveAndFlush(this)
             return ResponseEntity.ok().body(this)
         }

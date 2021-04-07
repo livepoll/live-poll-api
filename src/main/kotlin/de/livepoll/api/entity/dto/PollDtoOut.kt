@@ -8,5 +8,6 @@ data class PollDtoOut(
         val name: String,
         val startDate: Date,
         val endDate: Date,
-        val slug: String
+        val slug: String,
+        var currentItem: Int?
 )
