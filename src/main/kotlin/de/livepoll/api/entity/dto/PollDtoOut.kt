@@ -7,5 +7,6 @@ data class PollDtoOut(
         val id: Int,
         val name: String,
         val startDate: Date,
-        val endDate: Date
+        val endDate: Date,
+        val slug: String
 )

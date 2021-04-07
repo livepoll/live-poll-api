@@ -6,7 +6,7 @@ import de.livepoll.api.entity.dto.*
 // --------------------------------------------------- Poll mappers ----------------------------------------------------
 
 fun Poll.toDtoOut(): PollDtoOut {
-    return PollDtoOut(this.id, this.name, this.startDate, this.endDate)
+    return PollDtoOut(this.id, this.name, this.startDate, this.endDate, this.slug)
 }
 
 // --------------------------------------------------- User mappers ----------------------------------------------------

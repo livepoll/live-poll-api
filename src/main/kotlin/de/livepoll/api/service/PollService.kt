@@ -26,7 +26,7 @@ class PollService(
 
     fun createPollEntity(pollDto: PollDtoIn, userId: Int) {
         userRepository.findById(userId).orElseGet { null }.run {
-            val poll = Poll(0, this, pollDto.name, pollDto.startDate, pollDto.endDate, emptyList<PollItem>().toMutableList())
+            val poll = Poll(0, this, pollDto.name, pollDto.startDate, pollDto.endDate, java.util.UUID.randomUUID().toString(), emptyList<PollItem>().toMutableList())
             pollRepository.saveAndFlush(poll)
         }
     }
@@ -62,7 +62,7 @@ class PollService(
     fun getPollItemsForPoll(pollId: Int): ResponseEntity<*> {
         pollRepository.findById(pollId).orElseGet {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, "This poll does not exist")
-        }.run{
+        }.run {
             val pollItemsOut = this.pollItems.map { it.toDtoOut() }
             return ResponseEntity.ok().body(pollItemsOut)
         }
@@ -88,6 +88,19 @@ class PollService(
                 } catch (ex: EmptyResultDataAccessException) {
                 }
             }
+        }
+    }
+
+    fun updatePoll(pollId: Int, poll: PollDtoIn): ResponseEntity<*> {
+        pollRepository.findById(pollId).orElseGet {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "This poll does not exist")
+        }.run {
+            this.name = poll.name
+            this.startDate = poll.startDate
+            this.endDate = endDate
+            this.slug = slug
+            pollRepository.saveAndFlush(this)
+            return ResponseEntity.ok().body(this)
         }
     }
 }
