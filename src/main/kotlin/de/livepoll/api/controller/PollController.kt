@@ -54,4 +54,10 @@ class PollController(
         return pollService.getPollItemsForPoll(pollId)
     }
 
+    @ApiOperation(value = "Update slug", tags = ["Poll"])
+    @PutMapping("/{id}")
+    fun updatePoll(@PathVariable(name = "id") pollId: Int, @RequestBody updatedPoll: PollDtoIn): ResponseEntity<*> {
+        return pollService.updatePoll(pollId, updatedPoll)
+    }
+
 }
