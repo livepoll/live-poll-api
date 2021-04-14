@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+    database-mysql:
+        image: mysql:8.0
+        container_name: live-poll-dev-environment-db-mysql
+        volumes:
+            - ./volumes/mysql-data:/var/lib/mysql
+            - ./volumes/mysql-logs:/var/log/mysql
+        networks:
+            - mysql-phpmyadmin
+        ports:
+            - 3307:3306
+        env_file:
+            - environment.env
+        restart: always
+    db-admin-phpmyadmin:
+        image: phpmyadmin/phpmyadmin:latest
+        container_name: live-poll-dev-environment-dbadmin-phpmyadmin
+        volumes:
+            - /sessions
+        networks:
+            - mysql-phpmyadmin
+        ports:
+            - 81:80
+        env_file:
+            - environment.env
+        depends_on:
+            - database-mysql
+networks:
+    mysql-phpmyadmin: {}
