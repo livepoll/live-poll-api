@@ -1,4 +1,4 @@
 environment.env
-volumes/*
-!volumes/mysql-data/.gitkeep
-!volumes/mysql-logs/.gitkeep
+volumes/**
+!volumes/**/
+!.gitkeep
