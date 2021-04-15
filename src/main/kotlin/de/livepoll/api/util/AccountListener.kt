@@ -30,7 +30,7 @@ class AccountListener: ApplicationListener<OnCreateAccountEvent> {
 
         val recipientAddress = user.email
         val subject = "Account Confirmation Live-Poll"
-        val confirmationUrl = event.appUrl + "/v0/account/confirm?token=$token"
+        val confirmationUrl = event.appUrl + "/v1/account/confirm?token=$token"
         val message = "Please confirm your email: "
 
         javaMailSender.send(SimpleMailMessage().apply {
