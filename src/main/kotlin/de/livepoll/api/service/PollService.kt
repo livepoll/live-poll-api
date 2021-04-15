@@ -1,5 +1,6 @@
 package de.livepoll.api.service
 
+import de.livepoll.api.config.WebSocketConfig
 import de.livepoll.api.entity.db.*
 import de.livepoll.api.entity.dto.MultipleChoiceItemDtoIn
 import de.livepoll.api.entity.dto.PollDtoIn
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
 import java.util.*
 
 @Service
@@ -22,7 +24,8 @@ class PollService(
         private val multipleChoiceItemRepository: MultipleChoiceItemRepository,
         private val answerRepository: AnswerRepository,
         private val quizItemRepository: QuizItemRepository,
-        private val openTextItemRepository: OpenTextItemRepository
+        private val openTextItemRepository: OpenTextItemRepository,
+        private val webSocketService: WebSocketService
 ) {
 
     fun createPollEntity(pollDto: PollDtoIn, userId: Int) {
@@ -112,6 +115,9 @@ class PollService(
             }
             if (poll.currentItem != null) {
                 this.currentItem = poll.currentItem
+                webSocketService.sendCurrenItem(this.slug, this.currentItem!!)
+            } else {
+                this.currentItem = null
             }
             pollRepository.saveAndFlush(this)
             return ResponseEntity.ok().body(this)
@@ -122,4 +128,6 @@ class PollService(
         val poll: Poll? = pollRepository.findBySlug(slug)
         return poll == null
     }
+
+
 }
