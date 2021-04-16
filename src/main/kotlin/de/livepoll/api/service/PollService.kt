@@ -115,7 +115,7 @@ class PollService(
             }
             if (poll.currentItem != null) {
                 this.currentItem = poll.currentItem
-                webSocketService.sendCurrenItem(this.slug, this.currentItem!!)
+                // TODO webSocketService.sendCurrenItem(this.slug, this.currentItem!!)
             } else {
                 this.currentItem = null
             }
