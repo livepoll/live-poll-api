@@ -21,6 +21,7 @@ class PollItemController(
 ) {
 
     //--------------------------------------------- Get ----------------------------------------------------------------
+
     @ApiOperation(value = "Get poll item", tags = ["Poll item"])
     @GetMapping("/{id}")
     fun getPollItem(@PathVariable(name = "id") pollItemId: Long): PollItemDtoOut {
