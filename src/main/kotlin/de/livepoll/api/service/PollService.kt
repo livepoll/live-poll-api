@@ -1,5 +1,6 @@
 package de.livepoll.api.service
 
+import de.livepoll.api.config.WebSocketConfig
 import de.livepoll.api.entity.db.*
 import de.livepoll.api.entity.dto.MultipleChoiceItemDtoIn
 import de.livepoll.api.entity.dto.PollDtoIn
@@ -13,6 +14,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
+import java.util.*
 
 @Service
 class PollService(
@@ -21,12 +24,21 @@ class PollService(
         private val multipleChoiceItemRepository: MultipleChoiceItemRepository,
         private val answerRepository: AnswerRepository,
         private val quizItemRepository: QuizItemRepository,
-        private val openTextItemRepository: OpenTextItemRepository
+        private val openTextItemRepository: OpenTextItemRepository,
+        private val webSocketService: WebSocketService
 ) {
 
     fun createPollEntity(pollDto: PollDtoIn, userId: Int) {
         userRepository.findById(userId).orElseGet { null }.run {
-            val poll = Poll(0, this, pollDto.name, pollDto.startDate, pollDto.endDate, java.util.UUID.randomUUID().toString(), null ,emptyList<PollItem>().toMutableList())
+            val r = Random()
+            var slug: String
+            do {
+                slug = ""
+                for (i in 1..6) {
+                    slug += r.nextInt(10)
+                }
+            } while (!isSlugUnique(slug))
+            val poll = Poll(0, this, pollDto.name, pollDto.startDate, pollDto.endDate, slug, null, emptyList<PollItem>().toMutableList())
             pollRepository.saveAndFlush(poll)
         }
     }
@@ -97,13 +109,25 @@ class PollService(
         }.run {
             this.name = poll.name
             this.startDate = poll.startDate
-            this.endDate = endDate
-            this.slug = slug
-            if(poll.currentItem != null){
+            this.endDate = poll.endDate
+            if (poll.slug != null && isSlugUnique(poll.slug)) {
+                this.slug = poll.slug
+            }
+            if (poll.currentItem != null) {
                 this.currentItem = poll.currentItem
+                // TODO webSocketService.sendCurrenItem(this.slug, this.currentItem!!)
+            } else {
+                this.currentItem = null
             }
             pollRepository.saveAndFlush(this)
             return ResponseEntity.ok().body(this)
         }
     }
+
+    fun isSlugUnique(slug: String): Boolean {
+        val poll: Poll? = pollRepository.findBySlug(slug)
+        return poll == null
+    }
+
+
 }

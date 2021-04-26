@@ -11,4 +11,7 @@ interface PollRepository : JpaRepository<Poll, Int> {
     // https://stackoverflow.com/a/37491875/9655481
     @Transactional
     fun deleteByUser(user: User)
+
+    @Transactional
+    fun findBySlug(slug: String): Poll?
 }

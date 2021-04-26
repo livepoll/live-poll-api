@@ -318,6 +318,34 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Update poll",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"update\",\r\n    \"startDate\": \"1610705932\",\r\n    \"endDate\":\"1610705932\",\r\n    \"slug\": \"1234\",\r\n    \"currentItem\": 1\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/polls/2",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls",
+								"2"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -629,8 +657,7 @@
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -639,6 +666,47 @@
 					"request": {
 						"method": "GET",
 						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/polls/{{poll-id}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls",
+								"{{poll-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update poll Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"update-postman-poll\",\r\n    \"startDate\": \"1610705932\",\r\n    \"endDate\":\"1610705932\",\r\n    \"slug\": \"1234\",\r\n    \"currentItem\": 1\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "{{base-url}}/v1/polls/{{poll-id}}",
 							"host": [
