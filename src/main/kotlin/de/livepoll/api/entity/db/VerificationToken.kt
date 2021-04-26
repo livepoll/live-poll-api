@@ -9,7 +9,7 @@ data class VerificationToken(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name="verification_token_id", nullable = false)
-        val id: Int,
+        val id: Long,
 
         @Column(name="token", nullable = false)
         val token: String,

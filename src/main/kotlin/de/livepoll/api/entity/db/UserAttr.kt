@@ -8,7 +8,7 @@ data class UserAttr(
         @Id
         @GeneratedValue(strategy= GenerationType.IDENTITY)
         @Column(name="user_attr_id", nullable = false)
-        var id: Int,
+        var id: Long,
 
         @OneToOne
         @JoinColumn(name="user_id")
