@@ -1,8 +1,7 @@
 package de.livepoll.api.repository
 
 import de.livepoll.api.entity.db.MultipleChoiceItem
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.stereotype.Repository
+import javax.transaction.Transactional
 
-@Repository
-interface MultipleChoiceItemRepository: PollItemRepository<MultipleChoiceItem, Int>
+@Transactional
+interface MultipleChoiceItemRepository: PollItemRepository<MultipleChoiceItem>
