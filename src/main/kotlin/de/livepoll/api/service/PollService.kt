@@ -12,15 +12,18 @@ import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
+import java.util.*
 
 @Service
 class PollService(
     private val userRepository: UserRepository,
     private val pollRepository: PollRepository,
-    private val pollItemService: PollItemService
+    private val pollItemService: PollItemService,
+    private val webSocketService: WebSocketService
 ) {
 
     //--------------------------------------------- Get ----------------------------------------------------------------
+
     fun getPoll(pollId: Long): PollDtoOut {
         return pollRepository.findById(pollId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found") }
@@ -44,23 +47,31 @@ class PollService(
                 ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
             }
             .run {
+                val r = Random()
+                var slug: String
+                do {
+                    slug = ""
+                    for (i in 1..6) {
+                        slug += r.nextInt(16)
+                    }
+                } while (!isSlugUnique(slug))
                 val poll = Poll(
                     0,
                     this,
                     pollDto.name,
                     pollDto.startDate,
                     pollDto.endDate,
-                    java.util.UUID.randomUUID().toString(),
+                    slug,
                     null,
                     emptyList<PollItem>().toMutableList()
                 )
-                pollRepository.saveAndFlush(poll)
-                return poll.toDtoOut()
+                return pollRepository.saveAndFlush(poll).toDtoOut()
             }
     }
 
 
     //-------------------------------------------- Delete --------------------------------------------------------------
+
     fun deletePoll(id: Long) {
         try {
             pollRepository.deleteById(id)
@@ -71,6 +82,7 @@ class PollService(
 
 
     //-------------------------------------------- Update --------------------------------------------------------------
+
     fun updatePoll(pollId: Long, poll: PollDtoIn): PollDtoOut {
         pollRepository.findById(pollId).orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "This poll does not exist")
@@ -78,12 +90,22 @@ class PollService(
             this.name = poll.name
             this.startDate = poll.startDate
             this.endDate = poll.endDate
-            this.slug = poll.slug.toString()
+            if (poll.slug != null && isSlugUnique(poll.slug)) {
+                this.slug = poll.slug
+            }
             if (poll.currentItem != null) {
                 this.currentItem = poll.currentItem
+                // TODO webSocketService.sendCurrenItem(this.slug, this.currentItem!!)
+            } else {
+                this.currentItem = null
             }
             return pollRepository.saveAndFlush(this).toDtoOut()
         }
+    }
+
+    fun isSlugUnique(slug: String): Boolean {
+        val poll: Poll? = pollRepository.findBySlug(slug)
+        return poll == null
     }
 
 }
