@@ -1,10 +1,9 @@
 package de.livepoll.api.entity.db
 
-import com.sun.istack.NotNull
 import javax.persistence.*
 
 @Entity
-@Table(name = "user_Attr")
+@Table(name = "user_attr")
 data class UserAttr(
         @Id
         @GeneratedValue(strategy= GenerationType.IDENTITY)

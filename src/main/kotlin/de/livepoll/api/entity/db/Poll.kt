@@ -10,7 +10,7 @@ data class Poll(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "poll_id", nullable = false)
-        var id: Int,
+        var id: Long,
 
         @ManyToOne
         @JsonIgnore

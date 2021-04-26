@@ -6,3 +6,8 @@ class QuizItemDtoIn(
         val position: Int,
         val answers: List<String>
 )
+
+class QuizItemAnswerDtoIn(
+    val answer: String,
+    val isCorrect: Boolean
+)

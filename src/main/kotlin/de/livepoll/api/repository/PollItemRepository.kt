@@ -1,7 +1,6 @@
 package de.livepoll.api.repository
 
+import de.livepoll.api.entity.db.PollItem
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.repository.NoRepositoryBean
 
-@NoRepositoryBean
-interface PollItemRepository<PollItem, Int> : JpaRepository<PollItem, Int>
+interface PollItemRepository<T> : JpaRepository<T, Long> where T : PollItem

@@ -7,10 +7,11 @@ import javax.persistence.*
 @Table(name = "poll_item")
 @Inheritance(strategy = InheritanceType.JOINED)
 open class PollItem(
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "poll_item_id")
-        open val id: Int,
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NonNull
+    @Column(name = "poll_item_id")
+    open val id: Long,
 
         @ManyToOne
         @JsonIgnore
