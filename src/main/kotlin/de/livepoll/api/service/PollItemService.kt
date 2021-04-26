@@ -116,4 +116,23 @@ class PollItemService(
             }
     }
 
+    fun createOpenTextItem(item: OpenTextItemDtoIn): OpenTextItemDtoOut {
+        pollRepository.findById(item.pollId)
+            .orElseThrow {
+                ResponseStatusException(
+                    HttpStatus.NO_CONTENT,
+                    "The corresponding poll for this open text item could not be retrieved"
+                )
+            }.run {
+                val openTextItem = OpenTextItem(
+                    0,
+                    this,
+                    item.question,
+                    item.position,
+                    emptyList<OpenTextItemAnswer>().toMutableList()
+                )
+                return openTextItemRepository.saveAndFlush(openTextItem).toDtoOut()
+            }
+    }
+
 }
