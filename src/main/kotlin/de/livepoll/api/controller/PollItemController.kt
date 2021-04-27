@@ -1,6 +1,7 @@
 package de.livepoll.api.controller
 
 import de.livepoll.api.entity.dto.MultipleChoiceItemDtoIn
+import de.livepoll.api.entity.dto.OpenTextItemDtoIn
 import de.livepoll.api.entity.dto.PollItemDtoOut
 import de.livepoll.api.entity.dto.QuizItemDtoIn
 import de.livepoll.api.service.PollItemService
@@ -19,19 +20,16 @@ class PollItemController(
     private val pollItemService: PollItemService
 ) {
 
+    //--------------------------------------------- Get ----------------------------------------------------------------
+
     @ApiOperation(value = "Get poll item", tags = ["Poll item"])
     @GetMapping("/{id}")
     fun getPollItem(@PathVariable(name = "id") pollItemId: Long): PollItemDtoOut {
         return pollItemService.getPollItem(pollItemId)
     }
 
-    @ApiOperation(value = "Delete poll item", tags = ["Poll item"])
-    @DeleteMapping("/{id}")
-    fun deletePollItem(@PathVariable(name = "id") itemId: Long): ResponseEntity<*> {
-        pollItemService.deleteItem(itemId)
-        return ResponseEntity.ok("Deleted poll item")
-    }
 
+    //-------------------------------------------- Create --------------------------------------------------------------
     @ApiOperation(value = "Create multiple choice item", tags = ["Poll item"])
     @PostMapping("/multiple-choice")
     fun createMultipleChoiceItem(@RequestBody newItem: MultipleChoiceItemDtoIn): ResponseEntity<*> {
@@ -45,5 +43,24 @@ class PollItemController(
         val addedItem = pollItemService.createQuizItem(newItem)
         return ResponseEntity.created(URI(newItem.pollId.toString())).body(addedItem)
     }
+
+    @ApiOperation(value = "Create open text item", tags = ["Poll item"])
+    @PostMapping("/open-text")
+    fun createOpenTextItem(@RequestBody newItem: OpenTextItemDtoIn): ResponseEntity<*> {
+        val addedItem = pollItemService.createOpenTextItem(newItem)
+        return ResponseEntity.created(URI(newItem.pollId.toString())).body(addedItem)
+    }
+
+
+    //-------------------------------------------- Delete --------------------------------------------------------------
+
+    @ApiOperation(value = "Delete poll item", tags = ["Poll item"])
+    @DeleteMapping("/{id}")
+    fun deletePollItem(@PathVariable(name = "id") itemId: Long): ResponseEntity<*> {
+        pollItemService.deleteItem(itemId)
+        return ResponseEntity.ok("Deleted poll item")
+    }
+
+    //-------------------------------------------- Update --------------------------------------------------------------
 
 }
