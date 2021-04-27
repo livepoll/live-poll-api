@@ -1,7 +1,7 @@
 package de.livepoll.api.repository
 
 import de.livepoll.api.entity.db.OpenTextItem
-import org.springframework.stereotype.Repository
+import javax.transaction.Transactional
 
-@Repository
-interface OpenTextItemRepository: PollItemRepository<OpenTextItem, Int>
+@Transactional
+interface OpenTextItemRepository : PollItemRepository<OpenTextItem>

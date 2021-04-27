@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationListener
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Component
-import java.util.UUID
+import java.util.*
 
 @Component
 class AccountListener: ApplicationListener<OnCreateAccountEvent> {

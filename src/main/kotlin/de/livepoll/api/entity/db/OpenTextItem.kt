@@ -1,9 +1,21 @@
 package de.livepoll.api.entity.db
 
-import javax.persistence.*
+import javax.persistence.Entity
+import javax.persistence.OneToMany
+import javax.persistence.Table
 
 @Entity
-@Table(name = "open_Text_Item")
+@Table(name = "open_text_item")
 class OpenTextItem(
-        id: Int, poll: Poll, question: String, position: Int
-) : PollItem(id, poll, question, position)
+    id: Long,
+
+    poll: Poll,
+
+    question: String,
+
+    position: Int,
+
+    @OneToMany(mappedBy = "openTextItem")
+    val answers: MutableList<OpenTextItemAnswer>
+
+) : PollItem(id, poll, question, position, PollItemType.OPEN_TEXT)

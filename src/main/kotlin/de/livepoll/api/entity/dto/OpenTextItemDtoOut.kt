@@ -1,10 +1,10 @@
 package de.livepoll.api.entity.dto
 
-class MultipleChoiceItemDtoOut(
+class OpenTextItemDtoOut(
         itemId: Long,
         pollId: Long,
         question: String,
         position: Int,
         type: String,
-        val answers: List<MultipleChoiceItemAnswerDtoOut>
+        val answers: List<OpenTextItemAnswerDtoOut>
 ): PollItemDtoOut(itemId, pollId, question, position, type)

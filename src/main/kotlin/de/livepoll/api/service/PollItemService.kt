@@ -1,94 +1,138 @@
 package de.livepoll.api.service
 
-import com.sun.mail.iap.Response
-import de.livepoll.api.entity.db.PollItem
-import de.livepoll.api.entity.dto.AnswerDtoOut
-import de.livepoll.api.entity.dto.PollItemDtoOut
-import de.livepoll.api.repository.AnswerRepository
-import de.livepoll.api.repository.MultipleChoiceItemRepository
-import de.livepoll.api.repository.OpenTextItemRepository
-import de.livepoll.api.repository.QuizItemRepository
+import de.livepoll.api.entity.db.*
+import de.livepoll.api.entity.dto.*
+import de.livepoll.api.repository.*
 import de.livepoll.api.util.toDtoOut
-import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 
 @Service
 class PollItemService(
-        private val answerRepository: AnswerRepository,
-        private val multipleChoiceItemRepository: MultipleChoiceItemRepository,
-        private val quizItemRepository: QuizItemRepository,
-        private val openTextItemRepository: OpenTextItemRepository
+    private val pollRepository: PollRepository,
+    private val pollItemRepository: PollItemRepository<PollItem>,
+    private val multipleChoiceItemRepository: MultipleChoiceItemRepository,
+    private val multipleChoiceItemAnswerRepository: MultipleChoiceItemAnswerRepository,
+    private val openTextItemRepository: OpenTextItemRepository,
+    private val quizItemRepository: QuizItemRepository,
+    private val quizItemAnswerRepository: QuizItemAnswerRepository
 ) {
 
-    fun getPollItem(pollItemId: Int, itemType: String): ResponseEntity<*> {
-        when (itemType.toLowerCase()) {
-            "multiple-choice" -> {
-                multipleChoiceItemRepository.findById(pollItemId).orElseGet {
-                    throw ResponseStatusException(HttpStatus.NOT_FOUND, "This poll item does not exist")
-                }.run {
-                    if (userHasAccess(this)) {
-                        return ResponseEntity.ok().body(this.toDtoOut())
-                    } else {
-                        throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized")
+    //--------------------------------------------- Get ----------------------------------------------------------------
+
+    fun getPollItem(pollItemId: Long): PollItemDtoOut {
+        pollItemRepository.findById(pollItemId)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
+            .run {
+                when (this.type) {
+
+                    // Multiple Choice
+                    PollItemType.MULTIPLE_CHOICE -> {
+                        return multipleChoiceItemRepository.findById(pollItemId)
+                            .orElseThrow {
+                                ResponseStatusException(
+                                    HttpStatus.NOT_FOUND,
+                                    "Multiple choice item not found"
+                                )
+                            }
+                            .run { this.toDtoOut() }
                     }
+
+                    // Open text
+                    PollItemType.OPEN_TEXT -> {
+                        return openTextItemRepository.findById(pollItemId)
+                            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, ("Open text item not found")) }
+                            .run { this.toDtoOut() }
+                    }
+
+                    // Quiz
+                    PollItemType.QUIZ -> {
+                        return quizItemRepository.findById(pollItemId)
+                            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz item not found") }
+                            .run { this.toDtoOut() }
+                    }
+
                 }
             }
-            "quiz" -> {
-                quizItemRepository.findById(pollItemId).orElseGet {
-                    throw ResponseStatusException(HttpStatus.NOT_FOUND, "This poll item does not exist")
-                }.run {
-                    if (userHasAccess(this)) {
-                        return ResponseEntity.ok().body(this.toDtoOut())
-                    } else {
-                        throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized")
-                    }
-                }
-            }
-            else -> {
-                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong itemtype")
-            }
-        }
     }
 
-    fun getAnswers(pollItemId: Int): List<AnswerDtoOut> {
-        return answerRepository.findByPollItemId(pollItemId).map { it.toDtoOut() }
+    fun deleteItem(itemId: Long) {
+        pollItemRepository.deleteById(itemId)
     }
 
-    private fun userHasAccess(item: PollItem) = (item.poll.user.username == SecurityContextHolder.getContext().authentication.name)
 
+    //-------------------------------------------- Create --------------------------------------------------------------
 
-    fun deleteItem(itemId: Int, itemType: String) {
-        when (itemType.toLowerCase()) {
-            "multiple-choice" -> {
-                val item = multipleChoiceItemRepository.getOne(itemId)
-                if (userHasAccess(item)) {
-                    try {
-                        multipleChoiceItemRepository.deleteById(itemId)
-                    } catch (ex: EmptyResultDataAccessException) {
-                    }
-                } else {
-                    throw Exception("Not authorzied")
-                }
+    fun createMultipleChoiceItem(item: MultipleChoiceItemDtoIn): MultipleChoiceItemDtoOut {
+        pollRepository.findById(item.pollId)
+            .orElseThrow {
+                ResponseStatusException(
+                    HttpStatus.NO_CONTENT,
+                    "The corresponding poll for this multiple choice item could not be retrieved"
+                )
+            }.run {
+                // Multiple choice item
+                val multipleChoiceItem = MultipleChoiceItem(
+                    0,
+                    this,
+                    item.position,
+                    item.question,
+                    item.allowMultipleAnswers,
+                    item.allowBlankField,
+                    mutableListOf()
+                )
+                // Multiple choice item answers
+                multipleChoiceItem.answers =
+                    item.answers.map { MultipleChoiceItemAnswer(0, multipleChoiceItem, it, 0) }.toMutableList()
+                multipleChoiceItemRepository.saveAndFlush(multipleChoiceItem)
+                multipleChoiceItem.answers.forEach { multipleChoiceItemAnswerRepository.saveAndFlush(it) }
+                return multipleChoiceItem.toDtoOut()
             }
-            "quiz" -> {
-                val item = quizItemRepository.getOne(itemId)
-                if (userHasAccess(item)) {
-                    try {
-                        quizItemRepository.deleteById(itemId)
-                    } catch (ex: EmptyResultDataAccessException) {
-                        println("Item existiert nicht")
-                    }
-                } else {
-                    throw Exception("Not authorzied")
-                }
-            }
-            else -> {
-                throw Exception("Wrong itemtype")
-            }
-        }
     }
+
+    fun createQuizItem(item: QuizItemDtoIn): QuizItemDtoOut {
+        pollRepository.findById(item.pollId)
+            .orElseThrow {
+                ResponseStatusException(
+                    HttpStatus.NO_CONTENT,
+                    "The corresponding poll for this quiz item could not be retrieved"
+                )
+            }.run {
+                // Quiz item
+                val quizItem = QuizItem(
+                    0,
+                    this,
+                    item.position,
+                    item.question,
+                    mutableListOf()
+                )
+                // Quiz item answers
+                quizItem.answers =
+                    item.answers.map { QuizItemAnswer(0, quizItem, it.answer, it.isCorrect, 0) }.toMutableList()
+                quizItemRepository.saveAndFlush(quizItem)
+                quizItem.answers.forEach { quizItemAnswerRepository.saveAndFlush(it) }
+                return quizItem.toDtoOut()
+            }
+    }
+
+    fun createOpenTextItem(item: OpenTextItemDtoIn): OpenTextItemDtoOut {
+        pollRepository.findById(item.pollId)
+            .orElseThrow {
+                ResponseStatusException(
+                    HttpStatus.NO_CONTENT,
+                    "The corresponding poll for this open text item could not be retrieved"
+                )
+            }.run {
+                val openTextItem = OpenTextItem(
+                    0,
+                    this,
+                    item.question,
+                    item.position,
+                    emptyList<OpenTextItemAnswer>().toMutableList()
+                )
+                return openTextItemRepository.saveAndFlush(openTextItem).toDtoOut()
+            }
+    }
+
 }
