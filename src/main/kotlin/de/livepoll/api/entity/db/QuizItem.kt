@@ -1,14 +1,21 @@
 package de.livepoll.api.entity.db
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.sun.istack.NotNull
-import javax.persistence.*
+import javax.persistence.Entity
+import javax.persistence.OneToMany
+import javax.persistence.Table
 
 @Entity
-@Table(name = "quiz_Item")
+@Table(name = "quiz_item")
 class QuizItem(
-        id: Int, poll: Poll, question: String, position: Int,
-        @JsonIgnore
-        @OneToMany(mappedBy = "pollItem", cascade = [CascadeType.ALL])
-        val answers: List<Answer>
-) : PollItem(id, poll, question, position)
+    id: Long,
+
+    poll: Poll,
+
+    position: Int,
+
+    question: String,
+
+    @OneToMany(mappedBy = "quizItem")
+    var answers: MutableList<QuizItemAnswer>
+
+) : PollItem(id, poll, question, position, PollItemType.QUIZ)

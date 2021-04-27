@@ -1,8 +1,5 @@
 package de.livepoll.api.service
 
-import de.livepoll.api.entity.db.PollItem
-import de.livepoll.api.repository.PollItemRepository
-import de.livepoll.api.repository.PollRepository
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.stereotype.Controller
 

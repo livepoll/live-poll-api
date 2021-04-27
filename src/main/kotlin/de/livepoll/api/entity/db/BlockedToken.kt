@@ -1,6 +1,6 @@
 package de.livepoll.api.entity.db
 
-import java.util.Date
+import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -9,7 +9,7 @@ data class BlockedToken(
         @Id
         @Column(nullable = false)
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        val id: Int,
+        val id: Long,
 
         @Column(nullable = false)
         val token: String,

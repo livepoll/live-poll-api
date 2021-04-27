@@ -11,26 +11,42 @@ fun Poll.toDtoOut(): PollDtoOut {
 
 // --------------------------------------------------- User mappers ----------------------------------------------------
 
-fun User.toDtoOut() = UserDtoOut(this.id, this.username, this.email)
+fun User.toDtoOut(): UserDtoOut {
+    return UserDtoOut(this.id, this.username, this.email)
+}
 
-fun UserDtoIn.toDbEntity() = User(0, this.username, this.email, this.password, false, "", emptyList())
+fun UserDtoIn.toDbEntity(): User {
+    return User(0, this.username, this.email, this.password, false, "", emptyList())
+}
 
 
 // ------------------------------------------------- Poll item mappers -------------------------------------------------
 
-fun PollItem.toDtoOut() : PollItemDtoOut {
-    return PollItemDtoOut(this.id, this.poll.id, this.question, this.position, "TODO")
+fun MultipleChoiceItem.toDtoOut(): MultipleChoiceItemDtoOut {
+    return MultipleChoiceItemDtoOut(this.id, this.poll.id, this.question, this.position,
+        "multiple-choice", this.answers.map { it.toDtoOut() }
+    )
 }
 
-fun MultipleChoiceItem.toDtoOut() = MultipleChoiceItemDtoOut(this.id,this.poll.id, this.question, this.position, "multiple-choice", this.answers.map{
-    it.toDtoOut()
-})
+fun MultipleChoiceItemAnswer.toDtoOut(): MultipleChoiceItemAnswerDtoOut {
+    return MultipleChoiceItemAnswerDtoOut(this.id, this.selectionOption, this.answerCount)
+}
 
-fun QuizItem.toDtoOut() = QuizItemDtoOut(this.id,this.poll.id, this.question, this.position, "quiz", this.answers.map{
-    it.toDtoOut()
-})
+fun QuizItem.toDtoOut(): QuizItemDtoOut {
+    return QuizItemDtoOut(this.id, this.poll.id, this.question, this.position,
+        "quiz", this.answers.map { it.toDtoOut() }
+    )
+}
 
+fun QuizItemAnswer.toDtoOut(): QuizItemAnswerDtoOut {
+    return QuizItemAnswerDtoOut(this.id, this.selectionOption, this.isCorrect, this.answerCount)
+}
 
-// --------------------------------------------------- Answer mappers --------------------------------------------------
+fun OpenTextItem.toDtoOut(): OpenTextItemDtoOut {
+    return OpenTextItemDtoOut(this.id, this.poll.id, this.question, this.position,
+        "open-text", this.answers.map { it.toDtoOut() })
+}
 
-fun Answer.toDtoOut() = AnswerDtoOut(this.id, this.answer)
+fun OpenTextItemAnswer.toDtoOut(): OpenTextItemAnswerDtoOut {
+    return OpenTextItemAnswerDtoOut(this.id, this.answer)
+}
