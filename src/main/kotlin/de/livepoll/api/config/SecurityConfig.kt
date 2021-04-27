@@ -31,6 +31,8 @@ class SecurityConfig(
                 .antMatchers("/v1/account/register").permitAll()
                 .antMatchers("/v1/account/confirm").permitAll()
                 .antMatchers("/v1/account/login").permitAll()
+                .antMatchers("/websocket/*").permitAll()
+                .antMatchers("/websocket/**").permitAll()
     //                .antMatchers("/admin").hasRole("ADMIN") // TODO: introduce ROLE_ADMIN authority later on
                 .anyRequest().authenticated()
                 .and()

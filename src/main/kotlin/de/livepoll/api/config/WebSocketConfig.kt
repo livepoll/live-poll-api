@@ -9,16 +9,17 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
-class WebSocketConfig : WebSocketMessageBrokerConfigurer {
-
+class WebSocketConfig : WebSocketMessageBrokerConfigurer  {
 
     override fun configureMessageBroker(registry: MessageBrokerRegistry) {
-        registry.enableSimpleBroker("/websocket-poll/")
-        registry.setApplicationDestinationPrefixes("/websocket-answer/")
+        registry.enableSimpleBroker("/websocket/poll")
+        registry.setApplicationDestinationPrefixes("/websocket/answer")
     }
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
-        registry.addEndpoint("/websocket-enter-poll")
+        registry.addEndpoint("/websocket/enter-poll")
+                .addInterceptors(HttpHandshakeInterceptor())
+                .setAllowedOrigins("*")
     }
 
 }

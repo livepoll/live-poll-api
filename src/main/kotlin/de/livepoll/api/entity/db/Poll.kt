@@ -27,7 +27,7 @@ data class Poll(
         var slug: String,
 
         @Column(nullable = true)
-        var currentItem : Int?,
+        var currentItem : Long?,
 
         @JsonIgnore
         @OneToMany(mappedBy = "poll", cascade = [CascadeType.ALL])
