@@ -1,12 +1,12 @@
 package de.livepoll.api.entity.dto
 
-import de.livepoll.api.entity.db.PollItem
-import java.util.Date
+import java.util.*
 
 data class PollDtoOut(
-        val id: Int,
+        val id: Long,
         val name: String,
         val startDate: Date,
         val endDate: Date,
-        val pollItems: List<PollItemDtoOut>
+        val slug: String,
+        var currentItem: Int?
 )

@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationListener
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Component
-import java.util.UUID
+import java.util.*
 
 @Component
 class AccountListener: ApplicationListener<OnCreateAccountEvent> {
@@ -30,7 +30,7 @@ class AccountListener: ApplicationListener<OnCreateAccountEvent> {
 
         val recipientAddress = user.email
         val subject = "Account Confirmation Live-Poll"
-        val confirmationUrl = event.appUrl + "/v0/account/confirm?token=$token"
+        val confirmationUrl = event.appUrl + "/v1/account/confirm?token=$token"
         val message = "Please confirm your email: "
 
         javaMailSender.send(SimpleMailMessage().apply {

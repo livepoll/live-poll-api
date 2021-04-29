@@ -10,7 +10,7 @@ data class Poll(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "poll_id", nullable = false)
-        var id: Int,
+        var id: Long,
 
         @ManyToOne
         @JsonIgnore
@@ -23,6 +23,11 @@ data class Poll(
         var startDate: Date,
 
         var endDate: Date,
+
+        var slug: String,
+
+        @Column(nullable = true)
+        var currentItem : Int?,
 
         @JsonIgnore
         @OneToMany(mappedBy = "poll", cascade = [CascadeType.ALL])

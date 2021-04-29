@@ -1,8 +1,10 @@
 package de.livepoll.api.entity.dto
 
-import de.livepoll.api.entity.db.Answer
-
 class QuizItemDtoOut(
-        itemId: Int, pollId: Int, question: String, position: Int, type: String,
-        val answers: List<AnswerDtoOut>
+    itemId: Long,
+    pollId: Long,
+    question: String,
+    position: Int,
+    type: String,
+    val answers: List<QuizItemAnswerDtoOut>
 ) : PollItemDtoOut(itemId, pollId, question, position, type)

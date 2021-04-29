@@ -1,25 +1,66 @@
 package de.livepoll.api.controller
 
+import de.livepoll.api.entity.dto.MultipleChoiceItemDtoIn
+import de.livepoll.api.entity.dto.OpenTextItemDtoIn
+import de.livepoll.api.entity.dto.PollItemDtoOut
+import de.livepoll.api.entity.dto.QuizItemDtoIn
 import de.livepoll.api.service.PollItemService
+import de.livepoll.api.service.PollService
+import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiParam
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.net.URI
 
 @RestController
-@RequestMapping("/v0/items")
+@Api(value = "Poll item", description = "Poll items, e.g. a multiple choice question", tags = ["Poll item"])
+@RequestMapping("/v1/poll-items")
 class PollItemController(
-        private val pollItemService: PollItemService
+    private val pollService: PollService,
+    private val pollItemService: PollItemService
 ) {
 
-    @ApiOperation(value = "Get a poll item")
-    @GetMapping("/{id}")
-    fun getPollItem(
-            @ApiParam(name = "type", type = "String", value = "Poll-item type", example = "multiplechoice", required = true)
-            @RequestParam(name = "type") itemType: String,
+    //--------------------------------------------- Get ----------------------------------------------------------------
 
-            @ApiParam(name = "id", type = "Int", value = "Poll-item id", example = "1", required = true)
-            @PathVariable(name = "id") pollItemId: Int): ResponseEntity<*> {
-        return ResponseEntity.ok().body(pollItemService.getPollItem(pollItemId, itemType))
+    @ApiOperation(value = "Get poll item", tags = ["Poll item"])
+    @GetMapping("/{id}")
+    fun getPollItem(@PathVariable(name = "id") pollItemId: Long): PollItemDtoOut {
+        return pollItemService.getPollItem(pollItemId)
     }
+
+
+    //-------------------------------------------- Create --------------------------------------------------------------
+    @ApiOperation(value = "Create multiple choice item", tags = ["Poll item"])
+    @PostMapping("/multiple-choice")
+    fun createMultipleChoiceItem(@RequestBody newItem: MultipleChoiceItemDtoIn): ResponseEntity<*> {
+        val addedItem = pollItemService.createMultipleChoiceItem(newItem)
+        return ResponseEntity.created(URI(newItem.pollId.toString())).body(addedItem)
+    }
+
+    @ApiOperation(value = "Create quiz item", tags = ["Poll item"])
+    @PostMapping("/quiz")
+    fun createQuizItem(@RequestBody newItem: QuizItemDtoIn): ResponseEntity<*> {
+        val addedItem = pollItemService.createQuizItem(newItem)
+        return ResponseEntity.created(URI(newItem.pollId.toString())).body(addedItem)
+    }
+
+    @ApiOperation(value = "Create open text item", tags = ["Poll item"])
+    @PostMapping("/open-text")
+    fun createOpenTextItem(@RequestBody newItem: OpenTextItemDtoIn): ResponseEntity<*> {
+        val addedItem = pollItemService.createOpenTextItem(newItem)
+        return ResponseEntity.created(URI(newItem.pollId.toString())).body(addedItem)
+    }
+
+
+    //-------------------------------------------- Delete --------------------------------------------------------------
+
+    @ApiOperation(value = "Delete poll item", tags = ["Poll item"])
+    @DeleteMapping("/{id}")
+    fun deletePollItem(@PathVariable(name = "id") itemId: Long): ResponseEntity<*> {
+        pollItemService.deleteItem(itemId)
+        return ResponseEntity.ok("Deleted poll item")
+    }
+
+    //-------------------------------------------- Update --------------------------------------------------------------
+
 }

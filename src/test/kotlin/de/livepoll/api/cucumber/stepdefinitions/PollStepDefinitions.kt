@@ -38,7 +38,7 @@ class PollStepDefinitions(userRepository: UserRepository, val pollRepository: Po
         val url = "${SERVER_URL}:$port$CREATE_POLL_ENDPOINT"
 
         // request body params & headers
-        val pollPostRequest = PollDtoIn(pollName, Date(0), Date(0))
+        val pollPostRequest = PollDtoIn(pollName, Date(0), Date(0), "test", null)
         val headers = HttpHeaders()
         headers["Cookie"] = SessionCookieUtil.sessionCookie
         val requestEntity: HttpEntity<PollDtoIn> = HttpEntity(pollPostRequest, headers)

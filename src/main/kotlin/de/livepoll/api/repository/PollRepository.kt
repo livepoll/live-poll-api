@@ -7,8 +7,11 @@ import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
 @Repository
-interface PollRepository : JpaRepository<Poll, Int> {
+interface PollRepository : JpaRepository<Poll, Long> {
     // https://stackoverflow.com/a/37491875/9655481
     @Transactional
     fun deleteByUser(user: User)
+
+    @Transactional
+    fun findBySlug(slug: String): Poll?
 }
