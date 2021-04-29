@@ -1,6 +1,5 @@
 package de.livepoll.api.controller
 
-import de.livepoll.api.entity.db.MultipleChoiceItemAnswer
 import de.livepoll.api.service.WebSocketService
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.MessageMapping
@@ -9,7 +8,7 @@ import org.springframework.stereotype.Controller
 
 @Controller
 class WebSocketController(
-    private val webSocketService: WebSocketService
+        private val webSocketService: WebSocketService
 ) {
     @MessageMapping("/{pollItemId}")
     fun processAnswer(@DestinationVariable pollItemId: Long, @Payload answer: String) {

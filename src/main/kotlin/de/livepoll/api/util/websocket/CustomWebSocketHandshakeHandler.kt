@@ -1,0 +1,25 @@
+package de.livepoll.api.util.websocket
+
+import org.springframework.http.server.ServerHttpRequest
+import org.springframework.web.socket.WebSocketHandler
+import org.springframework.web.socket.server.support.DefaultHandshakeHandler
+import java.security.Principal
+import java.util.*
+
+
+class CustomWebSocketHandshakeHandler : DefaultHandshakeHandler() {
+
+    private val ATTR_PRINCIPAL = "_principal_"
+
+    override fun determineUser(request: ServerHttpRequest, wsHandler: WebSocketHandler, attributes: MutableMap<String, Any>): Principal? {
+        val name: String
+        if (!attributes.containsKey(ATTR_PRINCIPAL)) {
+            name = UUID.randomUUID().toString()
+            attributes[ATTR_PRINCIPAL] = name
+        } else {
+            name = attributes[ATTR_PRINCIPAL] as String
+        }
+        return Principal { name }
+    }
+
+}
