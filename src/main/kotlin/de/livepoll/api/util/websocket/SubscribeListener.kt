@@ -14,11 +14,12 @@ import org.springframework.web.socket.messaging.SessionSubscribeEvent
 class SubscribeListener(
         private val messagingTemplate: SimpMessageSendingOperations,
         private val pollRepository: PollRepository,
+        private val pollItemService: PollItemService
 ) : ApplicationListener<SessionSubscribeEvent> {
 
     @Transactional
     override fun onApplicationEvent(event: SessionSubscribeEvent) {
-        val slug = event.message.headers.get("simpDestination").toString().split("/").last()
+        val slug = event.message.headers["simpDestination"].toString().split("/").last()
         val poll = pollRepository.findBySlug(slug)
         if (poll == null) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND)
@@ -26,13 +27,9 @@ class SubscribeListener(
             if (poll.currentItem == null) {
                 throw ResponseStatusException(HttpStatus.CONTINUE)
             } else {
-                val pollItem = poll.pollItems.find { it.id == poll.currentItem }
-                if (pollItem == null) {
-                    throw ResponseStatusException(HttpStatus.NOT_FOUND)
-                } else {
-                    val url = "/v1/websocket/poll/" + slug
-                    messagingTemplate.convertAndSendToUser(event.user!!.name, url, pollItem)
-                }
+                val pollItemDto = pollItemService.getPollItem(poll.currentItem!!)
+                val url = "/v1/websocket/poll/$slug"
+                messagingTemplate.convertAndSendToUser(event.user!!.name, url, pollItemDto)
             }
         }
     }
