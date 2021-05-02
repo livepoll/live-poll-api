@@ -24,6 +24,6 @@ class MultipleChoiceItemAnswer (
     val selectionOption: String,
 
     @Column(name = "answer_count")
-    val answerCount: Int
+    var answerCount: Int
 
 )

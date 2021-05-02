@@ -17,7 +17,7 @@ class WebSocketConfig(
 
     override fun configureMessageBroker(registry: MessageBrokerRegistry) {
         registry.enableSimpleBroker("/v1/websocket/poll")
-        registry.setApplicationDestinationPrefixes("/v/1/websocket/answer")
+        registry.setApplicationDestinationPrefixes("/v1/websocket/answer")
     }
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {

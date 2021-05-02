@@ -1,9 +1,14 @@
 package de.livepoll.api.service
 
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import de.livepoll.api.entity.db.*
+import de.livepoll.api.entity.dto.MultipleChoiceItemParticipantAnswerDtoIn
+import de.livepoll.api.entity.dto.OpenTextItemParticipantAnswerDtoIn
 import de.livepoll.api.entity.dto.PollItemDtoOut
+import de.livepoll.api.entity.dto.QuizItemParticipantAnswerDtoIn
 import de.livepoll.api.repository.*
+import de.livepoll.api.util.toDbEntity
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.messaging.simp.user.SimpUserRegistry
 import org.springframework.stereotype.Controller
@@ -13,10 +18,11 @@ import org.springframework.stereotype.Controller
 class WebSocketService(
         private val messagingTemplate: SimpMessageSendingOperations,
         private val pollItemService: PollItemService,
-        private val multipleChoiceItemRepository: MultipleChoiceItemRepository,
-        private val openTextItemRepository: OpenTextItemRepository,
-        private val quizItemRepository: QuizItemRepository,
-        private val simpUserRegistry: SimpUserRegistry
+        private val openTextItemAnswerRepository: OpenTextItemAnswerRepository,
+        private val simpUserRegistry: SimpUserRegistry,
+        private val multipleChoiceItemAnswerRepository: MultipleChoiceItemAnswerRepository,
+        private val quizItemAnswerRepository: QuizItemAnswerRepository,
+        private val openTextItemRepository: OpenTextItemRepository
 ) {
     fun sendCurrenItem(slug: String, currentItemId: Long) {
         val item: PollItemDtoOut = pollItemService.getPollItem(currentItemId);
@@ -30,35 +36,30 @@ class WebSocketService(
     fun saveAnswer(pollItemId: Long, payload: String) {
         println("PAYLOAD: " + payload)
         val mapper = ObjectMapper()
-        val map: Map<String, String> = mapper.readValue(payload, Map::class.java) as Map<String, String>
-        when (getPollItemType(map.get("type")!!)) {
+        val type: String = mapper.readValue(payload, Map::class.java).get("type").toString()
+        when (getPollItemType(type)) {
 
             // Multiple Choice
             PollItemType.MULTIPLE_CHOICE -> {
-                val obj: MultipleChoiceItemAnswer = mapper.readValue(payload, MultipleChoiceItemAnswer::class.java)
-                val pollItem: MultipleChoiceItem = multipleChoiceItemRepository.getOne(pollItemId)
-                println(obj.id)
-                println(obj.answerCount)
-                println(obj.multipleChoiceItem.question)
-                println(obj.selectionOption)
-                pollItem.answers.add(obj)
-                multipleChoiceItemRepository.saveAndFlush(pollItem)
+                val obj: MultipleChoiceItemParticipantAnswerDtoIn = mapper.readValue(payload, MultipleChoiceItemParticipantAnswerDtoIn::class.java)
+                val multipleChoiceItemAnswer = multipleChoiceItemAnswerRepository.getOne(obj.id)
+                multipleChoiceItemAnswer.answerCount++
+                multipleChoiceItemAnswerRepository.saveAndFlush(multipleChoiceItemAnswer)
             }
 
             // Open text
             PollItemType.OPEN_TEXT -> {
-                val obj: OpenTextItemAnswer = mapper.readValue(payload, OpenTextItemAnswer::class.java)
-                val pollItem: OpenTextItem = openTextItemRepository.getOne(pollItemId)
-                pollItem.answers.add(obj)
-                openTextItemRepository.saveAndFlush(pollItem)
+                val obj: OpenTextItemParticipantAnswerDtoIn = mapper.readValue(payload, OpenTextItemParticipantAnswerDtoIn::class.java)
+                val pollItem = openTextItemRepository.getOne(pollItemId)
+                openTextItemAnswerRepository.saveAndFlush(obj.toDbEntity(pollItem))
             }
 
             // Quiz
             PollItemType.QUIZ -> {
-                val obj: QuizItemAnswer = mapper.readValue(payload, QuizItemAnswer::class.java)
-                val pollItem: QuizItem = quizItemRepository.getOne(pollItemId)
-                pollItem.answers.add(obj)
-                quizItemRepository.saveAndFlush(pollItem)
+                val obj: QuizItemParticipantAnswerDtoIn = mapper.readValue(payload, QuizItemParticipantAnswerDtoIn::class.java)
+                val quizItemAnswer = quizItemAnswerRepository.getOne(obj.id)
+                quizItemAnswer.answerCount++
+                quizItemAnswerRepository.saveAndFlush(quizItemAnswer)
             }
 
         }
@@ -66,10 +67,10 @@ class WebSocketService(
 
     private fun getPollItemType(type: String): PollItemType {
         when (type.toLowerCase()) {
-            "multiple_choice" -> {
+            "multiple-choice" -> {
                 return PollItemType.MULTIPLE_CHOICE
             }
-            "open_text" -> {
+            "open-text" -> {
                 return PollItemType.OPEN_TEXT
             }
             "quiz" -> {
