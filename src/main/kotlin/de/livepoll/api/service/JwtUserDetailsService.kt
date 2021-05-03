@@ -21,5 +21,4 @@ class JwtUserDetailsService : UserDetailsService {
         }
         return user
     }
-
 }

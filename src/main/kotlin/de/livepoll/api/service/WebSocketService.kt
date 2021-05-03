@@ -26,7 +26,7 @@ class WebSocketService(
 ) {
     fun sendCurrenItem(slug: String, currentItemId: Long) {
         val item: PollItemDtoOut = pollItemService.getPollItem(currentItemId);
-        val url = "/v1/websocket/poll/" + slug
+        val url = "/v1/websocket/poll/$slug"
         simpUserRegistry.users.forEach {
             messagingTemplate.convertAndSendToUser(it.name, url, item)
         }
@@ -34,7 +34,7 @@ class WebSocketService(
 
 
     fun saveAnswer(pollItemId: Long, payload: String) {
-        println("PAYLOAD: " + payload)
+        println("PAYLOAD: $payload")
         val mapper = ObjectMapper()
         val type: String = mapper.readValue(payload, Map::class.java).get("type").toString()
         when (getPollItemType(type)) {
@@ -66,17 +66,11 @@ class WebSocketService(
     }
 
     private fun getPollItemType(type: String): PollItemType {
-        when (type.toLowerCase()) {
-            "multiple-choice" -> {
-                return PollItemType.MULTIPLE_CHOICE
-            }
-            "open-text" -> {
-                return PollItemType.OPEN_TEXT
-            }
-            "quiz" -> {
-                return PollItemType.QUIZ
-            }
+        return when (type.toLowerCase()) {
+            "multiple-choice" -> PollItemType.MULTIPLE_CHOICE
+            "open-text" -> PollItemType.OPEN_TEXT
+            "quiz" -> PollItemType.QUIZ
+            else -> throw Exception("Item type not allowed")
         }
-        throw Exception("Item type not allowed")
     }
 }

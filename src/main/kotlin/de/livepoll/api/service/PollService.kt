@@ -38,7 +38,6 @@ class PollService(
                 }
     }
 
-
     //-------------------------------------------- Create --------------------------------------------------------------
 
     fun createPoll(pollDto: PollDtoIn, userId: Long): PollDtoOut {
@@ -80,7 +79,6 @@ class PollService(
         }
     }
 
-
     //-------------------------------------------- Update --------------------------------------------------------------
 
     fun updatePoll(pollId: Long, poll: PollDtoIn): PollDtoOut {
@@ -103,9 +101,5 @@ class PollService(
         }
     }
 
-    fun isSlugUnique(slug: String): Boolean {
-        val poll: Poll? = pollRepository.findBySlug(slug)
-        return poll == null
-    }
-
+    fun isSlugUnique(slug: String) = pollRepository.findBySlug(slug) == null
 }
