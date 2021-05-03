@@ -24,34 +24,17 @@ import java.util.*
 import javax.servlet.http.HttpServletRequest
 
 @RestController
-class AccountService {
-
-    @Autowired
-    private lateinit var passwordEncoder: PasswordEncoder
-
-    @Autowired
-    private lateinit var userRepository: UserRepository
-
-    @Autowired
-    private lateinit var eventPublisher: ApplicationEventPublisher
-
-    @Autowired
-    private lateinit var verificationTokenRepository: VerificationTokenRepository
-
-    @Autowired
-    private lateinit var cookieUtil: CookieUtil
-
-    @Autowired
-    private lateinit var jwtUtil: JwtUtil
-
-    @Autowired
-    private lateinit var jwtUserDetailsService: JwtUserDetailsService
-
-    @Autowired
-    private lateinit var cookieCipher: CookieCipher
-
-    @Autowired
-    private lateinit var blockedTokenRepository: BlockedTokenRepository
+class AccountService(
+    private val passwordEncoder: PasswordEncoder,
+    private val userRepository: UserRepository,
+    private val eventPublisher: ApplicationEventPublisher,
+    private val verificationTokenRepository: VerificationTokenRepository,
+    private val cookieUtil: CookieUtil,
+    private val jwtUtil: JwtUtil,
+    private val jwtUserDetailsService: JwtUserDetailsService,
+    private val cookieCipher: CookieCipher,
+    private val blockedTokenRepository: BlockedTokenRepository
+) {
 
     fun createAccount(user: User): User {
         return user.apply {
@@ -72,20 +55,23 @@ class AccountService {
 
     fun confirmAccount(token: String): Boolean {
         val verificationToken = verificationTokenRepository.findByToken(token)
-        return if (verificationToken.expiryDate.after(Date())) {
+        if (verificationToken.expiryDate.after(Date())) {
             val user = userRepository.findByUsername(verificationToken.username)
             user?.isAccountEnabled = true
             verificationTokenRepository.delete(verificationToken)
-            true
-        } else false
+            return true
+        }
+        return false
     }
 
-    private fun calculateExpiryDate() = Calendar.getInstance().apply { add(Calendar.MINUTE, 60 * 24) }.time
+    private fun calculateExpiryDate() = Calendar.getInstance()
+        .apply { add(Calendar.MINUTE, 60 * 24) }
+        .time
 
     fun login(username: String): ResponseEntity<*> {
         val user = userRepository.findByUsername(username) ?: userRepository.findByEmail(username)
         user?.run {
-            if (user.isAccountEnabled) {
+            if (isAccountEnabled) {
                 val userDetails = jwtUserDetailsService.loadUserByUsername(username)
                 val responseHeaders = HttpHeaders()
                 responseHeaders.add(
@@ -119,5 +105,4 @@ class AccountService {
         response["message"] = "Logout successful"
         return ResponseEntity.ok().headers(responseHeaders).body(response)
     }
-
 }

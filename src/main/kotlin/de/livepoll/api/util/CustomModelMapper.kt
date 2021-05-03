@@ -50,3 +50,7 @@ fun OpenTextItem.toDtoOut(): OpenTextItemDtoOut {
 fun OpenTextItemAnswer.toDtoOut(): OpenTextItemAnswerDtoOut {
     return OpenTextItemAnswerDtoOut(this.id, this.answer)
 }
+
+fun OpenTextItemParticipantAnswerDtoIn.toDbEntity(item: OpenTextItem): OpenTextItemAnswer{
+    return OpenTextItemAnswer(0, item, this.answer)
+}
