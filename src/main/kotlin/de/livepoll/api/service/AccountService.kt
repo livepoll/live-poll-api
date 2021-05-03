@@ -12,7 +12,6 @@ import de.livepoll.api.util.JwtUtil
 import de.livepoll.api.util.OnCreateAccountEvent
 import de.livepoll.api.util.jwtCookie.CookieCipher
 import de.livepoll.api.util.jwtCookie.CookieUtil
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
