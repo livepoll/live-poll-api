@@ -14,10 +14,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.authentication.AuthenticationManager
 
-
-
-
-
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
@@ -31,7 +27,8 @@ class SecurityConfig(
                 .antMatchers("/v1/account/register").permitAll()
                 .antMatchers("/v1/account/confirm").permitAll()
                 .antMatchers("/v1/account/login").permitAll()
-    //                .antMatchers("/admin").hasRole("ADMIN") // TODO: introduce ROLE_ADMIN authority later on
+                .antMatchers("/v1/websocket/**").permitAll()
+                //.antMatchers("/admin").hasRole("ADMIN") // TODO: introduce ROLE_ADMIN authority later on
                 .anyRequest().authenticated()
                 .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -59,5 +56,4 @@ class SecurityConfig(
             "/"
         )
     }
-
 }

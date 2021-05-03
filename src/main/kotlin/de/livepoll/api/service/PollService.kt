@@ -16,57 +16,56 @@ import java.util.*
 
 @Service
 class PollService(
-    private val userRepository: UserRepository,
-    private val pollRepository: PollRepository,
-    private val pollItemService: PollItemService,
-    private val webSocketService: WebSocketService
+        private val userRepository: UserRepository,
+        private val pollRepository: PollRepository,
+        private val pollItemService: PollItemService,
+        private val webSocketService: WebSocketService
 ) {
 
     //--------------------------------------------- Get ----------------------------------------------------------------
 
     fun getPoll(pollId: Long): PollDtoOut {
         return pollRepository.findById(pollId)
-            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found") }
-            .run { this.toDtoOut() }
+                .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found") }
+                .run { this.toDtoOut() }
     }
 
     fun getPollItemsForPoll(pollId: Long): List<PollItemDtoOut> {
         pollRepository.findById(pollId)
-            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found") }
-            .run {
-                return this.pollItems.map { pollItemService.getPollItem(it.id) }
-            }
+                .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found") }
+                .run {
+                    return this.pollItems.map { pollItemService.getPollItem(it.id) }
+                }
     }
-
 
     //-------------------------------------------- Create --------------------------------------------------------------
 
     fun createPoll(pollDto: PollDtoIn, userId: Long): PollDtoOut {
         userRepository.findById(userId)
-            .orElseThrow {
-                ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
-            }
-            .run {
-                val r = Random()
-                var slug: String
-                do {
-                    slug = ""
-                    for (i in 1..6) {
-                        slug += r.nextInt(16)
-                    }
-                } while (!isSlugUnique(slug))
-                val poll = Poll(
-                    0,
-                    this,
-                    pollDto.name,
-                    pollDto.startDate,
-                    pollDto.endDate,
-                    slug,
-                    null,
-                    emptyList<PollItem>().toMutableList()
-                )
-                return pollRepository.saveAndFlush(poll).toDtoOut()
-            }
+                .orElseThrow {
+                    ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
+                }
+                .run {
+                    val r = Random()
+                    var slug: String
+                    do {
+                        slug = ""
+                        for (i in 1..6) {
+                            slug += r.nextInt(16)
+                        }
+                    } while (!isSlugUnique(slug))
+                    val poll = Poll(
+                            0,
+                            this,
+                            pollDto.name,
+                            pollDto.startDate,
+                            pollDto.endDate,
+                            slug,
+                            null,
+                            emptyList<PollItem>().toMutableList()
+                    )
+                    return pollRepository.saveAndFlush(poll).toDtoOut()
+                }
     }
 
 
@@ -79,7 +78,6 @@ class PollService(
             throw ResponseStatusException(HttpStatus.NO_CONTENT)
         }
     }
-
 
     //-------------------------------------------- Update --------------------------------------------------------------
 
@@ -95,7 +93,7 @@ class PollService(
             }
             if (poll.currentItem != null) {
                 this.currentItem = poll.currentItem
-                // TODO webSocketService.sendCurrenItem(this.slug, this.currentItem!!)
+                webSocketService.sendCurrentItem(this.slug, this.currentItem!!)
             } else {
                 this.currentItem = null
             }
@@ -103,9 +101,5 @@ class PollService(
         }
     }
 
-    fun isSlugUnique(slug: String): Boolean {
-        val poll: Poll? = pollRepository.findBySlug(slug)
-        return poll == null
-    }
-
+    fun isSlugUnique(slug: String) = pollRepository.findBySlug(slug) == null
 }

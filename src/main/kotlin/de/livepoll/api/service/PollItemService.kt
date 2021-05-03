@@ -38,34 +38,21 @@ class PollItemService {
         pollItemRepository.findById(pollItemId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
             .run {
-                when (this.type) {
-
+                return when (type) {
                     // Multiple Choice
-                    PollItemType.MULTIPLE_CHOICE -> {
-                        return multipleChoiceItemRepository.findById(pollItemId)
-                            .orElseThrow {
-                                ResponseStatusException(
-                                    HttpStatus.NOT_FOUND,
-                                    "Multiple choice item not found"
-                                )
-                            }
-                            .run { this.toDtoOut() }
-                    }
+                    PollItemType.MULTIPLE_CHOICE -> multipleChoiceItemRepository.findById(pollItemId)
+                        .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Multiple choice item not found") }
+                        .toDtoOut()
 
-                    // Open text
-                    PollItemType.OPEN_TEXT -> {
-                        return openTextItemRepository.findById(pollItemId)
-                            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, ("Open text item not found")) }
-                            .run { this.toDtoOut() }
-                    }
+                    // Open Text
+                    PollItemType.OPEN_TEXT -> openTextItemRepository.findById(pollItemId)
+                        .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, ("Open text item not found")) }
+                        .toDtoOut()
 
                     // Quiz
-                    PollItemType.QUIZ -> {
-                        return quizItemRepository.findById(pollItemId)
-                            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz item not found") }
-                            .run { this.toDtoOut() }
-                    }
-
+                    PollItemType.QUIZ -> quizItemRepository.findById(pollItemId)
+                        .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz item not found") }
+                        .toDtoOut()
                 }
             }
     }
@@ -73,7 +60,6 @@ class PollItemService {
     fun deleteItem(itemId: Long) {
         pollItemRepository.deleteById(itemId)
     }
-
 
     //-------------------------------------------- Create --------------------------------------------------------------
 
