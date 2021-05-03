@@ -32,6 +32,7 @@ class PollItemService {
     @Autowired
     private lateinit var quizItemAnswerRepository: QuizItemAnswerRepository
 
+
     //--------------------------------------------- Get ----------------------------------------------------------------
 
     fun getPollItem(pollItemId: Long): PollItemDtoOut {
@@ -60,6 +61,7 @@ class PollItemService {
     fun deleteItem(itemId: Long) {
         pollItemRepository.deleteById(itemId)
     }
+
 
     //-------------------------------------------- Create --------------------------------------------------------------
 
@@ -107,8 +109,10 @@ class PollItemService {
                     mutableListOf()
                 )
                 // Quiz item answers
-                quizItem.answers =
-                    item.answers.map { QuizItemAnswer(0, quizItem, it.answer, it.isCorrect, 0) }.toMutableList()
+                quizItem.answers = item.answers.mapIndexed { index, element ->
+                    QuizItemAnswer(0, quizItem, element, index == 0,  0)
+                }.toMutableList()
+
                 quizItemRepository.saveAndFlush(quizItem)
                 quizItem.answers.forEach { quizItemAnswerRepository.saveAndFlush(it) }
                 return quizItem.toDtoOut()
