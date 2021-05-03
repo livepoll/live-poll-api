@@ -24,7 +24,7 @@ class WebSocketService(
         private val quizItemAnswerRepository: QuizItemAnswerRepository,
         private val openTextItemRepository: OpenTextItemRepository
 ) {
-    fun sendCurrenItem(slug: String, currentItemId: Long) {
+    fun sendCurrentItem(slug: String, currentItemId: Long) {
         val item: PollItemDtoOut = pollItemService.getPollItem(currentItemId);
         val url = "/v1/websocket/poll/$slug"
         simpUserRegistry.users.forEach {
@@ -36,9 +36,8 @@ class WebSocketService(
     fun saveAnswer(pollItemId: Long, payload: String) {
         println("PAYLOAD: $payload")
         val mapper = ObjectMapper()
-        val type: String = mapper.readValue(payload, Map::class.java).get("type").toString()
+        val type: String = mapper.readValue(payload, Map::class.java)["type"].toString()
         when (getPollItemType(type)) {
-
             // Multiple Choice
             PollItemType.MULTIPLE_CHOICE -> {
                 val obj: MultipleChoiceItemParticipantAnswerDtoIn = mapper.readValue(payload, MultipleChoiceItemParticipantAnswerDtoIn::class.java)
@@ -61,7 +60,6 @@ class WebSocketService(
                 quizItemAnswer.answerCount++
                 quizItemAnswerRepository.saveAndFlush(quizItemAnswer)
             }
-
         }
     }
 
