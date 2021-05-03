@@ -45,9 +45,9 @@ class PollStepDefinitions(userRepository: UserRepository, val pollRepository: Po
 
         // make request
         val responseEntity: ResponseEntity<Any> = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                requestEntity
+            url,
+            HttpMethod.POST,
+            requestEntity
         )
 
         assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.CREATED)
@@ -61,7 +61,8 @@ class PollStepDefinitions(userRepository: UserRepository, val pollRepository: Po
     @And("I retrieve my polls")
     fun retrieveMyPolls() {
         val url = "${SERVER_URL}:$port$POLLS_ENDPOINT"
-        val pollResponseEntity = makeGetRequestWithSessionCookie<Array<PollDtoOut>>(url, SessionCookieUtil.sessionCookie)
+        val pollResponseEntity =
+            makeGetRequestWithSessionCookie<Array<PollDtoOut>>(url, SessionCookieUtil.sessionCookie)
         assertThat(pollResponseEntity.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(pollResponseEntity.body).isNotNull
         for (poll in pollResponseEntity.body!!) {
@@ -76,7 +77,7 @@ class PollStepDefinitions(userRepository: UserRepository, val pollRepository: Po
 
     @And("I get back a poll named {string}")
     fun getBackNamedPoll(pollName: String) {
-        assertThat(myPolls.get(0).name).isEqualTo(pollName)
+        assertThat(myPolls[0].name).isEqualTo(pollName)
     }
 
 }

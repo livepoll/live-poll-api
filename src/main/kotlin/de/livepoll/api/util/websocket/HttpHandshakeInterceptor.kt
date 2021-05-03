@@ -10,11 +10,10 @@ import org.springframework.web.socket.server.HandshakeInterceptor
 class HttpHandshakeInterceptor : HandshakeInterceptor {
     override fun beforeHandshake(request: ServerHttpRequest, response: ServerHttpResponse, webSocketHandler: WebSocketHandler, attributes: MutableMap<String, Any>): Boolean {
         if (request is ServletServerHttpRequest) {
-            val servletRequest = request as ServletServerHttpRequest
-            val session = servletRequest.servletRequest.session
+            val session = request.servletRequest.session
             attributes["sessionId"] = session.id
         }
-        println("test. ID: " + attributes.getValue("sessionId"))
+//        println("test. ID: " + attributes.getValue("sessionId"))
         return true
     }
 

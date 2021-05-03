@@ -11,10 +11,11 @@ import org.springframework.http.*
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.exchange
 
+private const val LOGOUT_ENDPOINT = "/v0/authenticate/logout"
+
 class UserStepDefinitions(userRepository: UserRepository) : CucumberIntegrationTestContext(userRepository) {
     private val USER_ENDPOINT = "/v0/users/${testUser.id}"
     private val USER_ENDPOINT_ANOTHER = "/v0/users/${testUser.id + 1}"
-    private val LOGOUT_ENDPOINT = "/v0/authenticate/logout"
 
     lateinit var status: HttpStatus
     var alreadyConfirmed = false

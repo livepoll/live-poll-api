@@ -2,12 +2,15 @@ package de.livepoll.api.service
 
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import de.livepoll.api.entity.db.*
+import de.livepoll.api.entity.db.PollItemType
 import de.livepoll.api.entity.dto.MultipleChoiceItemParticipantAnswerDtoIn
 import de.livepoll.api.entity.dto.OpenTextItemParticipantAnswerDtoIn
 import de.livepoll.api.entity.dto.PollItemDtoOut
 import de.livepoll.api.entity.dto.QuizItemParticipantAnswerDtoIn
-import de.livepoll.api.repository.*
+import de.livepoll.api.repository.MultipleChoiceItemAnswerRepository
+import de.livepoll.api.repository.OpenTextItemAnswerRepository
+import de.livepoll.api.repository.OpenTextItemRepository
+import de.livepoll.api.repository.QuizItemAnswerRepository
 import de.livepoll.api.util.toDbEntity
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.messaging.simp.user.SimpUserRegistry
@@ -24,14 +27,14 @@ class WebSocketService(
         private val quizItemAnswerRepository: QuizItemAnswerRepository,
         private val openTextItemRepository: OpenTextItemRepository
 ) {
+
     fun sendCurrentItem(slug: String, currentItemId: Long) {
-        val item: PollItemDtoOut = pollItemService.getPollItem(currentItemId);
+        val item: PollItemDtoOut = pollItemService.getPollItem(currentItemId)
         val url = "/v1/websocket/poll/$slug"
         simpUserRegistry.users.forEach {
             messagingTemplate.convertAndSendToUser(it.name, url, item)
         }
     }
-
 
     fun saveAnswer(pollItemId: Long, payload: String) {
         println("PAYLOAD: $payload")
@@ -71,4 +74,5 @@ class WebSocketService(
             else -> throw Exception("Item type not allowed")
         }
     }
+
 }
