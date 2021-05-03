@@ -3,6 +3,8 @@ package de.livepoll.api.controller.v1
 import de.livepoll.api.entity.db.*
 import de.livepoll.api.entity.dto.MultipleChoiceItemAnswerDtoOut
 import de.livepoll.api.entity.dto.MultipleChoiceItemDtoOut
+import de.livepoll.api.entity.dto.QuizItemAnswerDtoOut
+import de.livepoll.api.entity.dto.QuizItemDtoOut
 import de.livepoll.api.repository.*
 import de.livepoll.api.service.PollItemService
 import org.assertj.core.api.Assertions.assertThat
@@ -76,17 +78,32 @@ class PollItemServiceTests {
     )
 
     // Different poll item types
-    private val testDataMultipleChoiceItem = getTestDataForMultipleChoice()
-    private val assertDataMultipleChoiceItem = getAssertDataForMultipleChoice()
+    private val testDataMultipleChoice = getTestDataForMultipleChoice()
+    private val assertDataMultipleChoice = getAssertDataForMultipleChoice()
+    private val testDataQuiz = getTestDataForQuiz()
+    private val assertDataQuiz = getAssertDataForQuiz()
 
     @Before
     fun init() {
         // Setup fake function calls
-        Mockito.`when`(pollItemRepository.findById(0)).thenReturn(Optional.of(testDataMultipleChoiceItem[0]))
-        Mockito.`when`(pollItemRepository.findById(1)).thenReturn(Optional.of(testDataMultipleChoiceItem[1]))
-        Mockito.`when`(multipleChoiceItemRepository.findById(0)).thenReturn(Optional.of(testDataMultipleChoiceItem[0]))
-        Mockito.`when`(multipleChoiceItemRepository.findById(1)).thenReturn(Optional.of(testDataMultipleChoiceItem[1]))
+
+        // Multiple Choice
+        Mockito.`when`(pollItemRepository.findById(0)).thenReturn(Optional.of(testDataMultipleChoice[0]))
+        Mockito.`when`(pollItemRepository.findById(1)).thenReturn(Optional.of(testDataMultipleChoice[1]))
+        Mockito.`when`(multipleChoiceItemRepository.findById(0)).thenReturn(Optional.of(testDataMultipleChoice[0]))
+        Mockito.`when`(multipleChoiceItemRepository.findById(1)).thenReturn(Optional.of(testDataMultipleChoice[1]))
+
+        // Quiz
+        Mockito.`when`(pollItemRepository.findById(3)).thenReturn(Optional.of(testDataQuiz[0]))
+        Mockito.`when`(pollItemRepository.findById(4)).thenReturn(Optional.of(testDataQuiz[1]))
+        Mockito.`when`(quizItemRepository.findById(3)).thenReturn(Optional.of(testDataQuiz[0]))
+        Mockito.`when`(quizItemRepository.findById(4)).thenReturn(Optional.of(testDataQuiz[1]))
     }
+
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // ------------------------------ Test Cases + Mock data per poll item type ----------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------
 
 
     // ----------------------------------------- Multiple Choice -------------------------------------------------------
@@ -96,7 +113,7 @@ class PollItemServiceTests {
             0,
             mockPoll,
             0,
-            "Question1?",
+            "Multiple Choice Question1",
             false,
             false,
             mutableListOf()
@@ -105,7 +122,7 @@ class PollItemServiceTests {
             1,
             mockPoll,
             1,
-            "Question2?",
+            "Multiple Choice Question 2",
             false,
             false,
             mutableListOf()
@@ -113,14 +130,14 @@ class PollItemServiceTests {
 
         // Selection options
         val answer11 = MultipleChoiceItemAnswer(0, multipleChoiceItem1, "Option1-1", 0)
-        val answer12 = MultipleChoiceItemAnswer(0, multipleChoiceItem1, "Option1-2", 0)
-        val answer13 = MultipleChoiceItemAnswer(0, multipleChoiceItem1, "Option1-3", 0)
-        val answer14 = MultipleChoiceItemAnswer(0, multipleChoiceItem1, "Option1-4", 0)
-        multipleChoiceItem1.answers = listOf(answer11, answer12, answer13, answer14).toMutableList()
+        val answer12 = MultipleChoiceItemAnswer(1, multipleChoiceItem1, "Option1-2", 0)
+        val answer13 = MultipleChoiceItemAnswer(2, multipleChoiceItem1, "Option1-3", 0)
+        val answer14 = MultipleChoiceItemAnswer(3, multipleChoiceItem1, "Option1-4", 0)
+        multipleChoiceItem1.answers = mutableListOf(answer11, answer12, answer13, answer14)
 
-        val answer21 = MultipleChoiceItemAnswer(0, multipleChoiceItem1, "Option2-1", 0)
-        val answer22 = MultipleChoiceItemAnswer(0, multipleChoiceItem1, "Option2-2", 0)
-        multipleChoiceItem2.answers = listOf(answer21, answer22).toMutableList()
+        val answer21 = MultipleChoiceItemAnswer(4, multipleChoiceItem1, "Option2-1", 0)
+        val answer22 = MultipleChoiceItemAnswer(5, multipleChoiceItem1, "Option2-2", 0)
+        multipleChoiceItem2.answers = mutableListOf(answer21, answer22)
 
         return listOf(multipleChoiceItem1, multipleChoiceItem2)
     }
@@ -128,20 +145,20 @@ class PollItemServiceTests {
     private fun getAssertDataForMultipleChoice(): List<MultipleChoiceItemDtoOut> {
         // Selection options
         val answer11 = MultipleChoiceItemAnswerDtoOut(0, "Option1-1", 0)
-        val answer12 = MultipleChoiceItemAnswerDtoOut(0, "Option1-2", 0)
-        val answer13 = MultipleChoiceItemAnswerDtoOut(0, "Option1-3", 0)
-        val answer14 = MultipleChoiceItemAnswerDtoOut(0, "Option1-4", 0)
+        val answer12 = MultipleChoiceItemAnswerDtoOut(1, "Option1-2", 0)
+        val answer13 = MultipleChoiceItemAnswerDtoOut(2, "Option1-3", 0)
+        val answer14 = MultipleChoiceItemAnswerDtoOut(3, "Option1-4", 0)
         val answers1 = listOf(answer11, answer12, answer13, answer14)
 
-        val answer21 = MultipleChoiceItemAnswerDtoOut(0, "Option2-1", 0)
-        val answer22 = MultipleChoiceItemAnswerDtoOut(0, "Option2-2", 0)
+        val answer21 = MultipleChoiceItemAnswerDtoOut(4, "Option2-1", 0)
+        val answer22 = MultipleChoiceItemAnswerDtoOut(5, "Option2-2", 0)
         val answers2 = listOf(answer21, answer22)
 
         // Shell
         val multipleChoice1 = MultipleChoiceItemDtoOut(
             0,
             mockPoll.id,
-            "Question1?",
+            "Multiple Choice Question1",
             0,
             PollItemType.MULTIPLE_CHOICE.representation,
             answers1
@@ -149,7 +166,7 @@ class PollItemServiceTests {
         val multipleChoice2 = MultipleChoiceItemDtoOut(
             1,
             mockPoll.id,
-            "Question2?",
+            "Multiple Choice Question 2",
             1,
             PollItemType.MULTIPLE_CHOICE.representation,
             answers2
@@ -161,10 +178,93 @@ class PollItemServiceTests {
     @Test
     @DisplayName("Get a single multiple choice item")
     fun testGetPollItemMultipleChoice() {
-        val result = pollItemService.getPollItem(0)
-        val expected = assertDataMultipleChoiceItem[0]
-        assertThat(result).usingRecursiveComparison().isEqualTo(expected)
-//        assertThat(result).isEqualToComparingFieldByFieldRecursively(assertDataMultipleChoiceItem.elementAt(1))
+        val result1 = pollItemService.getPollItem(0)
+        val expected1 = assertDataMultipleChoice[0]
+        assertThat(result1).usingRecursiveComparison().isEqualTo(expected1)
+
+        val result2 = pollItemService.getPollItem(1)
+        val expected2 = assertDataMultipleChoice[1]
+        assertThat(result2).usingRecursiveComparison().isEqualTo(expected2)
+    }
+
+
+    // --------------------------------------------- Quiz --------------------------------------------------------------
+    private fun getTestDataForQuiz(): List<QuizItem> {
+        // Shell
+        val quiz1 = QuizItem(
+            3,
+            mockPoll,
+            0,
+            "Quiz Question1",
+            mutableListOf()
+        )
+
+        val quiz2 = QuizItem(
+            4,
+            mockPoll,
+            1,
+            "Quiz Question2",
+            mutableListOf()
+        )
+
+        // Selection options
+        val answer11 = QuizItemAnswer(0, quiz1, "Option 1-1", true, 0)
+        val answer12 = QuizItemAnswer(1, quiz1, "Option 1-2", false, 0)
+        val answer13 = QuizItemAnswer(2, quiz1, "Option 1-3", false, 0)
+        val answer14 = QuizItemAnswer(3, quiz1, "Option 1-4", false, 0)
+        quiz1.answers = mutableListOf(answer11, answer12, answer13, answer14)
+
+
+        val answer21 = QuizItemAnswer(4, quiz1, "Option 2-1", false, 0)
+        val answer22 = QuizItemAnswer(5, quiz1, "Option 2-2", true, 0)
+        quiz2.answers = mutableListOf(answer21, answer22)
+
+        return listOf(quiz1, quiz2)
+    }
+
+    private fun getAssertDataForQuiz(): List<QuizItemDtoOut> {
+        // Selection options
+        val answer11 = QuizItemAnswerDtoOut(0, "Option 1-1", true, 0)
+        val answer12 = QuizItemAnswerDtoOut(1, "Option 1-2", false, 0)
+        val answer13 = QuizItemAnswerDtoOut(2, "Option 1-3", false, 0)
+        val answer14 = QuizItemAnswerDtoOut(3, "Option 1-4", false, 0)
+        val answers1 = listOf(answer11, answer12, answer13, answer14)
+
+        val answer21 = QuizItemAnswerDtoOut(4, "Option 2-1", false, 0)
+        val answer22 = QuizItemAnswerDtoOut(5, "Option 2-2", true, 0)
+        val answers2 = listOf(answer21, answer22)
+
+        // Shell
+        val quiz1 = QuizItemDtoOut(
+            3,
+            mockPoll.id,
+            "Quiz Question1",
+            0,
+            PollItemType.QUIZ.representation,
+            answers1
+        )
+        val quiz2 = QuizItemDtoOut(
+            4,
+            mockPoll.id,
+            "Quiz Question2",
+            1,
+            PollItemType.QUIZ.representation,
+            answers2
+        )
+
+        return listOf(quiz1, quiz2)
+    }
+
+    @Test
+    @DisplayName("Get a single quiz item")
+    fun testGetPollItemQuiz() {
+        val result1 = pollItemService.getPollItem(3)
+        val expected1 = assertDataQuiz[0]
+        assertThat(result1).usingRecursiveComparison().isEqualTo(expected1)
+
+        val result2 = pollItemService.getPollItem(4)
+        val expected2 = assertDataQuiz[1]
+        assertThat(result2).usingRecursiveComparison().isEqualTo(expected2)
     }
 
 }
