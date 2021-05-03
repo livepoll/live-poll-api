@@ -4,7 +4,7 @@ That's why we rely on you, the open source contributors, to inform us about actu
 Please follow the guideline below to get in touch with us, even if you're not sure, if your issue is regarding the data security.
 
 ## Reporting a Vulnerability
-**Please do not open GitHub issues for security vulnerabilities, cause they are publicly accessible!!!**
+**Please do not open GitHub issues for security vulnerabilities since they are publicly accessible!!!**
 
 Instead, contact us per mail. We guarantee a response within two workdays and a security patch as fast as possible.
 

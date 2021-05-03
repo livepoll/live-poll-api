@@ -6,12 +6,11 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler
 import java.security.Principal
 import java.util.*
 
+private const val ATTR_PRINCIPAL = "_principal_"
 
 class CustomWebSocketHandshakeHandler : DefaultHandshakeHandler() {
 
-    private val ATTR_PRINCIPAL = "_principal_"
-
-    override fun determineUser(request: ServerHttpRequest, wsHandler: WebSocketHandler, attributes: MutableMap<String, Any>): Principal? {
+    override fun determineUser(request: ServerHttpRequest, wsHandler: WebSocketHandler, attributes: MutableMap<String, Any>): Principal {
         val name: String
         if (!attributes.containsKey(ATTR_PRINCIPAL)) {
             name = UUID.randomUUID().toString()

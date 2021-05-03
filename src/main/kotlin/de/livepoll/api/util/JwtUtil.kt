@@ -45,8 +45,8 @@ class JwtUtil(
 
     private fun isTokenBlocked(token: String?): Boolean {
         blockedTokenRepository.findByToken(token)?.run {
-            return true;
+            return true
         }
-        return false;
+        return false
     }
 }

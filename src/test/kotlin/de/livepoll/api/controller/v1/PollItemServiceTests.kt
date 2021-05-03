@@ -121,18 +121,18 @@ class PollItemServiceTests {
             mockPoll,
             0,
             "Multiple Choice Question1",
-            false,
-            false,
-            mutableListOf()
+            allowMultipleAnswers = false,
+            allowBlankField = false,
+            answers = mutableListOf()
         )
         val multipleChoice2 = MultipleChoiceItem(
             1,
             mockPoll,
             1,
             "Multiple Choice Question 2",
-            false,
-            false,
-            mutableListOf()
+            allowMultipleAnswers = false,
+            allowBlankField = false,
+            answers = mutableListOf()
         )
 
         // Selection options
