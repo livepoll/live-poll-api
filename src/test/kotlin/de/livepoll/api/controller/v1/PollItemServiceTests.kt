@@ -1,10 +1,7 @@
 package de.livepoll.api.controller.v1
 
 import de.livepoll.api.entity.db.*
-import de.livepoll.api.entity.dto.MultipleChoiceItemAnswerDtoOut
-import de.livepoll.api.entity.dto.MultipleChoiceItemDtoOut
-import de.livepoll.api.entity.dto.QuizItemAnswerDtoOut
-import de.livepoll.api.entity.dto.QuizItemDtoOut
+import de.livepoll.api.entity.dto.*
 import de.livepoll.api.repository.*
 import de.livepoll.api.service.PollItemService
 import org.assertj.core.api.Assertions.assertThat
@@ -49,6 +46,8 @@ class PollItemServiceTests {
     @MockBean
     private lateinit var quizItemAnswerRepository: QuizItemAnswerRepository
 
+    // Needed, since we can't use @Autowired in unit tests
+    // If you know a solution to this "hack", please fix it or open a GitHub issue
     @TestConfiguration
     class PollitemServiceBean {
         @Bean
@@ -82,6 +81,8 @@ class PollItemServiceTests {
     private val assertDataMultipleChoice = getAssertDataForMultipleChoice()
     private val testDataQuiz = getTestDataForQuiz()
     private val assertDataQuiz = getAssertDataForQuiz()
+    private val testDataOpenText = getTestDataForOpenText()
+    private val assertDataOpenText = getAssertDataForOpenText()
 
     @Before
     fun init() {
@@ -98,6 +99,12 @@ class PollItemServiceTests {
         Mockito.`when`(pollItemRepository.findById(4)).thenReturn(Optional.of(testDataQuiz[1]))
         Mockito.`when`(quizItemRepository.findById(3)).thenReturn(Optional.of(testDataQuiz[0]))
         Mockito.`when`(quizItemRepository.findById(4)).thenReturn(Optional.of(testDataQuiz[1]))
+
+        // Open text
+        Mockito.`when`(pollItemRepository.findById(5)).thenReturn(Optional.of(testDataOpenText[0]))
+        Mockito.`when`(pollItemRepository.findById(6)).thenReturn(Optional.of(testDataOpenText[1]))
+        Mockito.`when`(openTextItemRepository.findById(5)).thenReturn(Optional.of(testDataOpenText[0]))
+        Mockito.`when`(openTextItemRepository.findById(6)).thenReturn(Optional.of(testDataOpenText[1]))
     }
 
 
@@ -109,7 +116,7 @@ class PollItemServiceTests {
     // ----------------------------------------- Multiple Choice -------------------------------------------------------
     private fun getTestDataForMultipleChoice(): List<MultipleChoiceItem> {
         // Shell
-        val multipleChoiceItem1 = MultipleChoiceItem(
+        val multipleChoice1 = MultipleChoiceItem(
             0,
             mockPoll,
             0,
@@ -118,7 +125,7 @@ class PollItemServiceTests {
             false,
             mutableListOf()
         )
-        val multipleChoiceItem2 = MultipleChoiceItem(
+        val multipleChoice2 = MultipleChoiceItem(
             1,
             mockPoll,
             1,
@@ -129,17 +136,17 @@ class PollItemServiceTests {
         )
 
         // Selection options
-        val answer11 = MultipleChoiceItemAnswer(0, multipleChoiceItem1, "Option1-1", 0)
-        val answer12 = MultipleChoiceItemAnswer(1, multipleChoiceItem1, "Option1-2", 0)
-        val answer13 = MultipleChoiceItemAnswer(2, multipleChoiceItem1, "Option1-3", 0)
-        val answer14 = MultipleChoiceItemAnswer(3, multipleChoiceItem1, "Option1-4", 0)
-        multipleChoiceItem1.answers = mutableListOf(answer11, answer12, answer13, answer14)
+        val answer11 = MultipleChoiceItemAnswer(0, multipleChoice1, "Option1-1", 0)
+        val answer12 = MultipleChoiceItemAnswer(1, multipleChoice1, "Option1-2", 0)
+        val answer13 = MultipleChoiceItemAnswer(2, multipleChoice1, "Option1-3", 0)
+        val answer14 = MultipleChoiceItemAnswer(3, multipleChoice1, "Option1-4", 0)
+        multipleChoice1.answers = mutableListOf(answer11, answer12, answer13, answer14)
 
-        val answer21 = MultipleChoiceItemAnswer(4, multipleChoiceItem1, "Option2-1", 0)
-        val answer22 = MultipleChoiceItemAnswer(5, multipleChoiceItem1, "Option2-2", 0)
-        multipleChoiceItem2.answers = mutableListOf(answer21, answer22)
+        val answer21 = MultipleChoiceItemAnswer(4, multipleChoice1, "Option2-1", 0)
+        val answer22 = MultipleChoiceItemAnswer(5, multipleChoice1, "Option2-2", 0)
+        multipleChoice2.answers = mutableListOf(answer21, answer22)
 
-        return listOf(multipleChoiceItem1, multipleChoiceItem2)
+        return listOf(multipleChoice1, multipleChoice2)
     }
 
     private fun getAssertDataForMultipleChoice(): List<MultipleChoiceItemDtoOut> {
@@ -264,6 +271,62 @@ class PollItemServiceTests {
 
         val result2 = pollItemService.getPollItem(4)
         val expected2 = assertDataQuiz[1]
+        assertThat(result2).usingRecursiveComparison().isEqualTo(expected2)
+    }
+
+
+    // ----------------------------------------- Open text -------------------------------------------------------------
+    private fun getTestDataForOpenText(): List<OpenTextItem> {
+        val openText1 = OpenTextItem(
+            5,
+            mockPoll,
+            "Open text question1",
+            0,
+            mutableListOf()
+        )
+
+        val openText2 = OpenTextItem(
+            6,
+            mockPoll,
+            "Open text question2",
+            1,
+            mutableListOf()
+        )
+
+        return listOf(openText1, openText2)
+    }
+
+    private fun getAssertDataForOpenText(): List<OpenTextItemDtoOut> {
+        val openText1 = OpenTextItemDtoOut(
+            5,
+            mockPoll.id,
+            "Open text question1",
+            0,
+            PollItemType.OPEN_TEXT.representation,
+            emptyList()
+        )
+
+        val openText2 = OpenTextItemDtoOut(
+            6,
+            mockPoll.id,
+            "Open text question2",
+            1,
+            PollItemType.OPEN_TEXT.representation,
+            emptyList()
+        )
+
+        return listOf(openText1, openText2)
+    }
+
+    @Test
+    @DisplayName("Get a single open text item")
+    fun testGetPollOpenText() {
+        val result1 = pollItemService.getPollItem(5)
+        val expected1 = assertDataOpenText[0]
+        assertThat(result1).usingRecursiveComparison().isEqualTo(expected1)
+
+        val result2 = pollItemService.getPollItem(6)
+        val expected2 = assertDataOpenText[1]
         assertThat(result2).usingRecursiveComparison().isEqualTo(expected2)
     }
 
