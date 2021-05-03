@@ -4,20 +4,33 @@ import de.livepoll.api.entity.db.*
 import de.livepoll.api.entity.dto.*
 import de.livepoll.api.repository.*
 import de.livepoll.api.util.toDtoOut
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 
 @Service
-class PollItemService(
-    private val pollRepository: PollRepository,
-    private val pollItemRepository: PollItemRepository<PollItem>,
-    private val multipleChoiceItemRepository: MultipleChoiceItemRepository,
-    private val multipleChoiceItemAnswerRepository: MultipleChoiceItemAnswerRepository,
-    private val openTextItemRepository: OpenTextItemRepository,
-    private val quizItemRepository: QuizItemRepository,
-    private val quizItemAnswerRepository: QuizItemAnswerRepository
-) {
+class PollItemService {
+    @Autowired
+    private lateinit var pollRepository: PollRepository
+
+    @Autowired
+    private lateinit var pollItemRepository: PollItemRepository<PollItem>
+
+    @Autowired
+    private lateinit var multipleChoiceItemRepository: MultipleChoiceItemRepository
+
+    @Autowired
+    private lateinit var multipleChoiceItemAnswerRepository: MultipleChoiceItemAnswerRepository
+
+    @Autowired
+    private lateinit var openTextItemRepository: OpenTextItemRepository
+
+    @Autowired
+    private lateinit var quizItemRepository: QuizItemRepository
+
+    @Autowired
+    private lateinit var quizItemAnswerRepository: QuizItemAnswerRepository
 
     //--------------------------------------------- Get ----------------------------------------------------------------
 
