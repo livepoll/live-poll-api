@@ -1,6 +1,6 @@
 package de.livepoll.api.cucumber.stepdefinitions
 
-import de.livepoll.api.cucumber.CucumberIntegrationTestContext
+import de.livepoll.api.cucumber.CucumberIntegrationTest
 import de.livepoll.api.entity.dto.PollDtoIn
 import de.livepoll.api.entity.dto.PollDtoOut
 import de.livepoll.api.repository.PollRepository
@@ -14,14 +14,14 @@ import org.springframework.http.*
 import org.springframework.web.client.exchange
 import java.sql.Date
 
-class PollStepDefinitions(userRepository: UserRepository, val pollRepository: PollRepository) : CucumberIntegrationTestContext(userRepository) {
-    private val POLLS_ENDPOINT = "/v0/users/${testUser.id}/polls"
-    private val CREATE_POLL_ENDPOINT = "/v0/users/${testUser.id}/poll"
+class PollStepDefinitions(userRepository: UserRepository, val pollRepository: PollRepository) : CucumberIntegrationTest(userRepository) {
+    private val POLLS_ENDPOINT = "/v1/polls"
+    private val CREATE_POLL_ENDPOINT = "/v1/polls"
     lateinit var myPolls: ArrayList<PollDtoOut>
 
     @Given("I have no polls created yet")
     fun deleteAllPolls() {
-        pollRepository.deleteByUser(testUser)
+        pollRepository.deleteByUser(testUser!!)
     }
 
     @When("I create {int} new dummy polls")

@@ -1,6 +1,6 @@
 package de.livepoll.api.cucumber.stepdefinitions
 
-import de.livepoll.api.cucumber.CucumberIntegrationTestContext
+import de.livepoll.api.cucumber.CucumberIntegrationTest
 import de.livepoll.api.repository.UserRepository
 import io.cucumber.java.en.And
 import io.cucumber.java.en.Given
@@ -11,18 +11,18 @@ import org.springframework.http.*
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.exchange
 
-private const val LOGOUT_ENDPOINT = "/v0/authenticate/logout"
+private const val LOGOUT_ENDPOINT = "/v1/account/logout"
 
-class UserStepDefinitions(userRepository: UserRepository) : CucumberIntegrationTestContext(userRepository) {
-    private val USER_ENDPOINT = "/v0/users/${testUser.id}"
-    private val USER_ENDPOINT_ANOTHER = "/v0/users/${testUser.id + 1}"
+class UserStepDefinitions(private val userRepository: UserRepository) : CucumberIntegrationTest(userRepository) {
+    private val USER_ENDPOINT = "/v1/user"
+    private val USER_ENDPOINT_ANOTHER = "/v1/user"
 
     lateinit var status: HttpStatus
     var alreadyConfirmed = false
 
     @Given("A test user exists")
     fun makeSureATestUserExists() {
-        // TODO
+        //TODO
     }
 
     @Given("I am logged in as test user")
