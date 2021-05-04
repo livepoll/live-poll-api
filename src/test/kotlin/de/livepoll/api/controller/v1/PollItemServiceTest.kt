@@ -1,5 +1,6 @@
 package de.livepoll.api.controller.v1
 
+import de.livepoll.api.LivePollApplication
 import de.livepoll.api.entity.db.*
 import de.livepoll.api.entity.dto.*
 import de.livepoll.api.repository.*
@@ -11,16 +12,24 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Bean
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import java.util.*
 
 
+
 @RunWith(SpringRunner::class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = [LivePollApplication::class])
+@AutoConfigureMockMvc
+@TestPropertySource("classpath:application-test.properties")
 @DisplayName("Test poll item service")
-class PollItemServiceTests {
+class PollItemServiceTest {
 
     @Autowired
     private lateinit var pollItemService: PollItemService
