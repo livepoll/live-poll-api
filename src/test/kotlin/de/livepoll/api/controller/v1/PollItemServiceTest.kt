@@ -55,6 +55,10 @@ class PollItemServiceTest {
     @MockBean
     private lateinit var quizItemAnswerRepository: QuizItemAnswerRepository
 
+    init{
+
+    }
+
     // Needed, since we can't use @Autowired in unit tests
     // If you know a solution to this "hack", please fix it or open a GitHub issue
     @TestConfiguration

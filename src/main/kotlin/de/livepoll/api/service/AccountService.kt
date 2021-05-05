@@ -1,24 +1,26 @@
 package de.livepoll.api.service
 
 import de.livepoll.api.entity.db.BlockedToken
+import de.livepoll.api.entity.db.PollItem
 import de.livepoll.api.entity.db.User
 import de.livepoll.api.entity.db.VerificationToken
 import de.livepoll.api.exception.EmailNotConfirmedException
 import de.livepoll.api.exception.UserExistsException
-import de.livepoll.api.repository.BlockedTokenRepository
-import de.livepoll.api.repository.UserRepository
-import de.livepoll.api.repository.VerificationTokenRepository
+import de.livepoll.api.repository.*
 import de.livepoll.api.util.JwtUtil
 import de.livepoll.api.util.OnCreateAccountEvent
 import de.livepoll.api.util.jwtCookie.CookieCipher
 import de.livepoll.api.util.jwtCookie.CookieUtil
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
+import java.security.Principal
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 
@@ -32,7 +34,9 @@ class AccountService(
     private val jwtUtil: JwtUtil,
     private val jwtUserDetailsService: JwtUserDetailsService,
     private val cookieCipher: CookieCipher,
-    private val blockedTokenRepository: BlockedTokenRepository
+    private val blockedTokenRepository: BlockedTokenRepository,
+    private val pollRepository: PollRepository,
+    private val pollItemRepository: PollItemRepository<PollItem>
 ) {
 
     fun createAccount(user: User): User {
@@ -103,5 +107,18 @@ class AccountService(
         val response: HashMap<String, String> = HashMap()
         response["message"] = "Logout successful"
         return ResponseEntity.ok().headers(responseHeaders).body(response)
+    }
+
+    fun checkAuthorizationByUsername(username: String): Boolean{
+        if(SecurityContextHolder.getContext().authentication.name == username) return true
+        throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized")
+    }
+    fun checkAuthorizationByPollId(id: Long): Boolean{
+        if(SecurityContextHolder.getContext().authentication.name == pollRepository.getOne(id).user.username) return true
+        throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized")
+    }
+    fun checkAuthorizationByPollItemId(id: Long): Boolean{
+        if(SecurityContextHolder.getContext().authentication.name == pollItemRepository.getOne(id).poll.user.username) return true
+        throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized")
     }
 }

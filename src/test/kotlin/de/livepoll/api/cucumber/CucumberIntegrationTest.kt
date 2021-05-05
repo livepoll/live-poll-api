@@ -1,12 +1,9 @@
 package de.livepoll.api.cucumber
 
 import de.livepoll.api.LivePollApplication
-import de.livepoll.api.config.SecurityConfig
 import de.livepoll.api.entity.db.User
-import de.livepoll.api.entity.dto.UserDtoIn
 import de.livepoll.api.entity.jwt.AuthenticationRequest
 import de.livepoll.api.repository.UserRepository
-import de.livepoll.api.service.AccountService
 import io.cucumber.spring.CucumberContextConfiguration
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory
 import org.apache.http.impl.client.CloseableHttpClient
@@ -30,14 +27,14 @@ import javax.net.ssl.SSLContext
 @SpringBootTest(classes = [LivePollApplication::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("classpath:application-test.properties")
 class CucumberIntegrationTest(
-        private val userRepository: UserRepository)
-{
+        private val userRepository: UserRepository
+) {
 
     @Autowired
     lateinit var passwordEncoder: PasswordEncoder
 
-    @Autowired
-    lateinit var accountService: AccountService
+    @LocalServerPort
+    protected var port = 0
 
     companion object {
         private const val AUTHENTICATION_ENDPOINT = "/v1/account/login"
@@ -52,14 +49,12 @@ class CucumberIntegrationTest(
     // can't move this into companion object since
     // "Kotlin: Using non-JVM static members protected in the superclass companion is unsupported yet"
     protected val SERVER_URL = "https://localhost"
-
-    @LocalServerPort
-    protected var port = 0
-
     protected final var restTemplate: RestTemplate
 
-    init {
+    protected final val testUserName = "cucumber_test_user"
+    protected final val testUserPassword = "1234"
 
+    init {
         // https://stackoverflow.com/a/42689331/9655481
         // Disable SSL certificate checking with Spring RestTemplate
         // ⚠ only do this for Cucumber testing purposes against https://localhost
@@ -82,16 +77,16 @@ class CucumberIntegrationTest(
     }
 
     protected fun logInWithTestUser(): Pair<HttpStatus, String> {
-         if(userRepository.findByUsername("cucumber_test_user")==null){
-            userRepository.saveAndFlush(User(0, "cucumber_test_user", "email", passwordEncoder.encode("1234") , true, "ROLE_USER", emptyList()))
-            testUser = userRepository.findByUsername("cucumber_test_user")
+        if (userRepository.findByUsername(testUserName) == null) {
+            userRepository.saveAndFlush(User(0, testUserName, "email", passwordEncoder.encode(testUserPassword), true, "ROLE_USER", emptyList()))
+            testUser = userRepository.findByUsername(testUserName)
         }
         // https://springbootdev.com/2017/11/21/spring-resttemplate-exchange-method/
         // https://attacomsian.com/blog/spring-boot-resttemplate-post-request-json-headers
         val url = "${SERVER_URL}:$port$AUTHENTICATION_ENDPOINT"
 
         // request body params
-        val authenticationRequest = AuthenticationRequest("cucumber_test_user", "1234")
+        val authenticationRequest = AuthenticationRequest(testUserName, testUserPassword)
         val requestEntity: HttpEntity<AuthenticationRequest> = HttpEntity(authenticationRequest)
 
         // make request
