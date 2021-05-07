@@ -1,6 +1,6 @@
 package de.livepoll.api.cucumber.stepdefinitions
 
-import de.livepoll.api.cucumber.CucumberIntegrationTestContext
+import de.livepoll.api.cucumber.CucumberIntegrationTest
 import de.livepoll.api.entity.dto.PollDtoIn
 import de.livepoll.api.entity.dto.PollDtoOut
 import de.livepoll.api.repository.PollRepository
@@ -14,14 +14,17 @@ import org.springframework.http.*
 import org.springframework.web.client.exchange
 import java.sql.Date
 
-class PollStepDefinitions(userRepository: UserRepository, val pollRepository: PollRepository) : CucumberIntegrationTestContext(userRepository) {
-    private val POLLS_ENDPOINT = "/v0/users/${testUser.id}/polls"
-    private val CREATE_POLL_ENDPOINT = "/v0/users/${testUser.id}/poll"
+class PollStepDefinitions(
+        userRepository: UserRepository,
+        private val pollRepository: PollRepository
+) : CucumberIntegrationTest(userRepository) {
+    private val POLL_ENDPOINT = "/v1/polls"
+
     lateinit var myPolls: ArrayList<PollDtoOut>
 
     @Given("I have no polls created yet")
     fun deleteAllPolls() {
-        pollRepository.deleteByUser(testUser)
+        pollRepository.deleteByUser(testUser!!)
     }
 
     @When("I create {int} new dummy polls")
@@ -35,7 +38,7 @@ class PollStepDefinitions(userRepository: UserRepository, val pollRepository: Po
         // Make sure we start with a new ArrayList for myPolls
         myPolls = ArrayList()
 
-        val url = "${SERVER_URL}:$port$CREATE_POLL_ENDPOINT"
+        val url = "${SERVER_URL}:$port$POLL_ENDPOINT"
 
         // request body params & headers
         val pollPostRequest = PollDtoIn(pollName, Date(0), Date(0), "test", null)
@@ -45,9 +48,9 @@ class PollStepDefinitions(userRepository: UserRepository, val pollRepository: Po
 
         // make request
         val responseEntity: ResponseEntity<Any> = restTemplate.exchange(
-            url,
-            HttpMethod.POST,
-            requestEntity
+                url,
+                HttpMethod.POST,
+                requestEntity
         )
 
         assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.CREATED)
@@ -60,9 +63,9 @@ class PollStepDefinitions(userRepository: UserRepository, val pollRepository: Po
 
     @And("I retrieve my polls")
     fun retrieveMyPolls() {
-        val url = "${SERVER_URL}:$port$POLLS_ENDPOINT"
+        val url = "${SERVER_URL}:$port$POLL_ENDPOINT"
         val pollResponseEntity =
-            makeGetRequestWithSessionCookie<Array<PollDtoOut>>(url, SessionCookieUtil.sessionCookie)
+                makeGetRequestWithSessionCookie<Array<PollDtoOut>>(url, SessionCookieUtil.sessionCookie)
         assertThat(pollResponseEntity.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(pollResponseEntity.body).isNotNull
         for (poll in pollResponseEntity.body!!) {

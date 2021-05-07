@@ -4,6 +4,7 @@ import de.livepoll.api.entity.db.User
 import de.livepoll.api.entity.dto.PollDtoIn
 import de.livepoll.api.entity.dto.PollDtoOut
 import de.livepoll.api.entity.dto.PollItemDtoOut
+import de.livepoll.api.service.AccountService
 import de.livepoll.api.service.PollService
 import de.livepoll.api.util.toDtoOut
 import io.swagger.annotations.Api
@@ -18,6 +19,7 @@ import java.net.URI
 @RequestMapping("/v1/polls")
 class PollController(
     private val pollService: PollService,
+    private val accountService: AccountService
 ) {
 
     @ApiOperation(value = "Get polls", tags = ["Poll"])
@@ -37,24 +39,28 @@ class PollController(
     @ApiOperation(value = "Get poll", tags = ["Poll"])
     @GetMapping("/{id}")
     fun getPoll(@PathVariable(name = "id") pollId: Long, @AuthenticationPrincipal user: User): PollDtoOut {
+        accountService.checkAuthorizationByPollId(pollId)
         return pollService.getPoll(pollId)
     }
 
     @ApiOperation(value = "Delete poll", tags = ["Poll"])
     @DeleteMapping("/{id}")
     fun deletePoll(@PathVariable(name = "id") pollId: Long) {
+        accountService.checkAuthorizationByPollId(pollId)
         return pollService.deletePoll(pollId)
     }
 
     @ApiOperation(value = "Update slug", tags = ["Poll"])
     @PutMapping("/{id}")
     fun updatePoll(@PathVariable(name = "id") pollId: Long, @RequestBody updatedPoll: PollDtoIn): PollDtoOut {
+        accountService.checkAuthorizationByPollId(pollId)
         return pollService.updatePoll(pollId, updatedPoll)
     }
 
     @ApiOperation(value = "Get poll items", tags = ["Poll item"])
     @GetMapping("/{id}/poll-items")
     fun getPollItems(@PathVariable(name = "id") pollId: Long): List<PollItemDtoOut> {
+        accountService.checkAuthorizationByPollId(pollId)
         return pollService.getPollItemsForPoll(pollId)
     }
 }

@@ -32,11 +32,10 @@ jobs:
           LIVE_POLL_MAIL_PASSWORD: ${{ secrets.API_LIVE_POLL_MAIL_PASSWORD }}
           LIVE_POLL_JWT_AUTH_COOKIE_NAME: ${{ secrets.API_LIVE_POLL_JWT_AUTH_COOKIE_NAME }}
           LIVE_POLL_JWT_COOKIE_KEY_VALUE: ${{ secrets.API_LIVE_POLL_JWT_COOKIE_KEY_VALUE }}
+          LIVE_POLL_JWT_SECRET: ${{ secrets.API_LIVE_POLL_JWT_SECRET }}
           LIVE_POLL_HTTPS_ENABLED: ${{ secrets.API_LIVE_POLL_HTTPS_ENABLED }}
           LIVE_POLL_HTTPS_CERT_PASSWORD: ${{ secrets.API_LIVE_POLL_HTTPS_CERT_PASSWORD }}
-          LIVE_POLL_H2_URL: ${{ secrets.API_LIVE_POLL_H2_URL }}
-          TEST_USER_NAME: ${{ secrets.API_TEST_USER_NAME }}
-          TEST_USER_PASSWORD: ${{ secrets.API_TEST_USER_PASSWORD }}
+          CUCUMBER_PUBLISH_TOKEN: ${{ secrets.CUCUMBER_PUBLISH_TOKEN }}
       - name: CodeCov report deploy
         run: bash <(curl -s https://codecov.io/bash)
       - name: Prepare environment
