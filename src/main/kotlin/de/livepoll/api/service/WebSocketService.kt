@@ -48,10 +48,10 @@ class WebSocketService(
     fun saveAnswer(pollItemId: Long, payload: String) {
         println("PAYLOAD: $payload")
         val mapper = ObjectMapper()
-        val type: String = mapper.readValue(payload, Map::class.java)["type"].toString()
-        when (getPollItemType(type)) {
+        val type: String = mapper.readValue(payload, Map::class.java).get("type").toString()
+        when (type) {
             // Multiple Choice
-            PollItemType.MULTIPLE_CHOICE -> {
+            PollItemType.MULTIPLE_CHOICE.representation -> {
                 val obj: MultipleChoiceItemParticipantAnswerDtoIn = mapper.readValue(payload, MultipleChoiceItemParticipantAnswerDtoIn::class.java)
                 val multipleChoiceItemAnswer = multipleChoiceItemAnswerRepository.getOne(obj.id)
                 multipleChoiceItemAnswer.answerCount++
@@ -59,28 +59,19 @@ class WebSocketService(
             }
 
             // Open text
-            PollItemType.OPEN_TEXT -> {
+            PollItemType.OPEN_TEXT.representation -> {
                 val obj: OpenTextItemParticipantAnswerDtoIn = mapper.readValue(payload, OpenTextItemParticipantAnswerDtoIn::class.java)
                 val pollItem = openTextItemRepository.getOne(pollItemId)
                 openTextItemAnswerRepository.saveAndFlush(obj.toDbEntity(pollItem))
             }
 
             // Quiz
-            PollItemType.QUIZ -> {
+            PollItemType.QUIZ.representation -> {
                 val obj: QuizItemParticipantAnswerDtoIn = mapper.readValue(payload, QuizItemParticipantAnswerDtoIn::class.java)
                 val quizItemAnswer = quizItemAnswerRepository.getOne(obj.id)
                 quizItemAnswer.answerCount++
                 quizItemAnswerRepository.saveAndFlush(quizItemAnswer)
             }
-        }
-    }
-
-    private fun getPollItemType(type: String): PollItemType {
-        return when (type.toLowerCase()) {
-            "multiple-choice" -> PollItemType.MULTIPLE_CHOICE
-            "open-text" -> PollItemType.OPEN_TEXT
-            "quiz" -> PollItemType.QUIZ
-            else -> throw Exception("Item type not allowed")
         }
     }
 

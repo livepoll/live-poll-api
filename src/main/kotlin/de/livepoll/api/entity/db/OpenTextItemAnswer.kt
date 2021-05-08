@@ -5,7 +5,7 @@ import org.springframework.lang.NonNull
 import javax.persistence.*
 
 @Entity
-@Table(name = "quiz_item_answer")
+@Table(name = "open_text_item_answer")
 class OpenTextItemAnswer(
 
     @Id
