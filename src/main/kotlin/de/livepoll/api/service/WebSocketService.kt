@@ -7,14 +7,13 @@ import de.livepoll.api.entity.dto.MultipleChoiceItemParticipantAnswerDtoIn
 import de.livepoll.api.entity.dto.OpenTextItemParticipantAnswerDtoIn
 import de.livepoll.api.entity.dto.PollItemDtoOut
 import de.livepoll.api.entity.dto.QuizItemParticipantAnswerDtoIn
-import de.livepoll.api.repository.MultipleChoiceItemAnswerRepository
-import de.livepoll.api.repository.OpenTextItemAnswerRepository
-import de.livepoll.api.repository.OpenTextItemRepository
-import de.livepoll.api.repository.QuizItemAnswerRepository
+import de.livepoll.api.repository.*
 import de.livepoll.api.util.toDbEntity
+import org.springframework.http.HttpStatus
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.messaging.simp.user.SimpUserRegistry
 import org.springframework.stereotype.Controller
+import org.springframework.web.server.ResponseStatusException
 
 
 @Controller
@@ -28,11 +27,21 @@ class WebSocketService(
         private val openTextItemRepository: OpenTextItemRepository
 ) {
 
-    fun sendCurrentItem(slug: String, currentItemId: Long) {
-        val item: PollItemDtoOut = pollItemService.getPollItem(currentItemId)
+    fun sendCurrentItem(slug: String, pollId: Long, currentItemId: Long?) {
         val url = "/v1/websocket/poll/$slug"
-        simpUserRegistry.users.forEach {
-            messagingTemplate.convertAndSendToUser(it.name, url, item)
+        if(currentItemId != null){
+            val item: PollItemDtoOut = pollItemService.getPollItem(currentItemId)
+            if(pollId == item.pollId){
+                simpUserRegistry.users.forEach {
+                    messagingTemplate.convertAndSendToUser(it.name, url, item)
+                }
+            }else{
+                throw ResponseStatusException(HttpStatus.CONFLICT, "Item is not part of poll")
+            }
+        }else{
+            simpUserRegistry.users.forEach {
+                messagingTemplate.convertAndSendToUser(it.name, url, "{\"id\":$pollId}")
+            }
         }
     }
 

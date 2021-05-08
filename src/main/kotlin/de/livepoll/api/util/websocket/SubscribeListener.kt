@@ -24,11 +24,11 @@ class SubscribeListener(
         if (poll == null) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND)
         } else {
+            val url = "/v1/websocket/poll/$slug"
             if (poll.currentItem == null) {
-                throw ResponseStatusException(HttpStatus.CONTINUE)
+                messagingTemplate.convertAndSendToUser(event.user!!.name, url, "{\"id\":${poll.id}}")
             } else {
                 val pollItemDto = pollItemService.getPollItem(poll.currentItem!!)
-                val url = "/v1/websocket/poll/$slug"
                 messagingTemplate.convertAndSendToUser(event.user!!.name, url, pollItemDto)
             }
         }

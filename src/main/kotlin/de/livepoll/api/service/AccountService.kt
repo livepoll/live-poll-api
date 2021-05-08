@@ -12,6 +12,7 @@ import de.livepoll.api.util.OnCreateAccountEvent
 import de.livepoll.api.util.jwtCookie.CookieCipher
 import de.livepoll.api.util.jwtCookie.CookieUtil
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.dao.DataAccessException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -20,8 +21,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
-import java.security.Principal
 import java.util.*
+import javax.persistence.EntityNotFoundException
 import javax.servlet.http.HttpServletRequest
 
 @RestController
@@ -114,11 +115,20 @@ class AccountService(
         throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized")
     }
     fun checkAuthorizationByPollId(id: Long): Boolean{
-        if(SecurityContextHolder.getContext().authentication.name == pollRepository.getOne(id).user.username) return true
-        throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized")
+        try{
+            if(SecurityContextHolder.getContext().authentication.name == pollRepository.getOne(id).user.username) return true
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized")
+        }catch(ex: DataAccessException ){
+            throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        }
     }
     fun checkAuthorizationByPollItemId(id: Long): Boolean{
-        if(SecurityContextHolder.getContext().authentication.name == pollItemRepository.getOne(id).poll.user.username) return true
-        throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized")
+        try{
+            if(SecurityContextHolder.getContext().authentication.name == pollItemRepository.getOne(id).poll.user.username) return true
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized")
+        }catch(ex: EntityNotFoundException){
+            throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        }
+
     }
 }
