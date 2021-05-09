@@ -37,3 +37,11 @@ jobs:
         LIVE_POLL_HTTPS_ENABLED: ${{ secrets.API_LIVE_POLL_HTTPS_ENABLED }}
         LIVE_POLL_HTTPS_CERT_PASSWORD: ${{ secrets.API_LIVE_POLL_HTTPS_CERT_PASSWORD }}
         CUCUMBER_PUBLISH_TOKEN: ${{ secrets.CUCUMBER_PUBLISH_TOKEN }}
+    - name: Setup testing environment
+      working-directory: ./.github/scripts
+      run: docker-compose up -d
+    - name: Install Newman
+      run: npm i -g newman
+    - name: Run Newman tests
+      working-directory: ./.github/scripts
+      run: newman run newman-collection.json --insecure

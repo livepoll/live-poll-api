@@ -1,0 +1,1133 @@
+{
+	"info": {
+		"_postman_id": "d53c9876-ac19-4317-a847-4c147e4f8209",
+		"name": "Livepoll - Newman",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Account",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"postman\",\r\n    \"email\": \"noreply@live-poll.de\",\r\n    \"password\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/account/register",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"account",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/account/confirm?token=abc",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"account",
+								"confirm"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "abc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/account/logout",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"account",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const urlPollId =\"localhost:8080/v1/polls/\";\r",
+									"pm.sendRequest(urlPollId, function(error, response){\r",
+									"    let resBody = JSON.parse(new Buffer.from(response.stream).toString())\r",
+									"    pm.globals.set(\"poll-id\", resBody[0].id)\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.unset(\"poll-id\")\r",
+									"pm.globals.unset(\"poll-item-id\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"postman\",\r\n    \"password\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/account/login",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"account",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/user",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Poll",
+			"item": [
+				{
+					"name": "Create poll",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"postman-poll\",\r\n    \"startDate\": \"1610705932\",\r\n    \"endDate\":\"1610705932\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/polls",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get polls",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/polls",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get poll",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/polls/{{poll-id}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls",
+								"{{poll-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get poll items",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/polls/{{poll-id}}/poll-items",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls",
+								"{{poll-id}}",
+								"poll-items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete poll",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/polls/{{poll-id}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls",
+								"{{poll-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update poll",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"update\",\r\n    \"startDate\": \"1610705932\",\r\n    \"endDate\":\"1610705932\",\r\n    \"slug\": \"1234\",\r\n    \"currentItem\": 126\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/polls/{{poll-id}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls",
+								"{{poll-id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Poll items",
+			"item": [
+				{
+					"name": "Get poll item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/poll-items/{{poll-item-id}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"poll-items",
+								"{{poll-item-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create multiple choice item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"question\": \"postman-multiplechoice-question\",\r\n    \"position\": 1,\r\n    \"answers\": [\"postman-multiplechoice-answer-1\", \"postman-multiplechoice-answer-2\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/poll-items/multiple-choice",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"poll-items",
+								"multiple-choice"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create quiz item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 1,\r\n    \"question\": \"postman-quiz-question\",\r\n    \"answers\": [ \"correct option\", \"wrong option\", \"wrong option\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/poll-items/quiz",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"poll-items",
+								"quiz"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create open text item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 1,\r\n    \"question\": \"postman-open-text-question\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/poll-items/open-text",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"poll-items",
+								"open-text"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete poll item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const url = \"localhost:8080/v1/poll-items/\" + pm.environment.get(\"poll-item-id\");\r",
+									"pm.sendRequest(url, function(error, response){\r",
+									"    pm.test(\"Poll item does not exist anymore\", function(){\r",
+									"    pm.expect(response).to.have.property('code', 404)\r",
+									"    pm.expect(response).to.have.property('status', 'Not Found')\r",
+									"    })\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/poll-items/{{poll-item-id}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"poll-items",
+								"{{poll-item-id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Integration Test",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.unset(\"poll-id\")\r",
+									"pm.globals.unset(\"poll-item-id\")\r",
+									"pm.globals.unset(\"poll-items\")\r",
+									"pm.globals.unset(\"poll-items-counter\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"postman\",\r\n    \"password\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/account/login",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"account",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/user",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create poll",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"postman-poll\",\r\n    \"startDate\": \"1610705932\",\r\n    \"endDate\":\"1610705932\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/polls",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get polls",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.globals.set(\"poll-id\", pm.response.json()[0].id)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/polls",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get poll",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/polls/{{poll-id}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls",
+								"{{poll-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create multiple choice item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"question\": \"postman-multiplechoice-question\",\r\n    \"position\": 1,\r\n    \"answers\": [\"postman-multiplechoice-answer-1\", \"postman-multiplechoice-answer-2\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/poll-items/multiple-choice",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"poll-items",
+								"multiple-choice"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Quiz Item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 1,\r\n    \"question\": \"postman-quiz-question\",\r\n    \"answers\": [ \"correct option\", \"wrong option\", \"wrong option\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/poll-items/quiz",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"poll-items",
+								"quiz"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create open text item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 1,\r\n    \"question\": \"postman-open-text-question\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/poll-items/open-text",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"poll-items",
+								"open-text"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get poll items",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.globals.set(\"poll-items\", pm.response.json()) \r",
+									"let pollItems = pm.globals.get(\"poll-items\")\r",
+									"pm.globals.set(\"poll-item-id\", pollItems[0].itemId)\r",
+									"pm.globals.set(\"poll-items-counter\", 1)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/polls/{{poll-id}}/poll-items",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls",
+								"{{poll-id}}",
+								"poll-items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get poll item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"let currentItem = pm.globals.get(\"poll-items-counter\")\r",
+									"let pollItems =  pm.globals.get(\"poll-items\")\r",
+									"if( currentItem < pollItems.length){\r",
+									"    pm.globals.set(\"poll-item-id\", pollItems[currentItem].itemId)\r",
+									"    currentItem++\r",
+									"    pm.globals.set(\"poll-items-counter\", currentItem)\r",
+									"    postman.setNextRequest(\"Get poll item\")\r",
+									"}else{\r",
+									"    postman.setNextRequest(\"Update poll\")\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/poll-items/{{poll-item-id}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"poll-items",
+								"{{poll-item-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update poll",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{$randomProductName}}\",\r\n    \"startDate\": \"1610705932\",\r\n    \"endDate\":\"1610705932\",\r\n    \"slug\": \"12345\",\r\n    \"currentItem\": {{poll-item-id}}\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/polls/{{poll-id}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls",
+								"{{poll-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete poll item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"const url = \"localhost:8080/v1/poll-items/\" + pm.globals.get(\"poll-item-id\");\r",
+									"pm.sendRequest(url, function(error, response){\r",
+									"    pm.test(\"Poll item does not exist anymore\", function(){\r",
+									"    pm.expect(response).to.have.property('code', 404)\r",
+									"    pm.expect(response).to.have.property('status', 'Not Found')\r",
+									"    })\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/poll-items/{{poll-item-id}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"poll-items",
+								"{{poll-item-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete poll",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"const url = \"localhost:8080/v1/polls/\" + pm.globals.get(\"poll-id\");\r",
+									"pm.sendRequest(url, function(error, response){\r",
+									"    pm.test(\"Poll item does not exist anymore\", function(){\r",
+									"    pm.expect(response).to.have.property('code', 404)\r",
+									"    pm.expect(response).to.have.property('status', 'Not Found')\r",
+									"    })\r",
+									"})\r",
+									"\r",
+									"pm.globals.unset(\"poll-id\")\r",
+									"pm.globals.unset(\"poll-item-id\")\r",
+									"pm.globals.unset(\"poll-items\")\r",
+									"pm.globals.unset(\"poll-items-counter\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/polls/{{poll-id}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls",
+								"{{poll-id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base-url",
+			"value": "https://localhost:8080"
+		}
+	]
+}
