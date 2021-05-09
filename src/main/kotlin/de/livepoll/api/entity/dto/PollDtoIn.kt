@@ -7,6 +7,6 @@ data class PollDtoIn(
         val startDate: Date,
         val endDate: Date,
         val slug: String?,
-        val currentItem: Int?
+        val currentItem: Long?
 )
 

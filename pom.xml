@@ -52,6 +52,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
@@ -62,10 +63,15 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<scope>test</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>org.junit.vintage</groupId>
-					<artifactId>junit-vintage-engine</artifactId>
+					<groupId>org.hamcrest</groupId>
+					<artifactId>hamcrest-core</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -183,7 +189,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.6</version>
+				<version>0.8.7</version>
 				<executions>
 					<execution>
 						<goals>

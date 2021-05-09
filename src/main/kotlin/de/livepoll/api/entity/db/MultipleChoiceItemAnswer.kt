@@ -18,12 +18,12 @@ class MultipleChoiceItemAnswer (
     @NonNull
     @ManyToOne
     @JoinColumn(name = "poll_item_id")
-    val multipleChoiceItem: MultipleChoiceItem,
+    var multipleChoiceItem: MultipleChoiceItem,
 
     @Column(name = "selection_option")
     val selectionOption: String,
 
     @Column(name = "answer_count")
-    val answerCount: Int
+    var answerCount: Int
 
 )

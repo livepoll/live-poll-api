@@ -4,6 +4,7 @@ import de.livepoll.api.entity.dto.MultipleChoiceItemDtoIn
 import de.livepoll.api.entity.dto.OpenTextItemDtoIn
 import de.livepoll.api.entity.dto.PollItemDtoOut
 import de.livepoll.api.entity.dto.QuizItemDtoIn
+import de.livepoll.api.service.AccountService
 import de.livepoll.api.service.PollItemService
 import de.livepoll.api.service.PollService
 import io.swagger.annotations.Api
@@ -17,7 +18,8 @@ import java.net.URI
 @RequestMapping("/v1/poll-items")
 class PollItemController(
     private val pollService: PollService,
-    private val pollItemService: PollItemService
+    private val pollItemService: PollItemService,
+    private val accountService: AccountService
 ) {
 
     //--------------------------------------------- Get ----------------------------------------------------------------
@@ -25,6 +27,7 @@ class PollItemController(
     @ApiOperation(value = "Get poll item", tags = ["Poll item"])
     @GetMapping("/{id}")
     fun getPollItem(@PathVariable(name = "id") pollItemId: Long): PollItemDtoOut {
+        accountService.checkAuthorizationByPollItemId(pollItemId)
         return pollItemService.getPollItem(pollItemId)
     }
 
@@ -56,8 +59,9 @@ class PollItemController(
 
     @ApiOperation(value = "Delete poll item", tags = ["Poll item"])
     @DeleteMapping("/{id}")
-    fun deletePollItem(@PathVariable(name = "id") itemId: Long): ResponseEntity<*> {
-        pollItemService.deleteItem(itemId)
+    fun deletePollItem(@PathVariable(name = "id") pollItemId: Long): ResponseEntity<*> {
+        accountService.checkAuthorizationByPollItemId(pollItemId)
+        pollItemService.deleteItem(pollItemId)
         return ResponseEntity.ok("Deleted poll item")
     }
 

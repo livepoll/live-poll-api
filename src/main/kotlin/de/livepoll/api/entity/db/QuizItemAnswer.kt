@@ -27,6 +27,6 @@ class QuizItemAnswer(
     val isCorrect: Boolean,
 
     @Column(name = "answer_count")
-    val answerCount: Int
+    var answerCount: Int
 
 )

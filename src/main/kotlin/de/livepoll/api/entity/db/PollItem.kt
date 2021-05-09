@@ -33,6 +33,8 @@ open class PollItem(
     open val type: PollItemType
 )
 
-enum class PollItemType {
-    MULTIPLE_CHOICE, OPEN_TEXT, QUIZ
+enum class PollItemType(val representation: String) {
+    MULTIPLE_CHOICE("multiple-choice"),
+    OPEN_TEXT("open-text"),
+    QUIZ("quiz")
 }

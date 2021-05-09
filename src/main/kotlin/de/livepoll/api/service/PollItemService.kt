@@ -4,20 +4,34 @@ import de.livepoll.api.entity.db.*
 import de.livepoll.api.entity.dto.*
 import de.livepoll.api.repository.*
 import de.livepoll.api.util.toDtoOut
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 
 @Service
-class PollItemService(
-    private val pollRepository: PollRepository,
-    private val pollItemRepository: PollItemRepository<PollItem>,
-    private val multipleChoiceItemRepository: MultipleChoiceItemRepository,
-    private val multipleChoiceItemAnswerRepository: MultipleChoiceItemAnswerRepository,
-    private val openTextItemRepository: OpenTextItemRepository,
-    private val quizItemRepository: QuizItemRepository,
-    private val quizItemAnswerRepository: QuizItemAnswerRepository
-) {
+class PollItemService {
+    @Autowired
+    private lateinit var pollRepository: PollRepository
+
+    @Autowired
+    private lateinit var pollItemRepository: PollItemRepository<PollItem>
+
+    @Autowired
+    private lateinit var multipleChoiceItemRepository: MultipleChoiceItemRepository
+
+    @Autowired
+    private lateinit var multipleChoiceItemAnswerRepository: MultipleChoiceItemAnswerRepository
+
+    @Autowired
+    private lateinit var openTextItemRepository: OpenTextItemRepository
+
+    @Autowired
+    private lateinit var quizItemRepository: QuizItemRepository
+
+    @Autowired
+    private lateinit var quizItemAnswerRepository: QuizItemAnswerRepository
+
 
     //--------------------------------------------- Get ----------------------------------------------------------------
 
@@ -25,34 +39,21 @@ class PollItemService(
         pollItemRepository.findById(pollItemId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
             .run {
-                when (this.type) {
-
+                return when (type) {
                     // Multiple Choice
-                    PollItemType.MULTIPLE_CHOICE -> {
-                        return multipleChoiceItemRepository.findById(pollItemId)
-                            .orElseThrow {
-                                ResponseStatusException(
-                                    HttpStatus.NOT_FOUND,
-                                    "Multiple choice item not found"
-                                )
-                            }
-                            .run { this.toDtoOut() }
-                    }
+                    PollItemType.MULTIPLE_CHOICE -> multipleChoiceItemRepository.findById(pollItemId)
+                        .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Multiple choice item not found") }
+                        .toDtoOut()
 
-                    // Open text
-                    PollItemType.OPEN_TEXT -> {
-                        return openTextItemRepository.findById(pollItemId)
-                            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, ("Open text item not found")) }
-                            .run { this.toDtoOut() }
-                    }
+                    // Open Text
+                    PollItemType.OPEN_TEXT -> openTextItemRepository.findById(pollItemId)
+                        .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, ("Open text item not found")) }
+                        .toDtoOut()
 
                     // Quiz
-                    PollItemType.QUIZ -> {
-                        return quizItemRepository.findById(pollItemId)
-                            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz item not found") }
-                            .run { this.toDtoOut() }
-                    }
-
+                    PollItemType.QUIZ -> quizItemRepository.findById(pollItemId)
+                        .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz item not found") }
+                        .toDtoOut()
                 }
             }
     }
@@ -108,8 +109,10 @@ class PollItemService(
                     mutableListOf()
                 )
                 // Quiz item answers
-                quizItem.answers =
-                    item.answers.map { QuizItemAnswer(0, quizItem, it.answer, it.isCorrect, 0) }.toMutableList()
+                quizItem.answers = item.answers.mapIndexed { index, element ->
+                    QuizItemAnswer(0, quizItem, element, index == 0,  0)
+                }.toMutableList()
+
                 quizItemRepository.saveAndFlush(quizItem)
                 quizItem.answers.forEach { quizItemAnswerRepository.saveAndFlush(it) }
                 return quizItem.toDtoOut()
