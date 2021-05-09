@@ -13,8 +13,8 @@ import javax.mail.internet.MimeMessage
 
 @Component
 class AccountListener: ApplicationListener<OnCreateAccountEvent> {
-
-    private var serverUrl = System.getenv("LIVE_POLL_SERVER_URL")
+    
+    private val frontendUrl = System.getenv("LIVE_POLL_FRONTEND_URL")
 
     @Autowired
     private lateinit var accountService: AccountService
@@ -33,10 +33,7 @@ class AccountListener: ApplicationListener<OnCreateAccountEvent> {
 
         val recipientAddress = user.email
         val subject = "Your Live-Poll registration"
-        if(serverUrl.contains("api.")){
-            serverUrl = serverUrl.replace("api.","")
-        }
-        val confirmationUrl = "$serverUrl/activate/$token"
+        val confirmationUrl = "$frontendUrl/activate/$token"
 
         val mimeMessage: MimeMessage = javaMailSender.createMimeMessage()
         val helper = MimeMessageHelper(mimeMessage, true)
