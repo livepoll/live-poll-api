@@ -23,6 +23,7 @@ fun UserDtoIn.toDbEntity(): User {
 // ------------------------------------------------- Poll item mappers -------------------------------------------------
 
 fun MultipleChoiceItem.toDtoOut(): MultipleChoiceItemDtoOut {
+    println("im mapper "+this.answers[0].selectionOption)
     return MultipleChoiceItemDtoOut(this.id, this.poll.id, this.question, this.position,
         "multiple-choice", this.answers.map { it.toDtoOut() }
     )
