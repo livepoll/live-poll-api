@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "908feda7-9de6-4b7d-8d7c-5771cad4ad78",
+		"_postman_id": "5074c58b-22d0-43e5-81b9-515728e8714a",
 		"name": "Livepoll",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -438,6 +438,48 @@
 					"response": []
 				},
 				{
+					"name": "Update multiple choice item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"question\": \"postman-multiplechoice-question-update\",\r\n    \"position\": 1,\r\n    \"answers\": [\"postman-multiplechoice-answer-1-update\", \"postman-multiplechoice-answer-2-update\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/poll-items/multiple-choice/{{poll-item-id}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"poll-items",
+								"multiple-choice",
+								"{{poll-item-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Create quiz item",
 					"event": [
 						{
@@ -479,7 +521,49 @@
 					"response": []
 				},
 				{
-					"name": "Create open text item",
+					"name": "Update quiz item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 1,\r\n    \"question\": \"postman-quiz-question-update\",\r\n    \"answers\": [ \"correct option update\", \"wrong option update\", \"wrong option update\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/poll-items/quiz/{{poll-item-id}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"poll-items",
+								"quiz",
+								"{{poll-item-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update open text item",
 					"event": [
 						{
 							"listen": "test",
@@ -514,6 +598,48 @@
 								"v1",
 								"poll-items",
 								"open-text"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create open text item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 1,\r\n    \"question\": \"postman-open-text-question update\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/poll-items/open-text/{{poll-item-id}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"poll-items",
+								"open-text",
+								"{{poll-item-id}}"
 							]
 						}
 					},
