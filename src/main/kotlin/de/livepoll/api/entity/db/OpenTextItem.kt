@@ -1,5 +1,6 @@
 package de.livepoll.api.entity.db
 
+import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.OneToMany
 import javax.persistence.Table
@@ -15,7 +16,7 @@ class OpenTextItem(
 
     position: Int,
 
-    @OneToMany(mappedBy = "openTextItem")
-    val answers: MutableList<OpenTextItemAnswer>
+    @OneToMany(mappedBy = "openTextItem", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var answers: MutableList<OpenTextItemAnswer>
 
 ) : PollItem(id, poll, question, position, PollItemType.OPEN_TEXT)

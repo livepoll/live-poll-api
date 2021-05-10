@@ -1,5 +1,6 @@
 package de.livepoll.api.entity.db
 
+import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.OneToMany
 import javax.persistence.Table
@@ -15,7 +16,7 @@ class QuizItem(
 
     question: String,
 
-    @OneToMany(mappedBy = "quizItem")
+    @OneToMany(mappedBy = "quizItem", cascade = [CascadeType.ALL], orphanRemoval = true)
     var answers: MutableList<QuizItemAnswer>
 
 ) : PollItem(id, poll, question, position, PollItemType.QUIZ)

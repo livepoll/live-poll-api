@@ -22,11 +22,11 @@ open class PollItem(
 
     @NonNull
     @Column
-    open val question: String,
+    open var question: String,
 
     @NonNull
     @Column
-    open val position: Int,
+    open var position: Int,
 
     @NonNull
     @Column

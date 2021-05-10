@@ -24,7 +24,7 @@ class QuizItemAnswer(
     val selectionOption: String,
 
     @Column(name = "is_correct")
-    val isCorrect: Boolean,
+    var isCorrect: Boolean,
 
     @Column(name = "answer_count")
     var answerCount: Int

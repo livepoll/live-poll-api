@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
+import javax.sql.rowset.Predicate
+import javax.swing.text.MutableAttributeSet
 
 @Service
 class PollItemService {
@@ -110,7 +112,7 @@ class PollItemService {
                 )
                 // Quiz item answers
                 quizItem.answers = item.answers.mapIndexed { index, element ->
-                    QuizItemAnswer(0, quizItem, element, index == 0,  0)
+                    QuizItemAnswer(0, quizItem, element, index == 0, 0)
                 }.toMutableList()
 
                 quizItemRepository.saveAndFlush(quizItem)
@@ -135,6 +137,95 @@ class PollItemService {
                     emptyList<OpenTextItemAnswer>().toMutableList()
                 )
                 return openTextItemRepository.saveAndFlush(openTextItem).toDtoOut()
+            }
+    }
+
+
+    //-------------------------------------------- Update --------------------------------------------------------------
+
+    fun updateMultipleChoiceItem(pollItemId: Long, pollItem: MultipleChoiceItemDtoIn): MultipleChoiceItemDtoOut {
+        multipleChoiceItemRepository.findById(pollItemId)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
+            .run {
+                val newAnswers = pollItem.answers.toMutableList()
+                val removeAnswer = mutableListOf<MultipleChoiceItemAnswer>()
+                this.answers.forEach {
+                    if (it.answerCount != 0) {
+                        if(pollItem.answers.contains(it.selectionOption)){
+                            newAnswers.remove(it.selectionOption)
+                        }else{
+                            this.answers.remove(it)
+                        }
+                    }else{
+                        if(!pollItem.answers.contains(it.selectionOption)){
+                            removeAnswer.add(it)
+                        }
+                    }
+                }
+                removeAnswer.forEach {
+                    this.answers.remove(it)
+                }
+                newAnswers.forEach {
+                    this.answers.add(MultipleChoiceItemAnswer(0, this, it, 0))
+                }
+
+                this.question = pollItem.question
+                this.allowMultipleAnswers = pollItem.allowMultipleAnswers
+                this.allowBlankField = pollItem.allowBlankField
+                this.position = pollItem.position
+
+                return pollItemRepository.saveAndFlush(this).toDtoOut()
+            }
+    }
+
+    fun updateQuizItem(pollItemId: Long, pollItem: QuizItemDtoIn): QuizItemDtoOut {
+        quizItemRepository.findById(pollItemId)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
+            .run {
+                val newAnswers = pollItem.answers.toMutableList()
+                val removeAnswer = mutableListOf<QuizItemAnswer>()
+                this.answers.forEach {
+                    if (it.answerCount != 0) {
+                        if(pollItem.answers.contains(it.selectionOption)){
+                            newAnswers.remove(it.selectionOption)
+                            it.isCorrect = false
+                        }else{
+                            this.answers.remove(it)
+                        }
+                    }else{
+                        if(!pollItem.answers.contains(it.selectionOption)){
+                            removeAnswer.add(it)
+                        }
+                    }
+                }
+                removeAnswer.forEach {
+                    this.answers.remove(it)
+                }
+                newAnswers.forEach {
+                    this.answers.add(QuizItemAnswer(0, this, it, false, 0))
+                }
+                val newCorrectOne = this.answers.find{it.selectionOption == pollItem.answers[0]}!!
+                if(newCorrectOne.answerCount == 0){
+                    this.answers.find{it.selectionOption == pollItem.answers[0]}!!.isCorrect = true
+                }
+
+                this.question = pollItem.question
+                this.position = pollItem.position
+
+                return quizItemRepository.saveAndFlush(this).toDtoOut()
+            }
+    }
+
+    fun updateOpenTextItem(pollItemId: Long, pollItem: OpenTextItemDtoIn): OpenTextItemDtoOut {
+        openTextItemRepository.findById(pollItemId)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
+            .run {
+                if (!this.answers.isEmpty()) {
+                    throw ResponseStatusException(HttpStatus.CONFLICT, "This item can not be updated anymore")
+                }
+                this.question = pollItem.question
+                this.position = pollItem.position
+                return openTextItemRepository.saveAndFlush(this).toDtoOut()
             }
     }
 

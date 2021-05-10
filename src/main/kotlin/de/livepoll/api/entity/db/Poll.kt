@@ -30,6 +30,6 @@ data class Poll(
         var currentItem : Long?,
 
         @JsonIgnore
-        @OneToMany(mappedBy = "poll", cascade = [CascadeType.ALL])
+        @OneToMany(mappedBy = "poll", cascade = [CascadeType.ALL], orphanRemoval = true)
         var pollItems: MutableList<PollItem>
 )

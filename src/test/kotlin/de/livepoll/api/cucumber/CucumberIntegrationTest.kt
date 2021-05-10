@@ -25,7 +25,7 @@ import javax.net.ssl.SSLContext
 // https://github.com/Mhverma/spring-cucumber-example/blob/master/src/test/java/com/manoj/training/app/SpringCucumberIntegrationTests.java
 @CucumberContextConfiguration
 @SpringBootTest(classes = [LivePollApplication::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource("classpath:application-test.properties")
+@TestPropertySource("classpath:application-test.yml")
 class CucumberIntegrationTest(
         private val userRepository: UserRepository
 ) {

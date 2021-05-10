@@ -1,9 +1,6 @@
 package de.livepoll.api.entity.db
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.OneToMany
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "multiple_choice_item")
@@ -17,12 +14,12 @@ class MultipleChoiceItem(
     question: String,
 
     @Column(name = "allow_multiple_answers")
-    val allowMultipleAnswers: Boolean,
+    var allowMultipleAnswers: Boolean,
 
     @Column(name = "allow_blank_field")
-    val allowBlankField: Boolean,
+    var allowBlankField: Boolean,
 
-    @OneToMany(mappedBy = "multipleChoiceItem")
+    @OneToMany(mappedBy = "multipleChoiceItem", cascade = [CascadeType.ALL], orphanRemoval = true)
     var answers: MutableList<MultipleChoiceItemAnswer>
 
 ) : PollItem(id, poll, question, position, PollItemType.MULTIPLE_CHOICE)
