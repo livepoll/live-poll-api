@@ -55,6 +55,29 @@ class PollItemController(
     }
 
 
+    //-------------------------------------------- Update --------------------------------------------------------------
+    @ApiOperation(value = "Update multiple choice item", tags = ["Poll item"])
+    @PutMapping("/multiple-choice/{pollItemId}")
+    fun updateMultipleChoiceItem(@RequestBody updatedItem: MultipleChoiceItemDtoIn, @PathVariable(name="pollItemId") pollItemId: Long): ResponseEntity<*> {
+        accountService.checkAuthorizationByPollItemId(pollItemId)
+        return ResponseEntity.ok(pollItemService.updateMultipleChoiceItem(pollItemId, updatedItem))
+    }
+
+    @ApiOperation(value = "Update quiz item", tags = ["Poll item"])
+    @PutMapping("/quiz/{pollItemId}")
+    fun updateQuizItem(@RequestBody updatedItem: QuizItemDtoIn, @PathVariable(name="pollItemId") pollItemId: Long): ResponseEntity<*> {
+        accountService.checkAuthorizationByPollItemId(pollItemId)
+        return ResponseEntity.ok(pollItemService.updateQuizItem(pollItemId, updatedItem))
+    }
+
+    @ApiOperation(value = "Update open text item", tags = ["Poll item"])
+    @PutMapping("/open-text/{pollItemId}")
+    fun updateOpenTextItem(@RequestBody updatedItem: OpenTextItemDtoIn, @PathVariable(name="pollItemId") pollItemId: Long): ResponseEntity<*> {
+        accountService.checkAuthorizationByPollItemId(pollItemId)
+        return ResponseEntity.ok(pollItemService.updateOpenTextItem(pollItemId, updatedItem))
+    }
+
+
     //-------------------------------------------- Delete --------------------------------------------------------------
 
     @ApiOperation(value = "Delete poll item", tags = ["Poll item"])

@@ -38,6 +38,7 @@ class PollService(
                 }
     }
 
+
     //-------------------------------------------- Create --------------------------------------------------------------
 
     fun createPoll(pollDto: PollDtoIn, userId: Long): PollDtoOut {
@@ -79,6 +80,7 @@ class PollService(
         }
     }
 
+
     //-------------------------------------------- Update --------------------------------------------------------------
 
     fun updatePoll(pollId: Long, poll: PollDtoIn): PollDtoOut {
@@ -91,12 +93,8 @@ class PollService(
             if (poll.slug != null && isSlugUnique(poll.slug)) {
                 this.slug = poll.slug
             }
-            if (poll.currentItem != null) {
-                this.currentItem = poll.currentItem
-                webSocketService.sendCurrentItem(this.slug, this.currentItem!!)
-            } else {
-                this.currentItem = null
-            }
+            this.currentItem = poll.currentItem
+            webSocketService.sendCurrentItem(this.slug, this.id, this.currentItem)
             return pollRepository.saveAndFlush(this).toDtoOut()
         }
     }
