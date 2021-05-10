@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
+import javax.sql.rowset.Predicate
+import javax.swing.text.MutableAttributeSet
 
 @Service
 class PollItemService {
@@ -145,16 +147,26 @@ class PollItemService {
         multipleChoiceItemRepository.findById(pollItemId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
             .run {
+                val newAnswers = pollItem.answers.toMutableList()
+                val removeAnswer = mutableListOf<MultipleChoiceItemAnswer>()
                 this.answers.forEach {
                     if (it.answerCount != 0) {
-                        throw ResponseStatusException(HttpStatus.CONFLICT, "This item can not be updated anymore")
+                        if(pollItem.answers.contains(it.selectionOption)){
+                            newAnswers.remove(it.selectionOption)
+                        }else{
+                            this.answers.remove(it)
+                        }
+                    }else{
+                        if(!pollItem.answers.contains(it.selectionOption)){
+                            removeAnswer.add(it)
+                        }
                     }
                 }
-
-                this.answers.clear()
-                val newAnswers = pollItem.answers.map { MultipleChoiceItemAnswer(0, this, it, 0) }.toMutableList()
+                removeAnswer.forEach {
+                    this.answers.remove(it)
+                }
                 newAnswers.forEach {
-                    this.answers.add(it)
+                    this.answers.add(MultipleChoiceItemAnswer(0, this, it, 0))
                 }
 
                 this.question = pollItem.question
@@ -170,18 +182,31 @@ class PollItemService {
         quizItemRepository.findById(pollItemId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
             .run {
+                val newAnswers = pollItem.answers.toMutableList()
+                val removeAnswer = mutableListOf<QuizItemAnswer>()
                 this.answers.forEach {
                     if (it.answerCount != 0) {
-                        throw ResponseStatusException(HttpStatus.CONFLICT, "This item can not be updated anymore")
+                        if(pollItem.answers.contains(it.selectionOption)){
+                            newAnswers.remove(it.selectionOption)
+                            it.isCorrect = false
+                        }else{
+                            this.answers.remove(it)
+                        }
+                    }else{
+                        if(!pollItem.answers.contains(it.selectionOption)){
+                            removeAnswer.add(it)
+                        }
                     }
                 }
-
-                this.answers.clear()
-                val newAnswers = pollItem.answers.mapIndexed { index, element ->
-                    QuizItemAnswer(0, this, element, index == 0, 0)
-                }.toMutableList()
+                removeAnswer.forEach {
+                    this.answers.remove(it)
+                }
                 newAnswers.forEach {
-                    this.answers.add(it)
+                    this.answers.add(QuizItemAnswer(0, this, it, false, 0))
+                }
+                val newCorrectOne = this.answers.find{it.selectionOption == pollItem.answers[0]}!!
+                if(newCorrectOne.answerCount == 0){
+                    this.answers.find{it.selectionOption == pollItem.answers[0]}!!.isCorrect = true
                 }
 
                 this.question = pollItem.question

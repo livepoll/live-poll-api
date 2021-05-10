@@ -122,7 +122,7 @@ class AccountService(
                 return true
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized")
         } catch (ex: DataAccessException) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND)
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized")
         }
     }
 
@@ -132,7 +132,7 @@ class AccountService(
                 return true
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized")
         } catch (ex: EntityNotFoundException) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND)
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized")
         }
 
     }
