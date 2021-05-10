@@ -110,7 +110,7 @@ class PollItemService {
                 )
                 // Quiz item answers
                 quizItem.answers = item.answers.mapIndexed { index, element ->
-                    QuizItemAnswer(0, quizItem, element, index == 0,  0)
+                    QuizItemAnswer(0, quizItem, element, index == 0, 0)
                 }.toMutableList()
 
                 quizItemRepository.saveAndFlush(quizItem)
@@ -138,71 +138,70 @@ class PollItemService {
             }
     }
 
+
     //-------------------------------------------- Update --------------------------------------------------------------
 
-    fun updateMultipleChoiceItem(pollItemId: Long, pollItem: MultipleChoiceItemDtoIn): MultipleChoiceItemDtoOut{
-        multipleChoiceItemRepository.findById(pollItemId).orElseGet {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found")
-        }.run {
-            this.answers.forEach {
-                if(it.answerCount != 0){
-                    throw ResponseStatusException(HttpStatus.CONFLICT, "This item can not be updated anymore")
+    fun updateMultipleChoiceItem(pollItemId: Long, pollItem: MultipleChoiceItemDtoIn): MultipleChoiceItemDtoOut {
+        multipleChoiceItemRepository.findById(pollItemId)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
+            .run {
+                this.answers.forEach {
+                    if (it.answerCount != 0) {
+                        throw ResponseStatusException(HttpStatus.CONFLICT, "This item can not be updated anymore")
+                    }
                 }
+
+                this.answers.clear()
+                val newAnswers = pollItem.answers.map { MultipleChoiceItemAnswer(0, this, it, 0) }.toMutableList()
+                newAnswers.forEach {
+                    this.answers.add(it)
+                }
+
+                this.question = pollItem.question
+                this.allowMultipleAnswers = pollItem.allowMultipleAnswers
+                this.allowBlankField = pollItem.allowBlankField
+                this.position = pollItem.position
+
+                return pollItemRepository.saveAndFlush(this).toDtoOut()
             }
-
-            this.answers.clear()
-            val newAnswers = pollItem.answers.map { MultipleChoiceItemAnswer(0, this, it, 0) }.toMutableList()
-            newAnswers.forEach {
-                this.answers.add(it)
-            }
-
-            this.question = pollItem.question
-            this.allowMultipleAnswers = pollItem.allowMultipleAnswers
-            this.allowBlankField = pollItem.allowBlankField
-            this.position = pollItem.position
-            this.answers.forEach { println(it.selectionOption) }
-
-            return pollItemRepository.saveAndFlush(this).toDtoOut()
-        }
     }
 
-    fun updateQuizItem(pollItemId: Long, pollItem: QuizItemDtoIn): QuizItemDtoOut{
-        quizItemRepository.findById(pollItemId).orElseGet {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found")
-        }.run {
-            val existingSelectionOptions = mutableListOf<String>()
-            this.answers.forEach {
-                if(it.answerCount != 0){
-                    throw ResponseStatusException(HttpStatus.CONFLICT, "This item can not be updated anymore")
+    fun updateQuizItem(pollItemId: Long, pollItem: QuizItemDtoIn): QuizItemDtoOut {
+        quizItemRepository.findById(pollItemId)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
+            .run {
+                this.answers.forEach {
+                    if (it.answerCount != 0) {
+                        throw ResponseStatusException(HttpStatus.CONFLICT, "This item can not be updated anymore")
+                    }
                 }
+
+                this.answers.clear()
+                val newAnswers = pollItem.answers.mapIndexed { index, element ->
+                    QuizItemAnswer(0, this, element, index == 0, 0)
+                }.toMutableList()
+                newAnswers.forEach {
+                    this.answers.add(it)
+                }
+
+                this.question = pollItem.question
+                this.position = pollItem.position
+
+                return quizItemRepository.saveAndFlush(this).toDtoOut()
             }
-
-            this.answers.clear()
-            val newAnswers = pollItem.answers.mapIndexed { index, element ->
-                QuizItemAnswer(0, this, element, index == 0,  0)
-            }.toMutableList()
-            newAnswers.forEach {
-                this.answers.add(it)
-            }
-
-            this.question = pollItem.question
-            this.position = pollItem.position
-
-            return quizItemRepository.saveAndFlush(this).toDtoOut()
-        }
     }
 
-    fun updateOpenTextItem(pollItemId: Long, pollItem: OpenTextItemDtoIn): OpenTextItemDtoOut{
-        openTextItemRepository.findById(pollItemId).orElseGet {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found")
-        }.run {
-            if(!this.answers.isEmpty()){
-                throw ResponseStatusException(HttpStatus.CONFLICT, "This item can not be updated anymore")
+    fun updateOpenTextItem(pollItemId: Long, pollItem: OpenTextItemDtoIn): OpenTextItemDtoOut {
+        openTextItemRepository.findById(pollItemId)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
+            .run {
+                if (!this.answers.isEmpty()) {
+                    throw ResponseStatusException(HttpStatus.CONFLICT, "This item can not be updated anymore")
+                }
+                this.question = pollItem.question
+                this.position = pollItem.position
+                return openTextItemRepository.saveAndFlush(this).toDtoOut()
             }
-            this.question = pollItem.question
-            this.position = pollItem.position
-            return openTextItemRepository.saveAndFlush(this).toDtoOut()
-        }
     }
 
 }

@@ -12,9 +12,9 @@ import org.springframework.web.socket.messaging.SessionSubscribeEvent
 
 @Component
 class SubscribeListener(
-        private val messagingTemplate: SimpMessageSendingOperations,
-        private val pollRepository: PollRepository,
-        private val pollItemService: PollItemService
+    private val messagingTemplate: SimpMessageSendingOperations,
+    private val pollRepository: PollRepository,
+    private val pollItemService: PollItemService
 ) : ApplicationListener<SessionSubscribeEvent> {
 
     @Transactional
@@ -33,4 +33,5 @@ class SubscribeListener(
             }
         }
     }
+
 }

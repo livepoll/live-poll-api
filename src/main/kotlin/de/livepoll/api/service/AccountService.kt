@@ -110,23 +110,28 @@ class AccountService(
         return ResponseEntity.ok().headers(responseHeaders).body(response)
     }
 
-    fun checkAuthorizationByUsername(username: String): Boolean{
-        if(SecurityContextHolder.getContext().authentication.name == username) return true
+    fun checkAuthorizationByUsername(username: String): Boolean {
+        if (SecurityContextHolder.getContext().authentication.name == username)
+            return true
         throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized")
     }
-    fun checkAuthorizationByPollId(id: Long): Boolean{
-        try{
-            if(SecurityContextHolder.getContext().authentication.name == pollRepository.getOne(id).user.username) return true
+
+    fun checkAuthorizationByPollId(id: Long): Boolean {
+        try {
+            if (SecurityContextHolder.getContext().authentication.name == pollRepository.getOne(id).user.username)
+                return true
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized")
-        }catch(ex: DataAccessException ){
+        } catch (ex: DataAccessException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND)
         }
     }
-    fun checkAuthorizationByPollItemId(id: Long): Boolean{
-        try{
-            if(SecurityContextHolder.getContext().authentication.name == pollItemRepository.getOne(id).poll.user.username) return true
+
+    fun checkAuthorizationByPollItemId(id: Long): Boolean {
+        try {
+            if (SecurityContextHolder.getContext().authentication.name == pollItemRepository.getOne(id).poll.user.username)
+                return true
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized")
-        }catch(ex: EntityNotFoundException){
+        } catch (ex: EntityNotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND)
         }
 

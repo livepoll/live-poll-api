@@ -8,27 +8,27 @@ import javax.persistence.*
 @Table(name = "poll_item")
 @Inheritance(strategy = InheritanceType.JOINED)
 open class PollItem(
-        @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NonNull
     @Column(name = "poll_item_id")
     open val id: Long,
 
-        @JsonIgnore
+    @JsonIgnore
     @NonNull
     @ManyToOne
     @JoinColumn(name = "poll_id")
     open val poll: Poll,
 
-        @NonNull
+    @NonNull
     @Column
     open var question: String,
 
-        @NonNull
+    @NonNull
     @Column
     open var position: Int,
 
-        @NonNull
+    @NonNull
     @Column
     open val type: PollItemType
 )

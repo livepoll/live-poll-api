@@ -12,8 +12,8 @@ import javax.mail.internet.MimeMessage
 
 
 @Component
-class AccountListener: ApplicationListener<OnCreateAccountEvent> {
-    
+class AccountListener : ApplicationListener<OnCreateAccountEvent> {
+
     private val frontendUrl = System.getenv("LIVE_POLL_FRONTEND_URL")
 
     @Autowired
@@ -26,7 +26,7 @@ class AccountListener: ApplicationListener<OnCreateAccountEvent> {
         this.confirmCreateAccount(event)
     }
 
-    private fun confirmCreateAccount(event: OnCreateAccountEvent){
+    private fun confirmCreateAccount(event: OnCreateAccountEvent) {
         val user = event.user
         val token = UUID.randomUUID().toString()
         accountService.createVerificationToken(user, token)
@@ -41,24 +41,27 @@ class AccountListener: ApplicationListener<OnCreateAccountEvent> {
         helper.setTo(recipientAddress)
         helper.setSubject(subject)
         helper.setText(
-                "<html>"
-                        + "<body>"
-                        + "<img src='cid:logo' style='float:top;width:150px;height:150px;'/>"
-                        + "<div style='margin:1rem'/>"
-                        + "<div>Dear ${user.username},"
-                        + "<div>thank you for using Live-Poll."
-                        + "<div style='margin:1rem'/>"
-                        + "<div>Live-Poll is an open-source live-polling application that you can use totally free, no matter if you are a private person, school, university, society, small or big business etc. Our idea arose from the lack of free live voting/polling software on the Internet that has a nice user flow and is easy to use.</div>"
-                        + "<div style='margin:1rem'/>"
-                        + "<div>Please confirm your registration by clicking <a href='$confirmationUrl'>here</a>.</div>"
-                        + "<div style='margin:1rem'/>"
-                        + "<div>Best regards,</div>"
-                        + "<div>Live-Poll</div>"
-                        + "</div>"
-                        + "</div></body>"
-                        + "</html>", true)
-        helper.addInline("logo",
-                ResourceUtils.getFile("classpath:logo.png"))
+            "<html>"
+                    + "<body>"
+                    + "<img src='cid:logo' style='float:top;width:150px;height:150px;'/>"
+                    + "<div style='margin:1rem'/>"
+                    + "<div>Dear ${user.username},"
+                    + "<div>thank you for using Live-Poll."
+                    + "<div style='margin:1rem'/>"
+                    + "<div>Live-Poll is an open-source live-polling application that you can use totally free, no matter if you are a private person, school, university, society, small or big business etc. Our idea arose from the lack of free live voting/polling software on the Internet that has a nice user flow and is easy to use.</div>"
+                    + "<div style='margin:1rem'/>"
+                    + "<div>Please confirm your registration by clicking <a href='$confirmationUrl'>here</a>.</div>"
+                    + "<div style='margin:1rem'/>"
+                    + "<div>Best regards,</div>"
+                    + "<div>Live-Poll</div>"
+                    + "</div>"
+                    + "</div></body>"
+                    + "</html>", true
+        )
+        helper.addInline(
+            "logo",
+            ResourceUtils.getFile("classpath:logo.png")
+        )
 
         javaMailSender.send(mimeMessage)
     }

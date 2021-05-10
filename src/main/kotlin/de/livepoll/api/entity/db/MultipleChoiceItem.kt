@@ -1,10 +1,6 @@
 package de.livepoll.api.entity.db
 
-import javax.persistence.CascadeType
-import javax.persistence.Entity
-import javax.persistence.OneToMany
-import javax.persistence.Table
-import javax.persistence.Column
+import javax.persistence.*
 
 @Entity
 @Table(name = "multiple_choice_item")
