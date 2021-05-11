@@ -12,8 +12,7 @@ class WebSocketController(
 ) {
     @MessageMapping("/{pollItemId}")
     fun processAnswer(@DestinationVariable pollItemId: Long, @Payload answer: String) {
-        println(answer)
-        println(pollItemId)
         webSocketService.saveAnswer(pollItemId, answer)
+        webSocketService.sendItemWithAnswers(pollItemId)
     }
 }

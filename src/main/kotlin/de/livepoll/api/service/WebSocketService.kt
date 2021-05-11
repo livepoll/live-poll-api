@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.messaging.simp.user.SimpUserRegistry
 import org.springframework.stereotype.Controller
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
 
 
@@ -29,9 +30,10 @@ class WebSocketService(
     private val quizItemAnswerRepository: QuizItemAnswerRepository,
     private val openTextItemRepository: OpenTextItemRepository
 ) {
+    private val websocketPrefix = "/v1/websocket"
 
     fun sendCurrentItem(slug: String, pollId: Long, currentItemId: Long?) {
-        val url = "/v1/websocket/poll/$slug"
+        val url = "${websocketPrefix}/poll/$slug"
         if (currentItemId != null) {
             val item: PollItemDtoOut = pollItemService.getPollItem(currentItemId)
             if (pollId == item.pollId) {
@@ -49,7 +51,6 @@ class WebSocketService(
     }
 
     fun saveAnswer(pollItemId: Long, payload: String) {
-        println("PAYLOAD: $payload")
         val mapper = ObjectMapper()
         val type: String = mapper.readValue(payload, Map::class.java)["type"].toString()
         when (type) {
@@ -78,6 +79,15 @@ class WebSocketService(
                 quizItemAnswer.answerCount++
                 quizItemAnswerRepository.saveAndFlush(quizItemAnswer)
             }
+        }
+    }
+
+    @Transactional
+    fun sendItemWithAnswers(itemId: Long){
+        val item: PollItemDtoOut = pollItemService.getPollItem(itemId)
+        val url = "$websocketPrefix/presentation/${item.pollId}"
+        simpUserRegistry.users.forEach {
+            messagingTemplate.convertAndSendToUser(it.name, url, item)
         }
     }
 
