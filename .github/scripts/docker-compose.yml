@@ -1,10 +1,41 @@
 version: "3.9"
 services:
-    db:
-        image: mysql:8.0
-        env:
-            MYSQL_ALLOW_EMPTY_PASSWORD: yes
-            MYSQL_DATABASE: livepoll
-        ports:
-            - 3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+  db:
+    image: mysql:8.0
+    networks:
+      - app-db
+    environment:
+      MYSQL_ROOT_PASSWORD: qCNyq2SazD9vHqre5PPR7dCLs84Jhk
+      MYSQL_DATABASE: livepoll
+      MYSQL_USER: livepoll
+      MYSQL_PASSWORD: M3uBcPLbM7RmgX4C3wAUej6WPzq886
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+  api:
+    build: ../..
+    networks:
+      - app-db
+    environment:
+      LIVE_POLL_MYSQL_URL: db:3306
+      LIVE_POLL_MYSQL_USER: livepoll
+      LIVE_POLL_MYSQL_PASSWORD: M3uBcPLbM7RmgX4C3wAUej6WPzq886
+      LIVE_POLL_DEV_URL: localhost:4200
+      LIVE_POLL_SERVER_URL: localhost:8080
+      LIVE_POLL_MAIL_HOST: ${API_LIVE_POLL_MAIL_HOST}
+      LIVE_POLL_MAIL_PORT: ${API_LIVE_POLL_MAIL_PORT}
+      LIVE_POLL_MAIL_USERNAME: ${API_LIVE_POLL_MAIL_USERNAME}
+      LIVE_POLL_MAIL_PASSWORD: ${API_LIVE_POLL_MAIL_PASSWORD}
+      LIVE_POLL_JWT_AUTH_COOKIE_NAME: jaQ83KNSgsquPRGy8b8HraKB5kUQC3
+      LIVE_POLL_JWT_COOKIE_KEY_VALUE: 4Vdx8rg84SvGYbhNwdsS8s6ZwH94LC
+      LIVE_POLL_JWT_SECRET: xyqCc3h3Z2DSYvz7ELEQMsv4U4b7jg
+      LIVE_POLL_HTTPS_ENABLED: "true"
+      LIVE_POLL_HTTPS_CERT_PASSWORD: ${API_LIVE_POLL_HTTPS_CERT_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  app-db: {}
