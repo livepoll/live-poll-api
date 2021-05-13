@@ -35,6 +35,7 @@ services:
       LIVE_POLL_JWT_SECRET: xyqCc3h3Z2DSYvz7ELEQMsv4U4b7jg
       LIVE_POLL_HTTPS_ENABLED: "true"
       LIVE_POLL_HTTPS_CERT_PASSWORD: ${API_LIVE_POLL_HTTPS_CERT_PASSWORD}
+      LIVE_POLL_POSTMAN: "true"
     depends_on:
       db:
         condition: service_healthy
