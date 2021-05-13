@@ -1363,13 +1363,13 @@
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
-									"const url = \"localhost:8080/v1/poll-items/\" + pm.globals.get(\"poll-item-id\");\r",
-									"pm.sendRequest(url, function(error, response){\r",
-									"    pm.test(\"Poll item does not exist anymore\", function(){\r",
-									"    pm.expect(response).to.have.property('code', 403)\r",
-									"    pm.expect(response).to.have.property('status', 'Forbidden')\r",
+									"/*const url = \"localhost:8080/v1/poll-items/\" + pm.globals.get(\"poll-item-id\");\r",
+									"pm.sendRequest(url, function(error, response) {\r",
+									"    pm.test(\"Poll item does not exist anymore\", function() {\r",
+									"        pm.expect(response).to.have.property('code', 403)\r",
+									"        pm.expect(response).to.have.property('status', 'Forbidden')\r",
 									"    })\r",
-									"})"
+									"})*/"
 								],
 								"type": "text/javascript"
 							}
@@ -1408,18 +1408,19 @@
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
-									"const url = \"localhost:8080/v1/polls/\" + pm.globals.get(\"poll-id\");\r",
-									"pm.sendRequest(url, function(error, response){\r",
-									"    pm.test(\"Poll item does not exist anymore\", function(){\r",
-									"    pm.expect(response).to.have.property('code', 403)\r",
-									"    pm.expect(response).to.have.property('status', 'Forbidden')\r",
+									"/*const url = \"localhost:8080/v1/polls/\" + pm.globals.get(\"poll-id\");\r",
+									"pm.sendRequest(url, function(error, response) {\r",
+									"    pm.test(\"Poll item does not exist anymore\", function() {\r",
+									"        pm.expect(response).to.have.property('code', 403)\r",
+									"        pm.expect(response).to.have.property('status', 'Forbidden')\r",
 									"    })\r",
-									"})\r",
+									"})*/\r",
 									"\r",
 									"pm.globals.unset(\"poll-id\")\r",
 									"pm.globals.unset(\"poll-item-id\")\r",
 									"pm.globals.unset(\"poll-items\")\r",
-									"pm.globals.unset(\"poll-items-counter\")"
+									"pm.globals.unset(\"poll-items-counter\")\r",
+									"pm.globals.unset(\"cookies\")"
 								],
 								"type": "text/javascript"
 							}
