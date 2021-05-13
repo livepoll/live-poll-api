@@ -15,6 +15,7 @@ import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.*
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
@@ -25,7 +26,7 @@ import javax.net.ssl.SSLContext
 // https://github.com/Mhverma/spring-cucumber-example/blob/master/src/test/java/com/manoj/training/app/SpringCucumberIntegrationTests.java
 @CucumberContextConfiguration
 @SpringBootTest(classes = [LivePollApplication::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource("classpath:application-test.yml")
+@ActiveProfiles("test")
 class CucumberIntegrationTest(
         private val userRepository: UserRepository
 ) {
