@@ -12,8 +12,9 @@ services:
     healthcheck:
       test: ["CMD", "mysqladmin", "ping"]
       interval: 10s
-      retries: 5
+      retries: 10
       timeout: 5s
+      start_period: 40s
   api:
     build: ../..
     networks:
@@ -21,24 +22,30 @@ services:
     ports:
       - 8080:8080
     environment:
-      LIVE_POLL_MYSQL_URL: db:3306
+      LIVE_POLL_MYSQL_URL: jdbc:mysql://db:3306/livepoll
       LIVE_POLL_MYSQL_USER: livepoll
       LIVE_POLL_MYSQL_PASSWORD: M3uBcPLbM7RmgX4C3wAUej6WPzq886
       LIVE_POLL_DEV_URL: localhost:4200
       LIVE_POLL_SERVER_URL: localhost:8080
-      LIVE_POLL_MAIL_HOST: ${API_LIVE_POLL_MAIL_HOST}
-      LIVE_POLL_MAIL_PORT: ${API_LIVE_POLL_MAIL_PORT}
-      LIVE_POLL_MAIL_USERNAME: ${API_LIVE_POLL_MAIL_USERNAME}
-      LIVE_POLL_MAIL_PASSWORD: ${API_LIVE_POLL_MAIL_PASSWORD}
+      LIVE_POLL_MAIL_HOST: ${LIVE_POLL_MAIL_HOST}
+      LIVE_POLL_MAIL_PORT: ${LIVE_POLL_MAIL_PORT}
+      LIVE_POLL_MAIL_USERNAME: ${LIVE_POLL_MAIL_USERNAME}
+      LIVE_POLL_MAIL_PASSWORD: ${LIVE_POLL_MAIL_PASSWORD}
       LIVE_POLL_JWT_AUTH_COOKIE_NAME: jaQ83KNSgsquPRGy8b8HraKB5kUQC3
       LIVE_POLL_JWT_COOKIE_KEY_VALUE: 4Vdx8rg84SvGYbhNwdsS8s6ZwH94LC
       LIVE_POLL_JWT_SECRET: xyqCc3h3Z2DSYvz7ELEQMsv4U4b7jg
       LIVE_POLL_HTTPS_ENABLED: "true"
-      LIVE_POLL_HTTPS_CERT_PASSWORD: ${API_LIVE_POLL_HTTPS_CERT_PASSWORD}
+      LIVE_POLL_HTTPS_CERT_PASSWORD: ${LIVE_POLL_HTTPS_CERT_PASSWORD}
       LIVE_POLL_POSTMAN: "true"
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
 
 networks:
   app-db: {}
