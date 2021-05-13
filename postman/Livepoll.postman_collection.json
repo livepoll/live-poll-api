@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2006a217-01e3-449d-9bee-f79a38e381d1",
+		"_postman_id": "3db6a2a6-89c4-47ef-8186-f90672f63c9d",
 		"name": "Livepoll",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -695,7 +695,9 @@
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
-									"});"
+									"});\r",
+									"const cookies = pm.response.headers.all().filter(headerObj => headerObj.key === 'Set-Cookie').map(headerObj => headerObj.value);\r",
+									"pm.environment.set('cookies', cookies.join(';'));"
 								],
 								"type": "text/javascript"
 							}
@@ -756,7 +758,13 @@
 					],
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{base-url}}/v1/user",
 							"host": [
@@ -787,7 +795,13 @@
 					],
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"name\": \"postman-poll\",\r\n    \"startDate\": \"1610705932\",\r\n    \"endDate\":\"1610705932\"\r\n}",
@@ -828,7 +842,13 @@
 					],
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{base-url}}/v1/polls",
 							"host": [
@@ -868,7 +888,13 @@
 					],
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{base-url}}/v1/polls/{{poll-id}}",
 							"host": [
@@ -902,7 +928,13 @@
 					],
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"question\": \"postman-multiplechoice-question\",\r\n    \"position\": 1,\r\n    \"answers\": [\"postman-multiplechoice-answer-1\", \"postman-multiplechoice-answer-2\"]\r\n}",
@@ -944,7 +976,13 @@
 					],
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 1,\r\n    \"question\": \"postman-quiz-question\",\r\n    \"answers\": [ \"correct option\", \"wrong option\", \"wrong option\"]\r\n}",
@@ -987,7 +1025,13 @@
 					],
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 1,\r\n    \"question\": \"postman-open-text-question\"\r\n}",
@@ -1030,7 +1074,13 @@
 					],
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{base-url}}/v1/polls/{{poll-id}}/poll-items",
 							"host": [
@@ -1082,7 +1132,13 @@
 					],
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{base-url}}/v1/poll-items/{{poll-item-id}}",
 							"host": [
@@ -1123,7 +1179,13 @@
 					],
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"name\": \"{{$randomProductName}}\",\r\n    \"startDate\": \"1610705932\",\r\n    \"endDate\":\"1610705932\",\r\n    \"slug\": \"12345\",\r\n    \"currentItem\": {{poll-item-id}}\r\n    \r\n}",
@@ -1148,7 +1210,7 @@
 					"response": []
 				},
 				{
-					"name": "Update multiple choice item Copy",
+					"name": "Update multiple choice item",
 					"event": [
 						{
 							"listen": "test",
@@ -1164,7 +1226,13 @@
 					],
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"question\": \"postman-multiplechoice-question-update\",\r\n    \"position\": 1,\r\n    \"answers\": [\"postman-multiplechoice-answer-1-update\", \"postman-multiplechoice-answer-2-update\"]\r\n}",
@@ -1206,7 +1274,13 @@
 					],
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 1,\r\n    \"question\": \"postman-quiz-question-update\",\r\n    \"answers\": [ \"correct option update\", \"wrong option update\", \"wrong option update\"]\r\n}",
@@ -1248,7 +1322,13 @@
 					],
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 1,\r\n    \"question\": \"postman-open-text-question update\"\r\n}",
@@ -1297,7 +1377,13 @@
 					],
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{base-url}}/v1/poll-items/{{poll-item-id}}",
 							"host": [
@@ -1341,7 +1427,13 @@
 					],
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{base-url}}/v1/polls/{{poll-id}}",
 							"host": [

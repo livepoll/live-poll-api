@@ -60,4 +60,4 @@ jobs:
       run: curl -sSLf --retry-delay 5 --retry 5 --retry-connrefused --insecure http://example.org > /dev/null
 
     - name: Run Newman tests
-      run: newman run ./postman/Livepoll.postman_collection.json --folder "Integration Test" --insecure
+      run: newman run ./postman/Livepoll.postman_collection.json --iteration-count 3 --folder "Integration Test" --insecure
