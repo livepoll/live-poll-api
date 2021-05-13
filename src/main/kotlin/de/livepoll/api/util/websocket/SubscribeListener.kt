@@ -27,7 +27,7 @@ class SubscribeListener(
             } else {
                 val url = "/v1/websocket/poll/$slug"
                 if (poll.currentItem == null) {
-                    messagingTemplate.convertAndSendToUser(event.user!!.name, url, "{\"id\":${poll.id}}")
+                    messagingTemplate.convertAndSendToUser(event.user!!.name, url, "{\"pollId\":${poll.id}}")
                 } else {
                     val pollItemDto = pollItemService.getPollItem(poll.currentItem!!)
                     messagingTemplate.convertAndSendToUser(event.user!!.name, url, pollItemDto)
