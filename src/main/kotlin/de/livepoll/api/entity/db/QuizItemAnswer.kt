@@ -12,7 +12,7 @@ class QuizItemAnswer(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NonNull
     @Column
-    val id: Long,
+    override val id: Long,
 
     @JsonIgnore
     @NonNull
@@ -21,12 +21,12 @@ class QuizItemAnswer(
     val quizItem: QuizItem,
 
     @Column(name = "selection_option")
-    val selectionOption: String,
+    override val selectionOption: String,
 
     @Column(name = "is_correct")
     var isCorrect: Boolean,
 
     @Column(name = "answer_count")
-    var answerCount: Int
+    override var answerCount: Int
 
-)
+) : SelectionOptionAnswer
