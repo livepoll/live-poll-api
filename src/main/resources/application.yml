@@ -16,6 +16,11 @@ spring:
     show-sql: true
     hibernate.ddl-auto: update
     properties.hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: always
+      schema: classpath:quartz_tables.sql
 
 server.ssl:
   enabled: ${LIVE_POLL_HTTPS_ENABLED:true}
