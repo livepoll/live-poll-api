@@ -153,6 +153,9 @@ class PollItemService {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid poll item position")
         }
 
+        // Sort poll items by position instead of id
+        pollItems.sortBy { it.position }
+
         // Update elements in between
         when {
             oldPos < newPos -> {
