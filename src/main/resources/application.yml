@@ -27,3 +27,5 @@ server.ssl:
   key-store-type: PKCS12
   key-store: classpath:cert/localhost.p12
   key-store-password: ${LIVE_POLL_HTTPS_CERT_PASSWORD}
+
+management.endpoints.web.exposure.include: health

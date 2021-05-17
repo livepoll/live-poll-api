@@ -52,8 +52,7 @@ class WebSocketService(
 
     fun saveAnswer(pollItemId: Long, payload: String) {
         val mapper = ObjectMapper()
-        val type: String = mapper.readValue(payload, Map::class.java)["type"].toString()
-        when (type) {
+        when (mapper.readValue(payload, Map::class.java)["type"].toString()) {
             // Multiple Choice
             PollItemType.MULTIPLE_CHOICE.representation -> {
                 val obj: MultipleChoiceItemParticipantAnswerDtoIn =

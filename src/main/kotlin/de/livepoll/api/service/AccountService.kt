@@ -52,6 +52,13 @@ class AccountService(
         }
     }
 
+    fun createPostmanAccount() {
+        if (userRepository.existsByUsername("postman")) return
+        val user = User(0, "postman", "noreply@live-poll.de", passwordEncoder.encode("1234"),
+            true, "ROLE_USER", emptyList())
+        userRepository.saveAndFlush(user)
+    }
+
     fun createVerificationToken(user: User, token: String) {
         val verificationToken = VerificationToken(0, token, user.username, calculateExpiryDate())
         verificationTokenRepository.saveAndFlush(verificationToken)

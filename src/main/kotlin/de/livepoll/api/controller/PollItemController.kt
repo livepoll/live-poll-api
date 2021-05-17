@@ -22,17 +22,8 @@ class PollItemController(
     private val accountService: AccountService
 ) {
 
-    //--------------------------------------------- Get ----------------------------------------------------------------
-
-    @ApiOperation(value = "Get poll item", tags = ["Poll item"])
-    @GetMapping("/{id}")
-    fun getPollItem(@PathVariable(name = "id") pollItemId: Long): PollItemDtoOut {
-        accountService.checkAuthorizationByPollItemId(pollItemId)
-        return pollItemService.getPollItem(pollItemId)
-    }
-
-
     //-------------------------------------------- Create --------------------------------------------------------------
+
     @ApiOperation(value = "Create multiple choice item", tags = ["Poll item"])
     @PostMapping("/multiple-choice")
     fun createMultipleChoiceItem(@RequestBody newItem: MultipleChoiceItemDtoIn): ResponseEntity<*> {
@@ -54,8 +45,17 @@ class PollItemController(
         return ResponseEntity.created(URI(newItem.pollId.toString())).body(addedItem)
     }
 
+    //--------------------------------------------- Get ----------------------------------------------------------------
+
+    @ApiOperation(value = "Get poll item", tags = ["Poll item"])
+    @GetMapping("/{id}")
+    fun getPollItem(@PathVariable(name = "id") pollItemId: Long): PollItemDtoOut {
+        accountService.checkAuthorizationByPollItemId(pollItemId)
+        return pollItemService.getPollItem(pollItemId)
+    }
 
     //-------------------------------------------- Update --------------------------------------------------------------
+
     @ApiOperation(value = "Update multiple choice item", tags = ["Poll item"])
     @PutMapping("/multiple-choice/{pollItemId}")
     fun updateMultipleChoiceItem(@RequestBody updatedItem: MultipleChoiceItemDtoIn, @PathVariable(name="pollItemId") pollItemId: Long): ResponseEntity<*> {
@@ -77,7 +77,6 @@ class PollItemController(
         return ResponseEntity.ok(pollItemService.updateOpenTextItem(pollItemId, updatedItem))
     }
 
-
     //-------------------------------------------- Delete --------------------------------------------------------------
 
     @ApiOperation(value = "Delete poll item", tags = ["Poll item"])
@@ -87,7 +86,4 @@ class PollItemController(
         pollItemService.deleteItem(pollItemId)
         return ResponseEntity.ok("Deleted poll item")
     }
-
-    //-------------------------------------------- Update --------------------------------------------------------------
-
 }

@@ -64,5 +64,4 @@ class AccountController(
     fun logout(httpServletRequest: HttpServletRequest): ResponseEntity<*> {
         return accountService.logout(httpServletRequest)
     }
-
 }
