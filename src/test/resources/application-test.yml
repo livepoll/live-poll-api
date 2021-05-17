@@ -2,7 +2,7 @@ server.port: 8080
 spring:
   application.name: Live-Poll API
   datasource: # https://howtodoinjava.com/spring-boot2/h2-database-example/, https://www.baeldung.com/spring-jpa-test-in-memory-database
-    url: jdbc:h2:mem:livepoll
+    url: jdbc:h2:mem:livepoll;MVCC=TRUE
     driverClassName: org.h2.Driver
   h2: # https://medium.com/@harittweets/how-to-connect-to-h2-database-during-development-testing-using-spring-boot-44bbb287570
     console:
