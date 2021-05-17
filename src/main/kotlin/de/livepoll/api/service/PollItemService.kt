@@ -65,6 +65,12 @@ class PollItemService {
 
     //-------------------------------------------- Create --------------------------------------------------------------
 
+    fun ensurePositionNotTaken(pollItems: MutableList<PollItem>, itemPos: Int) {
+        if (pollItems.map { it.position }.contains(itemPos)) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Position already taken by another poll item")
+        }
+    }
+
     fun createMultipleChoiceItem(item: MultipleChoiceItemDtoIn): MultipleChoiceItemDtoOut {
         pollRepository.findById(item.pollId)
             .orElseThrow {
@@ -73,6 +79,8 @@ class PollItemService {
                     "The corresponding poll for this multiple choice item could not be retrieved"
                 )
             }.run {
+                ensurePositionNotTaken(this.pollItems, item.position)
+
                 // Multiple choice item
                 val multipleChoiceItem = MultipleChoiceItem(
                     0,
@@ -100,6 +108,8 @@ class PollItemService {
                     "The corresponding poll for this quiz item could not be retrieved"
                 )
             }.run {
+                ensurePositionNotTaken(this.pollItems, item.position)
+
                 // Quiz item
                 val quizItem = QuizItem(
                     0,
@@ -127,6 +137,8 @@ class PollItemService {
                     "The corresponding poll for this open text item could not be retrieved"
                 )
             }.run {
+                ensurePositionNotTaken(this.pollItems, item.position)
+
                 val openTextItem = OpenTextItem(
                     0,
                     this,
