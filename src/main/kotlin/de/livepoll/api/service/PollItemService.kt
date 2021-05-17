@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
-import javax.sql.rowset.Predicate
-import javax.swing.text.MutableAttributeSet
 
 @Service
 class PollItemService {
@@ -143,6 +141,42 @@ class PollItemService {
 
     //-------------------------------------------- Update --------------------------------------------------------------
 
+    /**
+     * Move poll item to another position while updating the positions of other poll items in the poll.<br>
+     *
+     * This method works in-place and will adjust the poll items list.<br>
+     * Old and new position are counted from 1 onwards, NOT from 0!
+     */
+    fun movePollItem(oldPos: Int, newPos: Int, pollItems: MutableList<PollItem>) {
+        // Check if new position is existent
+        if (!(newPos >= 1 && newPos <= pollItems.size)) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid poll item position")
+        }
+
+        // Update elements in between
+        when {
+            oldPos < newPos -> {
+                for (i in oldPos + 1..newPos) { // For every element in [oldPos+1, newPos]
+                    pollItems[i - 1].position-- // Decrease position by one
+                    pollItemRepository.saveAndFlush(pollItems[i - 1])
+                }
+            }
+            oldPos > newPos -> {
+                for (i in newPos until oldPos) {  // For every element in [newPos, oldPos-1]
+                    pollItems[i - 1].position++ // Increase position by one
+                    pollItemRepository.saveAndFlush(pollItems[i - 1])
+                }
+            }
+            else -> { // oldPos == newPos
+                // do nothing
+            }
+        }
+
+        // Update position of explicitly requested poll item
+        pollItems[oldPos - 1].position = newPos
+        pollItemRepository.saveAndFlush(pollItems[oldPos - 1])
+    }
+
     fun updateMultipleChoiceItem(pollItemId: Long, pollItem: MultipleChoiceItemDtoIn): MultipleChoiceItemDtoOut {
         multipleChoiceItemRepository.findById(pollItemId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
@@ -151,13 +185,13 @@ class PollItemService {
                 val removeAnswer = mutableListOf<MultipleChoiceItemAnswer>()
                 this.answers.forEach {
                     if (it.answerCount != 0) {
-                        if(pollItem.answers.contains(it.selectionOption)){
+                        if (pollItem.answers.contains(it.selectionOption)) {
                             newAnswers.remove(it.selectionOption)
-                        }else{
+                        } else {
                             this.answers.remove(it)
                         }
-                    }else{
-                        if(!pollItem.answers.contains(it.selectionOption)){
+                    } else {
+                        if (!pollItem.answers.contains(it.selectionOption)) {
                             removeAnswer.add(it)
                         }
                     }
@@ -172,7 +206,8 @@ class PollItemService {
                 this.question = pollItem.question
                 this.allowMultipleAnswers = pollItem.allowMultipleAnswers
                 this.allowBlankField = pollItem.allowBlankField
-                this.position = pollItem.position
+                movePollItem(this.position, pollItem.position, this.poll.pollItems)
+                pollRepository.saveAndFlush(this.poll)
 
                 return pollItemRepository.saveAndFlush(this).toDtoOut()
             }
@@ -186,14 +221,14 @@ class PollItemService {
                 val removeAnswer = mutableListOf<QuizItemAnswer>()
                 this.answers.forEach {
                     if (it.answerCount != 0) {
-                        if(pollItem.answers.contains(it.selectionOption)){
+                        if (pollItem.answers.contains(it.selectionOption)) {
                             newAnswers.remove(it.selectionOption)
                             it.isCorrect = false
-                        }else{
+                        } else {
                             this.answers.remove(it)
                         }
-                    }else{
-                        if(!pollItem.answers.contains(it.selectionOption)){
+                    } else {
+                        if (!pollItem.answers.contains(it.selectionOption)) {
                             removeAnswer.add(it)
                         }
                     }
@@ -204,13 +239,14 @@ class PollItemService {
                 newAnswers.forEach {
                     this.answers.add(QuizItemAnswer(0, this, it, false, 0))
                 }
-                val newCorrectOne = this.answers.find{it.selectionOption == pollItem.answers[0]}!!
-                if(newCorrectOne.answerCount == 0){
-                    this.answers.find{it.selectionOption == pollItem.answers[0]}!!.isCorrect = true
+                val newCorrectOne = this.answers.find { it.selectionOption == pollItem.answers[0] }!!
+                if (newCorrectOne.answerCount == 0) {
+                    this.answers.find { it.selectionOption == pollItem.answers[0] }!!.isCorrect = true
                 }
 
                 this.question = pollItem.question
-                this.position = pollItem.position
+                movePollItem(this.position, pollItem.position, this.poll.pollItems)
+                pollRepository.saveAndFlush(this.poll)
 
                 return quizItemRepository.saveAndFlush(this).toDtoOut()
             }
@@ -220,11 +256,13 @@ class PollItemService {
         openTextItemRepository.findById(pollItemId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
             .run {
-                if (!this.answers.isEmpty()) {
+                if (this.answers.isNotEmpty()) {
                     throw ResponseStatusException(HttpStatus.CONFLICT, "This item can not be updated anymore")
                 }
                 this.question = pollItem.question
-                this.position = pollItem.position
+                movePollItem(this.position, pollItem.position, this.poll.pollItems)
+                pollRepository.saveAndFlush(this.poll)
+
                 return openTextItemRepository.saveAndFlush(this).toDtoOut()
             }
     }
