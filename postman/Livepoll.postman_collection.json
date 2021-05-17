@@ -1056,6 +1056,55 @@
 					"response": []
 				},
 				{
+					"name": "Create open text item on taken position",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    // Position is already taken, so we should get a BAD REQUEST\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 2,\r\n    \"question\": \"postman-open-text-question\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base-url}}/v1/poll-items/open-text",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"poll-items",
+								"open-text"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get poll items",
 					"event": [
 						{
