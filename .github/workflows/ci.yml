@@ -23,7 +23,7 @@ jobs:
           java-version: 11
 
       - name: Build and test project with Maven
-        run: mvn -B package --file pom.xml --batch-mode --update-snapshots clean verify
+        run: mvn -B package --file pom.xml --batch-mode --update-snapshots
         env:
           LIVE_POLL_MYSQL_URL: ${{ secrets.API_LIVE_POLL_MYSQL_URL }}
           LIVE_POLL_MYSQL_USER: ${{ secrets.API_LIVE_POLL_MYSQL_USER }}
