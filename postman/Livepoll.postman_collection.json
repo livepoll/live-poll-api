@@ -1212,7 +1212,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"{{$randomProductName}}\",\r\n    \"startDate\": \"1610705932\",\r\n    \"endDate\":\"1610705932\",\r\n    \"slug\": \"12345\",\r\n    \"currentItem\": {{poll-item-id}}\r\n    \r\n}",
+							"raw": "{\r\n    \"name\": \"{{$randomProductName}}\",\r\n    \"startDate\": \"1669892400000\",\r\n    \"endDate\":\"1669892400000\",\r\n    \"slug\": \"12345\",\r\n    \"currentItem\": {{poll-item-id}}\r\n    \r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

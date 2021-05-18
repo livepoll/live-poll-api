@@ -12,3 +12,8 @@ spring:
     show-sql: true
     hibernate.ddl-auto: create-drop
     properties.hibernate.dialect: org.hibernate.dialect.H2Dialect
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: always
+      schema: classpath:quartz_tables.sql
