@@ -41,6 +41,14 @@ jobs:
           LIVE_POLL_HTTPS_CERT_PASSWORD: ${{ secrets.API_LIVE_POLL_HTTPS_CERT_PASSWORD }}
           CUCUMBER_PUBLISH_TOKEN: ${{ secrets.CUCUMBER_PUBLISH_TOKEN }}
 
+      - name: SonarQube report deployment
+        uses: kitabisa/sonarqube-action@master
+        env:
+          JAVA_HOME: '' # Avoid 'java: not found' error
+        with:
+          host: ${{ secrets.SONARQUBE_HOST }}
+          login: ${{ secrets.SONARQUBE_TOKEN }}
+
       - name: Setup testing environment
         working-directory: ./.github/scripts
         run: docker-compose up -d
