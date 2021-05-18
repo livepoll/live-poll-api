@@ -706,10 +706,14 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"pm.globals.unset(\"poll-id\")\r",
-									"pm.globals.unset(\"poll-item-id\")\r",
-									"pm.globals.unset(\"poll-items\")\r",
-									"pm.globals.unset(\"poll-items-counter\")"
+									"pm.globals.unset(\"poll-id\");\r",
+									"pm.globals.unset(\"poll-item-id\");\r",
+									"pm.globals.unset(\"poll-items\");\r",
+									"pm.globals.unset(\"poll-items-counter\");\r",
+									"\r",
+									"// Just for newman since we don't have our Livepoll Dev environment there\r",
+									"pm.globals.set('base-url', 'https://localhost:8080');\r",
+									""
 								],
 								"type": "text/javascript"
 							}
