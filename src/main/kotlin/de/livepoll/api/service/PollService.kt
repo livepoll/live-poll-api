@@ -130,6 +130,25 @@ class PollService(
         }
     }
 
+    fun getNextPollItem(pollId: Long) : PollDtoOut {
+        pollRepository.findById(pollId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "This poll does not exist")
+        }.run {
+            pollItems.sortBy { it.position }
+            if(currentItem == null){
+                this.currentItem = pollItems[0].id
+            }else if(currentItem == pollItems.last().id){
+                this.currentItem = null
+            }else{
+                val oldItem = pollItems.find { it.id == currentItem }
+                val newItem = pollItems.find { it.position == requireNotNull(oldItem).position+1 }
+                this.currentItem = requireNotNull(newItem).id
+            }
+            webSocketService.sendCurrentItem(this.slug, this.id, this.currentItem)
+            return pollRepository.saveAndFlush(this).toDtoOut()
+        }
+    }
+
     fun isSlugUnique(slug: String) = pollRepository.findBySlug(slug) == null
 
     private fun schedulePoll(pollId: Long, startDate: Date, stopDate: Date) {

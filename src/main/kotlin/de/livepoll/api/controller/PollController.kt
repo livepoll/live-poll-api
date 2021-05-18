@@ -54,6 +54,13 @@ class PollController(
         return pollService.getPollItemsForPoll(pollId)
     }
 
+    @ApiOperation(value = "Get next poll item for presentation", tags = ["Poll presentation"])
+    @GetMapping("/{id}/next-item")
+    fun getNextPollItem(@PathVariable(name = "id") pollId: Long, @AuthenticationPrincipal user: User): PollDtoOut {
+        accountService.checkAuthorizationByPollId(pollId)
+        return pollService.getNextPollItem(pollId)
+    }
+
     //-------------------------------------------- Update --------------------------------------------------------------
 
     @ApiOperation(value = "Update slug", tags = ["Poll"])
