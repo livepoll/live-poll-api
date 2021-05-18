@@ -166,22 +166,18 @@ class PollItemService {
         pollItems.sortBy { it.position }
 
         // Update elements in between
-        when {
-            oldPos < newPos -> {
-                for (i in oldPos + 1..newPos) { // For every element in [oldPos+1, newPos]
-                    pollItems[i - 1].position-- // Decrease position by one
-                    pollItemRepository.saveAndFlush(pollItems[i - 1])
-                }
+        if (oldPos < newPos) {
+            for (i in oldPos + 1..newPos) { // For every element in [oldPos+1, newPos]
+                pollItems[i - 1].position-- // Decrease position by one
+                pollItemRepository.saveAndFlush(pollItems[i - 1])
             }
-            oldPos > newPos -> {
-                for (i in newPos until oldPos) {  // For every element in [newPos, oldPos-1]
-                    pollItems[i - 1].position++ // Increase position by one
-                    pollItemRepository.saveAndFlush(pollItems[i - 1])
-                }
+        } else if (oldPos > newPos) {
+            for (i in newPos until oldPos) {  // For every element in [newPos, oldPos-1]
+                pollItems[i - 1].position++ // Increase position by one
+                pollItemRepository.saveAndFlush(pollItems[i - 1])
             }
-            else -> { // oldPos == newPos
-                // do nothing
-            }
+        } else { // oldPos == newPos
+            // do nothing
         }
 
         // Update position of explicitly requested poll item
