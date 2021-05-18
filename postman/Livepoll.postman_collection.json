@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "3db6a2a6-89c4-47ef-8186-f90672f63c9d",
+		"_postman_id": "65ba7f23-1487-472a-a87c-4af4209e407e",
 		"name": "Livepoll",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1188,7 +1188,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"{{$randomProductName}}\",\r\n    \"startDate\": \"1610705932\",\r\n    \"endDate\":\"1610705932\",\r\n    \"slug\": \"12345\",\r\n    \"currentItem\": {{poll-item-id}}\r\n    \r\n}",
+							"raw": "{\r\n    \"name\": \"{{$randomProductName}}\",\r\n    \"startDate\": \"1669892400000\",\r\n    \"endDate\":\"1669892400000\",\r\n    \"slug\": \"12345\",\r\n    \"currentItem\": {{poll-item-id}}\r\n    \r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

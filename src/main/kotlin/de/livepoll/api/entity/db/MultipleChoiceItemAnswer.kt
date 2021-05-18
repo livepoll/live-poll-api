@@ -12,7 +12,7 @@ class MultipleChoiceItemAnswer (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NonNull
     @Column
-    val id: Long,
+    override val id: Long,
 
     @JsonIgnore
     @NonNull
@@ -21,9 +21,9 @@ class MultipleChoiceItemAnswer (
     var multipleChoiceItem: MultipleChoiceItem,
 
     @Column(name = "selection_option")
-    val selectionOption: String,
+    override val selectionOption: String,
 
     @Column(name = "answer_count")
-    var answerCount: Int
+    override var answerCount: Int
 
-)
+) : SelectionOptionAnswer

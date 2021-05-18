@@ -20,9 +20,11 @@ data class Poll(
         @Column(nullable = false)
         var name: String,
 
-        var startDate: Date,
+        @Column(nullable = true)
+        var startDate: Date?,
 
-        var endDate: Date,
+        @Column(nullable = true)
+        var endDate: Date?,
 
         var slug: String,
 

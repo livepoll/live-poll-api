@@ -7,20 +7,30 @@ import de.livepoll.api.entity.dto.PollDtoOut
 import de.livepoll.api.entity.dto.PollItemDtoOut
 import de.livepoll.api.repository.PollRepository
 import de.livepoll.api.repository.UserRepository
+import de.livepoll.api.util.quartz.JobScheduleCrator
+import de.livepoll.api.util.quartz.StartPollPresentationJob
+import de.livepoll.api.util.quartz.StopPollPresentationJob
 import de.livepoll.api.util.toDtoOut
+import org.quartz.JobKey
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.http.HttpStatus
+import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
+
 
 @Service
 class PollService(
         private val userRepository: UserRepository,
         private val pollRepository: PollRepository,
         private val pollItemService: PollItemService,
-        private val webSocketService: WebSocketService
+        private val webSocketService: WebSocketService,
+        private val schedulerFactory: SchedulerFactoryBean,
+        private val jobScheduleCrator: JobScheduleCrator
 ) {
+
 
     //--------------------------------------------- Get ----------------------------------------------------------------
 
@@ -65,7 +75,21 @@ class PollService(
                             null,
                             emptyList<PollItem>().toMutableList()
                     )
-                    return pollRepository.saveAndFlush(poll).toDtoOut()
+                    val pollFromDb = pollRepository.saveAndFlush(poll)
+                    try {
+                        if (pollFromDb.startDate != null && pollFromDb.endDate != null) {
+                            schedulePoll(pollFromDb.id, pollFromDb.startDate!!, pollFromDb.endDate!!)
+                            return pollFromDb.toDtoOut()
+                        } else {
+                            pollFromDb.startDate = null
+                            pollFromDb.endDate = null
+                            return pollRepository.saveAndFlush(pollFromDb).toDtoOut()
+                        }
+                    } catch (ex: ResponseStatusException) {
+                        pollFromDb.startDate = null
+                        pollFromDb.endDate = null
+                        return pollRepository.saveAndFlush(pollFromDb).toDtoOut()
+                    }
                 }
     }
 
@@ -88,8 +112,15 @@ class PollService(
             ResponseStatusException(HttpStatus.NOT_FOUND, "This poll does not exist")
         }.run {
             this.name = poll.name
-            this.startDate = poll.startDate
-            this.endDate = poll.endDate
+            if (poll.startDate != null && poll.endDate != null) {
+                schedulePoll(pollId, poll.startDate, poll.endDate)
+                this.startDate = poll.startDate
+                this.endDate = poll.endDate
+            } else if (poll.startDate == null && poll.endDate == null) {
+                stopScheduledPoll(pollId)
+                this.startDate = null
+                this.endDate = null
+            }
             if (poll.slug != null && isSlugUnique(poll.slug)) {
                 this.slug = poll.slug
             }
@@ -100,4 +131,42 @@ class PollService(
     }
 
     fun isSlugUnique(slug: String) = pollRepository.findBySlug(slug) == null
+
+    private fun schedulePoll(pollId: Long, startDate: Date, stopDate: Date) {
+        if (startDate.before(GregorianCalendar.getInstance().time) || stopDate.before(GregorianCalendar.getInstance().time)) {
+            throw ResponseStatusException(HttpStatus.CONFLICT, "Poll was not planned because start or end date is in the past")
+        } else {
+            val jobDetailStart = jobScheduleCrator.createJob(StartPollPresentationJob::class.java, "start-poll-" + pollId.toString(), pollId)
+            val triggerStart = jobScheduleCrator.createSimpleTrigger("start-poll-trigger-" + pollId.toString(), startDate)
+            schedulerFactory.`object`!!.scheduleJob(jobDetailStart, triggerStart)
+
+            val jobDetailStop = jobScheduleCrator.createJob(StopPollPresentationJob::class.java, "stop-poll-" + pollId.toString(), pollId)
+            val triggerStop = jobScheduleCrator.createSimpleTrigger("stop-poll-trigger-" + pollId.toString(), stopDate)
+            schedulerFactory.`object`!!.scheduleJob(jobDetailStop, triggerStop)
+        }
+
+    }
+
+    @Transactional
+    fun executeStartPoll(pollId: Long) {
+        pollRepository.findById(pollId).ifPresent {
+            it.currentItem = it.pollItems[0].id
+            webSocketService.sendCurrentItem(it.slug, it.id, it.currentItem)
+            pollRepository.saveAndFlush(it)
+        }
+    }
+
+    fun executeStopPoll(pollId: Long) {
+        pollRepository.findById(pollId).ifPresent {
+            it.currentItem = null
+            webSocketService.sendCurrentItem(it.slug, it.id, null)
+            pollRepository.saveAndFlush(it)
+        }
+    }
+
+    fun stopScheduledPoll(pollId: Long) {
+        schedulerFactory.`object`!!.deleteJob(JobKey("start-poll-" + pollId))
+        schedulerFactory.`object`!!.deleteJob(JobKey("stop-poll-" + pollId))
+    }
+
 }

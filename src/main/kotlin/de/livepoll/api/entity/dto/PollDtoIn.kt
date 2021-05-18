@@ -4,8 +4,8 @@ import java.util.*
 
 data class PollDtoIn(
         val name: String,
-        val startDate: Date,
-        val endDate: Date,
+        val startDate: Date?,
+        val endDate: Date?,
         val slug: String?,
         val currentItem: Long?
 )
