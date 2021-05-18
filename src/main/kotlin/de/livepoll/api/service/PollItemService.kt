@@ -65,12 +65,6 @@ class PollItemService {
 
     //-------------------------------------------- Create --------------------------------------------------------------
 
-//    fun ensurePositionNotTaken(pollItems: MutableList<PollItem>, itemPos: Int) {
-//        if (pollItems.map { it.position }.contains(itemPos)) {
-//            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Position already taken by another poll item")
-//        }
-//    }
-
     fun createMultipleChoiceItem(item: MultipleChoiceItemDtoIn): MultipleChoiceItemDtoOut {
         pollRepository.findById(item.pollId)
             .orElseThrow {
