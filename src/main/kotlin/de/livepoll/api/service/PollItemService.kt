@@ -189,15 +189,17 @@ class PollItemService {
                 val newAnswers = pollItem.answers.toMutableList()
                 val removeAnswer = mutableListOf<MultipleChoiceItemAnswer>()
                 this.answers.forEach {
-                    if (it.answerCount != 0) {
+                    if (it.answerCount == 0) {
                         if (pollItem.answers.contains(it.selectionOption)) {
                             newAnswers.remove(it.selectionOption)
                         } else {
-                            this.answers.remove(it)
+                            removeAnswer.add(it)
                         }
                     } else {
                         if (!pollItem.answers.contains(it.selectionOption)) {
                             removeAnswer.add(it)
+                        } else {
+                            newAnswers.remove(it.selectionOption)
                         }
                     }
                 }
@@ -225,16 +227,17 @@ class PollItemService {
                 val newAnswers = pollItem.answers.toMutableList()
                 val removeAnswer = mutableListOf<QuizItemAnswer>()
                 this.answers.forEach {
-                    if (it.answerCount != 0) {
+                    if (it.answerCount == 0) {
                         if (pollItem.answers.contains(it.selectionOption)) {
                             newAnswers.remove(it.selectionOption)
-                            it.isCorrect = false
                         } else {
-                            this.answers.remove(it)
+                            removeAnswer.add(it)
                         }
                     } else {
                         if (!pollItem.answers.contains(it.selectionOption)) {
                             removeAnswer.add(it)
+                        } else {
+                            newAnswers.remove(it.selectionOption)
                         }
                     }
                 }
