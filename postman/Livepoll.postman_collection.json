@@ -712,7 +712,7 @@
 									"pm.globals.unset(\"poll-items-counter\");\r",
 									"\r",
 									"// Just for newman since we don't have our Livepoll Dev environment there\r",
-									"pm.globals.set('base-url', 'https://localhost:8080');\r",
+									"pm.environment.set('base-url', 'https://localhost:8080');\r",
 									""
 								],
 								"type": "text/javascript"
