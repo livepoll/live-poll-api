@@ -65,11 +65,11 @@ class PollItemService {
 
     //-------------------------------------------- Create --------------------------------------------------------------
 
-    fun ensurePositionNotTaken(pollItems: MutableList<PollItem>, itemPos: Int) {
-        if (pollItems.map { it.position }.contains(itemPos)) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Position already taken by another poll item")
-        }
-    }
+//    fun ensurePositionNotTaken(pollItems: MutableList<PollItem>, itemPos: Int) {
+//        if (pollItems.map { it.position }.contains(itemPos)) {
+//            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Position already taken by another poll item")
+//        }
+//    }
 
     fun createMultipleChoiceItem(item: MultipleChoiceItemDtoIn): MultipleChoiceItemDtoOut {
         pollRepository.findById(item.pollId)
@@ -79,13 +79,12 @@ class PollItemService {
                     "The corresponding poll for this multiple choice item could not be retrieved"
                 )
             }.run {
-                ensurePositionNotTaken(this.pollItems, item.position)
-
                 // Multiple choice item
                 val multipleChoiceItem = MultipleChoiceItem(
                     0,
                     this,
-                    item.position,
+                    // Insert new item at the end of the poll items (position is counted from 1 onwards)
+                    this.pollItems.size + 1,
                     item.question,
                     item.allowMultipleAnswers,
                     item.allowBlankField,
@@ -108,13 +107,12 @@ class PollItemService {
                     "The corresponding poll for this quiz item could not be retrieved"
                 )
             }.run {
-                ensurePositionNotTaken(this.pollItems, item.position)
-
                 // Quiz item
                 val quizItem = QuizItem(
                     0,
                     this,
-                    item.position,
+                    // Insert new item at the end of the poll items (position is counted from 1 onwards)
+                    this.pollItems.size + 1,
                     item.question,
                     mutableListOf()
                 )
@@ -137,13 +135,12 @@ class PollItemService {
                     "The corresponding poll for this open text item could not be retrieved"
                 )
             }.run {
-                ensurePositionNotTaken(this.pollItems, item.position)
-
                 val openTextItem = OpenTextItem(
                     0,
                     this,
                     item.question,
-                    item.position,
+                    // Insert new item at the end of the poll items (position is counted from 1 onwards)
+                    this.pollItems.size + 1,
                     emptyList<OpenTextItemAnswer>().toMutableList()
                 )
                 return openTextItemRepository.saveAndFlush(openTextItem).toDtoOut()
@@ -192,7 +189,10 @@ class PollItemService {
         pollItemRepository.saveAndFlush(pollItems[oldPos - 1])
     }
 
-    fun updateMultipleChoiceItem(pollItemId: Long, pollItem: MultipleChoiceItemDtoIn): MultipleChoiceItemDtoOut {
+    fun updateMultipleChoiceItem(
+        pollItemId: Long,
+        pollItem: MultipleChoiceItemWithPositionDtoIn
+    ): MultipleChoiceItemDtoOut {
         multipleChoiceItemRepository.findById(pollItemId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
             .run {
@@ -228,7 +228,7 @@ class PollItemService {
             }
     }
 
-    fun updateQuizItem(pollItemId: Long, pollItem: QuizItemDtoIn): QuizItemDtoOut {
+    fun updateQuizItem(pollItemId: Long, pollItem: QuizItemWithPositionDtoIn): QuizItemDtoOut {
         quizItemRepository.findById(pollItemId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
             .run {
@@ -267,7 +267,7 @@ class PollItemService {
             }
     }
 
-    fun updateOpenTextItem(pollItemId: Long, pollItem: OpenTextItemDtoIn): OpenTextItemDtoOut {
+    fun updateOpenTextItem(pollItemId: Long, pollItem: OpenTextItemWithPositionDtoIn): OpenTextItemDtoOut {
         openTextItemRepository.findById(pollItemId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
             .run {

@@ -1,9 +1,6 @@
 package de.livepoll.api.controller
 
-import de.livepoll.api.entity.dto.MultipleChoiceItemDtoIn
-import de.livepoll.api.entity.dto.OpenTextItemDtoIn
-import de.livepoll.api.entity.dto.PollItemDtoOut
-import de.livepoll.api.entity.dto.QuizItemDtoIn
+import de.livepoll.api.entity.dto.*
 import de.livepoll.api.service.AccountService
 import de.livepoll.api.service.PollItemService
 import de.livepoll.api.service.PollService
@@ -58,21 +55,21 @@ class PollItemController(
 
     @ApiOperation(value = "Update multiple choice item", tags = ["Poll item"])
     @PutMapping("/multiple-choice/{pollItemId}")
-    fun updateMultipleChoiceItem(@RequestBody updatedItem: MultipleChoiceItemDtoIn, @PathVariable(name="pollItemId") pollItemId: Long): ResponseEntity<*> {
+    fun updateMultipleChoiceItem(@RequestBody updatedItem: MultipleChoiceItemWithPositionDtoIn, @PathVariable(name="pollItemId") pollItemId: Long): ResponseEntity<*> {
         accountService.checkAuthorizationByPollItemId(pollItemId)
         return ResponseEntity.ok(pollItemService.updateMultipleChoiceItem(pollItemId, updatedItem))
     }
 
     @ApiOperation(value = "Update quiz item", tags = ["Poll item"])
     @PutMapping("/quiz/{pollItemId}")
-    fun updateQuizItem(@RequestBody updatedItem: QuizItemDtoIn, @PathVariable(name="pollItemId") pollItemId: Long): ResponseEntity<*> {
+    fun updateQuizItem(@RequestBody updatedItem: QuizItemWithPositionDtoIn, @PathVariable(name="pollItemId") pollItemId: Long): ResponseEntity<*> {
         accountService.checkAuthorizationByPollItemId(pollItemId)
         return ResponseEntity.ok(pollItemService.updateQuizItem(pollItemId, updatedItem))
     }
 
     @ApiOperation(value = "Update open text item", tags = ["Poll item"])
     @PutMapping("/open-text/{pollItemId}")
-    fun updateOpenTextItem(@RequestBody updatedItem: OpenTextItemDtoIn, @PathVariable(name="pollItemId") pollItemId: Long): ResponseEntity<*> {
+    fun updateOpenTextItem(@RequestBody updatedItem: OpenTextItemWithPositionDtoIn, @PathVariable(name="pollItemId") pollItemId: Long): ResponseEntity<*> {
         accountService.checkAuthorizationByPollItemId(pollItemId)
         return ResponseEntity.ok(pollItemService.updateOpenTextItem(pollItemId, updatedItem))
     }
