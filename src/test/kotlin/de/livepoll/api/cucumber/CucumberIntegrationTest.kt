@@ -1,9 +1,9 @@
 package de.livepoll.api.cucumber
 
 import de.livepoll.api.LivePollApplication
-import de.livepoll.api.entity.db.User
-import de.livepoll.api.entity.jwt.AuthenticationRequest
-import de.livepoll.api.repository.UserRepository
+import de.livepoll.api.user.User
+import de.livepoll.api.authentication.AuthenticationRequest
+import de.livepoll.api.user.UserRepository
 import io.cucumber.spring.CucumberContextConfiguration
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory
 import org.apache.http.impl.client.CloseableHttpClient
@@ -16,7 +16,6 @@ import org.springframework.http.*
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.TestPropertySource
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
 import java.security.cert.X509Certificate

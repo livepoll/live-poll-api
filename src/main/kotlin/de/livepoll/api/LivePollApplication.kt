@@ -1,8 +1,6 @@
 package de.livepoll.api
 
-import de.livepoll.api.entity.db.User
-import de.livepoll.api.repository.UserRepository
-import de.livepoll.api.service.AccountService
+import de.livepoll.api.account.AccountService
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

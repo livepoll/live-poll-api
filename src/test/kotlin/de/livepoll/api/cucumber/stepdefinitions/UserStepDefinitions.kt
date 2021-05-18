@@ -1,11 +1,11 @@
 package de.livepoll.api.cucumber.stepdefinitions
 
 import de.livepoll.api.cucumber.CucumberIntegrationTest
-import de.livepoll.api.entity.db.Poll
+import de.livepoll.api.poll.Poll
 import de.livepoll.api.entity.db.PollItem
-import de.livepoll.api.entity.db.User
-import de.livepoll.api.repository.PollRepository
-import de.livepoll.api.repository.UserRepository
+import de.livepoll.api.user.User
+import de.livepoll.api.poll.PollRepository
+import de.livepoll.api.user.UserRepository
 import io.cucumber.java.en.And
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
@@ -19,8 +19,8 @@ import java.util.*
 private const val LOGOUT_ENDPOINT = "/v1/account/logout"
 
 class UserStepDefinitions(
-        private val pollRepository: PollRepository,
-        private val userRepository: UserRepository
+    private val pollRepository: PollRepository,
+    private val userRepository: UserRepository
 ) : CucumberIntegrationTest(userRepository) {
 
     private val USER_ENDPOINT = "/v1/user"

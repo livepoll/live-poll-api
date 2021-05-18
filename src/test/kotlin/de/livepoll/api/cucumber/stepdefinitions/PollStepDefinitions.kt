@@ -1,10 +1,10 @@
 package de.livepoll.api.cucumber.stepdefinitions
 
 import de.livepoll.api.cucumber.CucumberIntegrationTest
-import de.livepoll.api.entity.dto.PollDtoIn
-import de.livepoll.api.entity.dto.PollDtoOut
-import de.livepoll.api.repository.PollRepository
-import de.livepoll.api.repository.UserRepository
+import de.livepoll.api.poll.PollDtoIn
+import de.livepoll.api.poll.PollDtoOut
+import de.livepoll.api.poll.PollRepository
+import de.livepoll.api.user.UserRepository
 import io.cucumber.java.en.And
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
@@ -15,8 +15,8 @@ import org.springframework.web.client.exchange
 import java.sql.Date
 
 class PollStepDefinitions(
-        userRepository: UserRepository,
-        private val pollRepository: PollRepository
+    userRepository: UserRepository,
+    private val pollRepository: PollRepository
 ) : CucumberIntegrationTest(userRepository) {
     private val POLL_ENDPOINT = "/v1/polls"
 

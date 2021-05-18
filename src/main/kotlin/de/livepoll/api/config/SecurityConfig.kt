@@ -1,7 +1,7 @@
 package de.livepoll.api.config
 
-import de.livepoll.api.service.JwtUserDetailsService
-import de.livepoll.api.util.JwtRequestFilter
+import de.livepoll.api.authentication.JwtUserDetailsService
+import de.livepoll.api.authentication.JwtRequestFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder

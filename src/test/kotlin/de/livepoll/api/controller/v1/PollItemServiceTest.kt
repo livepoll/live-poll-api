@@ -2,9 +2,16 @@ package de.livepoll.api.controller.v1
 
 import de.livepoll.api.LivePollApplication
 import de.livepoll.api.entity.db.*
-import de.livepoll.api.entity.dto.*
-import de.livepoll.api.repository.*
-import de.livepoll.api.service.PollItemService
+import de.livepoll.api.poll.Poll
+import de.livepoll.api.poll.PollRepository
+import de.livepoll.api.pollitem.PollItemRepository
+import de.livepoll.api.pollitem.PollItemService
+import de.livepoll.api.pollitem.multiplechoice.*
+import de.livepoll.api.pollitem.opentext.OpenTextItem
+import de.livepoll.api.pollitem.opentext.OpenTextItemDtoOut
+import de.livepoll.api.pollitem.opentext.OpenTextItemRepository
+import de.livepoll.api.pollitem.quiz.*
+import de.livepoll.api.user.User
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -18,7 +25,6 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Bean
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import java.util.*
 

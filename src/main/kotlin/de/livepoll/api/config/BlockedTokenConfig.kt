@@ -1,6 +1,6 @@
 package de.livepoll.api.config
 
-import de.livepoll.api.repository.BlockedTokenRepository
+import de.livepoll.api.authentication.BlockedTokenRepository
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled

@@ -1,7 +1,7 @@
 package de.livepoll.api.config
 
-import de.livepoll.api.util.websocket.CustomWebSocketHandshakeHandler
-import de.livepoll.api.util.websocket.HttpHandshakeInterceptor
+import de.livepoll.api.websocket.CustomWebSocketHandshakeHandler
+import de.livepoll.api.websocket.HttpHandshakeInterceptor
 import org.springframework.context.annotation.Configuration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
