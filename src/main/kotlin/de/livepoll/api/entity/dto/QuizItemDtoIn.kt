@@ -1,14 +1,14 @@
 package de.livepoll.api.entity.dto
 
-class QuizItemDtoIn(
-    var pollId: Long,
-    val question: String,
+open class QuizItemDtoIn(
+    pollId: Long,
+    question: String,
     val answers: List<String>
-)
+) : PollItemDtoIn(pollId, question)
 
 class QuizItemWithPositionDtoIn(
-    var pollId: Long,
-    val position: Int,
-    val question: String,
-    val answers: List<String>
-)
+    pollId: Long,
+    question: String,
+    answers: List<String>,
+    val position: Int
+) : QuizItemDtoIn(pollId, question, answers)

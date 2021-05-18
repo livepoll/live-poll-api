@@ -1,12 +1,12 @@
 package de.livepoll.api.entity.dto
 
-data class OpenTextItemDtoIn(
-    val pollId: Long,
-    val question: String,
-)
+open class OpenTextItemDtoIn(
+    pollId: Long,
+    question: String,
+) : PollItemDtoIn(pollId, question)
 
-data class OpenTextItemWithPositionDtoIn(
-    val pollId: Long,
-    val position: Int, // extra field
-    val question: String,
-)
+class OpenTextItemWithPositionDtoIn(
+    pollId: Long,
+    question: String,
+    val position: Int
+) : OpenTextItemDtoIn(pollId, question)

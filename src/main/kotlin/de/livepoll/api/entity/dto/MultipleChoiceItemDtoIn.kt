@@ -1,18 +1,18 @@
 package de.livepoll.api.entity.dto
 
-data class MultipleChoiceItemDtoIn(
-        val pollId: Long,
-        val question: String,
-        val allowMultipleAnswers: Boolean,
-        val allowBlankField: Boolean,
-        val answers: List<String>,
-)
+open class MultipleChoiceItemDtoIn(
+    pollId: Long,
+    question: String,
+    val allowMultipleAnswers: Boolean,
+    val allowBlankField: Boolean,
+    val answers: List<String>,
+) : PollItemDtoIn(pollId, question)
 
-data class MultipleChoiceItemWithPositionDtoIn(
-        val pollId: Long,
-        val question: String,
-        val position: Int, // extra field
-        val allowMultipleAnswers: Boolean,
-        val allowBlankField: Boolean,
-        val answers: List<String>,
-)
+class MultipleChoiceItemWithPositionDtoIn(
+    pollId: Long,
+    question: String,
+    allowMultipleAnswers: Boolean,
+    allowBlankField: Boolean,
+    answers: List<String>,
+    val position: Int
+) : MultipleChoiceItemDtoIn(pollId, question, allowMultipleAnswers, allowBlankField, answers)
