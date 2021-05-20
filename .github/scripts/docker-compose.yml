@@ -37,6 +37,7 @@ services:
       LIVE_POLL_HTTPS_ENABLED: "false"
       LIVE_POLL_HTTPS_CERT_PASSWORD: ${LIVE_POLL_HTTPS_CERT_PASSWORD}
       LIVE_POLL_POSTMAN: "true"
+      server.error.include-message: "always"
     depends_on:
       db:
         condition: service_healthy
