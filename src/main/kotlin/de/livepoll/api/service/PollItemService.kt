@@ -223,7 +223,18 @@ class PollItemService {
                 if (item is MultipleChoiceItem) {
                     MultipleChoiceItemAnswer(0, item, it, 0)
                 } else if (item is QuizItem) {
-                    QuizItemAnswer(0, item, it, false, 0)
+                    // In the updated list of strings, the first selection option is supposed to be the correct one
+                    // This might lead to marking an item that was correct before as incorrect.
+                    // This is only allowed if the previously correct item has an answer count of 0.
+                    // Otherwise we throw an error.
+                    if (item.answers.isNotEmpty() && selectionOptionsUpdate.isNotEmpty()) {
+                        if (item.answers[0].selectionOption != selectionOptionsUpdate[0]) {
+                            val msg = "This update would mark an existing selection option whose answer count is" +
+                                    " greater than 0 as incorrect. This is not allowed."
+                            throw ResponseStatusException(HttpStatus.BAD_REQUEST, msg)
+                        }
+                    }
+                    QuizItemAnswer(0, item, it, false, 0) // the correct item is updated later
                 } else {
                     // Should never happen
                     throw ResponseStatusException(
@@ -267,7 +278,11 @@ class PollItemService {
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
             .run {
                 updateAnswers(this, pollItem.selectionOptions)
-                this.answers[0].isCorrect = true // Make sure that first answer is correct one
+
+                // Update correct answer
+                val newCorrectIndex = this.answers.indexOfFirst { it.selectionOption == pollItem.selectionOptions[0] }
+                this.answers[newCorrectIndex].isCorrect = true
+
                 this.question = pollItem.question
                 movePollItem(this.position, pollItem.position, this.poll.pollItems)
                 pollRepository.saveAndFlush(this.poll)
