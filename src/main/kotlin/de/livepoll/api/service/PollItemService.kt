@@ -195,6 +195,7 @@ class PollItemService {
      * -> Remove the answer that contained this selection option
      */
     fun updateAnswers(item: PollItemAnswerable, selectionOptionsUpdate: List<String>) {
+        val selectionOptionsExisting = item.answers.map { it.selectionOption }
         // --- Example
         // e indicates: "existing"
         // u indicates: "update"
@@ -204,7 +205,23 @@ class PollItemService {
         // note that Ce is gone
         // note that Ae/Be are used in favor of Au/Bu since Ae/Be might include answer counts > 0
 
-        val selectionOptionsExisting = item.answers.map { it.selectionOption }
+        // --- Checks
+        if (item is QuizItem) {
+            // In the updated list of strings, the first selection option is supposed to be the correct one
+            // This might lead to marking an item that was correct before as incorrect.
+            // This is only allowed if the previously correct item has an answer count of 0.
+            // Otherwise we throw an error.
+            if (item.answers.isNotEmpty() && selectionOptionsUpdate.isNotEmpty()) {
+                if (item.answers[0].answerCount != 0) {
+                    if (item.answers[0].selectionOption != selectionOptionsUpdate[0]) {
+                        val msg =
+                            "This update would mark an existing correct selection option whose answer count is " +
+                                    "greater than 0 as incorrect. Aborting the update."
+                        throw ResponseStatusException(HttpStatus.BAD_REQUEST, msg)
+                    }
+                }
+            }
+        }
 
         // --- Removing
         // Remove answer in db whose whose selection option is not included in the selection options from the update
@@ -223,17 +240,6 @@ class PollItemService {
                 if (item is MultipleChoiceItem) {
                     MultipleChoiceItemAnswer(0, item, it, 0)
                 } else if (item is QuizItem) {
-                    // In the updated list of strings, the first selection option is supposed to be the correct one
-                    // This might lead to marking an item that was correct before as incorrect.
-                    // This is only allowed if the previously correct item has an answer count of 0.
-                    // Otherwise we throw an error.
-                    if (item.answers.isNotEmpty() && selectionOptionsUpdate.isNotEmpty()) {
-                        if (item.answers[0].selectionOption != selectionOptionsUpdate[0]) {
-                            val msg = "This update would mark an existing selection option whose answer count is" +
-                                    " greater than 0 as incorrect. This is not allowed."
-                            throw ResponseStatusException(HttpStatus.BAD_REQUEST, msg)
-                        }
-                    }
                     QuizItemAnswer(0, item, it, false, 0) // the correct item is updated later
                 } else {
                     // Should never happen
