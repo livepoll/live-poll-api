@@ -338,7 +338,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"update\",\r\n    \"startDate\": \"1610705932\",\r\n    \"endDate\":\"1610705932\",\r\n    \"slug\": \"1234\",\r\n    \"currentItem\": 126\r\n    \r\n}",
+							"raw": "{\r\n    \"name\": \"update\",\r\n    \"startDate\": \"1610705932\",\r\n    \"endDate\":\"1610705932\",\r\n    \"slug\": \"1234\",\r\n    \"currentItem\": 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -416,7 +416,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"question\": \"postman-multiplechoice-question\",\r\n    \"answers\": [\"postman-multiplechoice-answer-1\", \"postman-multiplechoice-answer-2\"]\r\n}",
+							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"question\": \"postman-multiplechoice-question\",\r\n    \"selectionOptions\": [\"postman-multiplechoice-answer-1\", \"postman-multiplechoice-answer-2\"]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -457,7 +457,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"question\": \"postman-multiplechoice-question-update\",\r\n    \"position\": 3,\r\n    \"answers\": [\"postman-multiplechoice-answer-1-update\", \"postman-multiplechoice-answer-2-update\"]\r\n}",
+							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 3,\r\n    \"question\": \"postman-multiplechoice-question-update\",\r\n    \"selectionOptions\": [\"postman-multiplechoice-answer-1-update\", \"postman-multiplechoice-answer-2-update\"]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -499,7 +499,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"question\": \"postman-quiz-question\",\r\n    \"answers\": [ \"correct option\", \"wrong option\", \"wrong option\"]\r\n}",
+							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"question\": \"postman-quiz-question\",\r\n    \"selectionOptions\": [ \"correct option\", \"wrong option\", \"wrong option\"]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -540,7 +540,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 1,\r\n    \"question\": \"postman-quiz-question-update\",\r\n    \"answers\": [ \"correct option update\", \"wrong option update\", \"wrong option update\"]\r\n}",
+							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 1,\r\n    \"question\": \"postman-quiz-question-update\",\r\n    \"selectionOptions\": [ \"correct option update\", \"wrong option update\", \"wrong option update\"]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
