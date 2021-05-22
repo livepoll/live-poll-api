@@ -23,7 +23,7 @@ jobs:
           java-version: 11
 
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
+        run: mvn package --file pom.xml --batch-mode --quiet --no-transfer-progress
         env:
           LIVE_POLL_MYSQL_URL: ${{ secrets.API_LIVE_POLL_MYSQL_URL }}
           LIVE_POLL_MYSQL_USER: ${{ secrets.API_LIVE_POLL_MYSQL_USER }}

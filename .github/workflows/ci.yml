@@ -23,7 +23,7 @@ jobs:
           java-version: 11
 
       - name: Build and test project with Maven
-        run: mvn -B package --file pom.xml --batch-mode --update-snapshots
+        run: mvn package --file pom.xml --batch-mode --update-snapshots --quiet --no-transfer-progress
         env:
           LIVE_POLL_MYSQL_URL: ${{ secrets.API_LIVE_POLL_MYSQL_URL }}
           LIVE_POLL_MYSQL_USER: ${{ secrets.API_LIVE_POLL_MYSQL_USER }}
@@ -41,14 +41,6 @@ jobs:
           LIVE_POLL_HTTPS_CERT_PASSWORD: ${{ secrets.API_LIVE_POLL_HTTPS_CERT_PASSWORD }}
           CUCUMBER_PUBLISH_TOKEN: ${{ secrets.CUCUMBER_PUBLISH_TOKEN }}
 
-      - name: SonarQube report deployment
-        uses: kitabisa/sonarqube-action@master
-        env:
-          JAVA_HOME: '' # Avoid 'java: not found' error
-        with:
-          host: ${{ secrets.SONARQUBE_HOST }}
-          login: ${{ secrets.SONARQUBE_TOKEN }}
-
       - name: Setup testing environment
         working-directory: ./.github/scripts
         run: docker-compose up -d
@@ -59,8 +51,13 @@ jobs:
           LIVE_POLL_MAIL_PASSWORD: ${{ secrets.API_LIVE_POLL_MAIL_PASSWORD }}
           LIVE_POLL_HTTPS_CERT_PASSWORD: ${{ secrets.API_LIVE_POLL_HTTPS_CERT_PASSWORD }}
 
-      - name: Check Docker
-        run: docker ps
+      - name: SonarQube report deployment
+        uses: kitabisa/sonarqube-action@master
+        env:
+          JAVA_HOME: '' # Avoid 'java: not found' error
+        with:
+          host: ${{ secrets.SONARQUBE_HOST }}
+          login: ${{ secrets.SONARQUBE_TOKEN }}
 
       - name: Install Newman
         run: sudo npm i -g newman
