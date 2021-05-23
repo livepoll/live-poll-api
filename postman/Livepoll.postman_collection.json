@@ -87,15 +87,11 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"//pm.test(\"Status code is 200\", function () {\r",
-									"//    pm.response.to.have.status(200);\r",
-									"//});\r",
-									"\r",
-									"//const urlPollId =\"localhost:8080/v1/polls/\";\r",
-									"//pm.sendRequest(urlPollId, function(error, response){\r",
-									"//    let resBody = JSON.parse(new Buffer.from(response.stream).toString())\r",
-									"//    pm.globals.set(\"poll-id\", resBody[0].id)\r",
-									"//});"
+									"const urlPollId =\"localhost:8080/v1/polls/\";\r",
+									"pm.sendRequest(urlPollId, function(error, response){\r",
+									"    let resBody = JSON.parse(new Buffer.from(response.stream).toString())\r",
+									"    pm.globals.set(\"poll-id\", resBody[0].id)\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -728,10 +724,14 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"pm.globals.unset(\"poll-id\");\r",
-									"pm.globals.unset(\"poll-item-id\");\r",
-									"pm.globals.unset(\"poll-items\");\r",
-									"pm.globals.unset(\"poll-items-counter\");\r",
+									"pm.globals.unset(\"poll-id\")\r",
+									"pm.globals.unset(\"poll-item-id\")\r",
+									"pm.globals.unset(\"poll-item-id-multiple-choice\")\r",
+									"pm.globals.unset(\"poll-item-id-open-text\")\r",
+									"pm.globals.unset(\"poll-item-id-quiz\")\r",
+									"pm.globals.unset(\"poll-items\")\r",
+									"pm.globals.unset(\"poll-items-counter\")\r",
+									"pm.globals.unset(\"cookies\")\r",
 									"\r",
 									"// Just for newman since we don't have our Livepoll Dev environment there\r",
 									"pm.environment.set('base-url', 'http://localhost:8080');\r",
@@ -1153,7 +1153,7 @@
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
-									"if(pm.response.json().currentItem == null){\r",
+									"if(pm.response.text() == \"Poll over\"){\r",
 									"    postman.setNextRequest(\"Get poll item\")\r",
 									"}else{\r",
 									"    postman.setNextRequest(\"Next presentation item\")\r",
@@ -1832,6 +1832,9 @@
 									"\r",
 									"pm.globals.unset(\"poll-id\")\r",
 									"pm.globals.unset(\"poll-item-id\")\r",
+									"pm.globals.unset(\"poll-item-id-multiple-choice\")\r",
+									"pm.globals.unset(\"poll-item-id-open-text\")\r",
+									"pm.globals.unset(\"poll-item-id-quiz\")\r",
 									"pm.globals.unset(\"poll-items\")\r",
 									"pm.globals.unset(\"poll-items-counter\")\r",
 									"pm.globals.unset(\"cookies\")"

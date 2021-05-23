@@ -56,9 +56,14 @@ class PollController(
 
     @ApiOperation(value = "Get next poll item for presentation", tags = ["Poll presentation"])
     @GetMapping("/{id}/next-item")
-    fun getNextPollItem(@PathVariable(name = "id") pollId: Long, @AuthenticationPrincipal user: User): PollDtoOut {
+    fun getNextPollItem(@PathVariable(name = "id") pollId: Long, @AuthenticationPrincipal user: User): ResponseEntity<*> {
         accountService.checkAuthorizationByPollId(pollId)
-        return pollService.getNextPollItem(pollId)
+        val item = pollService.getNextPollItem(pollId)
+        return if (item!=null){
+            ResponseEntity.ok(item)
+        }else{
+            ResponseEntity.ok("Poll over")
+        }
     }
 
     //-------------------------------------------- Update --------------------------------------------------------------

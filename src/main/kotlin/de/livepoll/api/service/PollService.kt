@@ -15,6 +15,7 @@ import org.quartz.JobKey
 import org.quartz.TriggerKey
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -131,7 +132,7 @@ class PollService(
         }
     }
 
-    fun getNextPollItem(pollId: Long): PollDtoOut {
+    fun getNextPollItem(pollId: Long): PollItemDtoOut? {
         pollRepository.findById(pollId).orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "This poll does not exist")
         }.run {
@@ -146,7 +147,12 @@ class PollService(
                 this.currentItem = requireNotNull(newItem).id
             }
             webSocketService.sendCurrentItem(this.slug, this.id, this.currentItem)
-            return pollRepository.saveAndFlush(this).toDtoOut()
+            pollRepository.saveAndFlush(this)
+            return if (this.currentItem != null) {
+                pollItemService.getPollItem(this.currentItem!!)
+            }else{
+                null
+            }
         }
     }
 
