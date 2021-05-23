@@ -9,6 +9,7 @@ fun Poll.toDtoOut(): PollDtoOut {
     return PollDtoOut(this.id, this.name, this.startDate, this.endDate, this.slug, this.currentItem)
 }
 
+
 // --------------------------------------------------- User mappers ----------------------------------------------------
 
 fun User.toDtoOut(): UserDtoOut {
