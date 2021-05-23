@@ -5,7 +5,7 @@ open class MultipleChoiceItemDtoIn(
     question: String,
     val allowMultipleAnswers: Boolean,
     val allowBlankField: Boolean,
-    val answers: List<String>,
+    val selectionOptions: List<String>,
 ) : PollItemDtoIn(pollId, question)
 
 class MultipleChoiceItemWithPositionDtoIn(
@@ -13,6 +13,6 @@ class MultipleChoiceItemWithPositionDtoIn(
     question: String,
     allowMultipleAnswers: Boolean,
     allowBlankField: Boolean,
-    answers: List<String>,
+    selectionOptions: List<String>,
     val position: Int
-) : MultipleChoiceItemDtoIn(pollId, question, allowMultipleAnswers, allowBlankField, answers)
+) : MultipleChoiceItemDtoIn(pollId, question, allowMultipleAnswers, allowBlankField, selectionOptions)

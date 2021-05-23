@@ -20,6 +20,6 @@ class MultipleChoiceItem(
     var allowBlankField: Boolean,
 
     @OneToMany(mappedBy = "multipleChoiceItem", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var answers: MutableList<MultipleChoiceItemAnswer>
+    override var answers: MutableList<MultipleChoiceItemAnswer>
 
-) : PollItem(id, poll, question, position, PollItemType.MULTIPLE_CHOICE)
+) : PollItemAnswerable(id, poll, question, position, PollItemType.MULTIPLE_CHOICE, answers)

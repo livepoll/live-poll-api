@@ -17,6 +17,6 @@ class QuizItem(
     question: String,
 
     @OneToMany(mappedBy = "quizItem", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var answers: MutableList<QuizItemAnswer>
+    override var answers: MutableList<QuizItemAnswer>
 
-) : PollItem(id, poll, question, position, PollItemType.QUIZ)
+) : PollItemAnswerable(id, poll, question, position, PollItemType.QUIZ, answers)
