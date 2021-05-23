@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "65ba7f23-1487-472a-a87c-4af4209e407e",
+		"_postman_id": "2a72ef7d-37b3-4769-9e90-53a5bf82d53b",
 		"name": "Livepoll",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -174,7 +174,9 @@
 								"exec": [
 									"pm.test(\"Status code is 201\", function () {\r",
 									"    pm.response.to.have.status(201);\r",
-									"});"
+									"});\r",
+									"\r",
+									"pm.globals.set(\"poll-id\", pm.response.json().id)"
 								],
 								"type": "text/javascript"
 							}
@@ -354,6 +356,26 @@
 								"v1",
 								"polls",
 								"{{poll-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Next presentation item",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/polls/{{poll-id}}/next-item",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls",
+								"{{poll-id}}",
+								"next-item"
 							]
 						}
 					},
@@ -985,7 +1007,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 1,\r\n    \"question\": \"postman-quiz-question\",\r\n    \"answers\": [ \"correct option\", \"wrong option\", \"wrong option\"]\r\n}",
+							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 2,\r\n    \"question\": \"postman-quiz-question\",\r\n    \"answers\": [ \"correct option\", \"wrong option\", \"wrong option\"]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1034,7 +1056,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 1,\r\n    \"question\": \"postman-open-text-question\"\r\n}",
+							"raw": "{\r\n    \"pollId\": \"{{poll-id}}\",\r\n    \"position\": 3,\r\n    \"question\": \"postman-open-text-question\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1091,6 +1113,51 @@
 								"polls",
 								"{{poll-id}}",
 								"poll-items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Next presentation item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.json().currentItem == null){\r",
+									"    postman.setNextRequest(\"Get poll item\")\r",
+									"}else{\r",
+									"    postman.setNextRequest(\"Next presentation item\")\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base-url}}/v1/polls/{{poll-id}}/next-item",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls",
+								"{{poll-id}}",
+								"next-item"
 							]
 						}
 					},
@@ -1363,13 +1430,19 @@
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
-									"/*const url = \"localhost:8080/v1/poll-items/\" + pm.globals.get(\"poll-item-id\");\r",
-									"pm.sendRequest(url, function(error, response) {\r",
+									"\r",
+									"\r",
+									"const url = \"localhost:8080/v1/poll-items/\" + pm.globals.get(\"poll-item-id\");\r",
+									"pm.sendRequest({\r",
+									"            url: \"localhost:8080/v1/poll-items/\" + pm.globals.get(\"poll-item-id\"),\r",
+									"            method: 'GET',\r",
+									"            headers: 'Cookie:'+pm.globals.get(\"cookies\")\r",
+									"        }, function(error, response) {\r",
 									"    pm.test(\"Poll item does not exist anymore\", function() {\r",
 									"        pm.expect(response).to.have.property('code', 403)\r",
 									"        pm.expect(response).to.have.property('status', 'Forbidden')\r",
 									"    })\r",
-									"})*/"
+									"})"
 								],
 								"type": "text/javascript"
 							}
