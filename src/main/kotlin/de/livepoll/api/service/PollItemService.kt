@@ -61,6 +61,14 @@ class PollItemService {
     }
 
     fun deleteItem(itemId: Long) {
+        pollItemRepository.findById(itemId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found")
+        }.run {
+            val poll = this.poll
+            if (poll.currentItem == itemId) {
+                poll.currentItem = null
+            }
+        }
         pollItemRepository.deleteById(itemId)
     }
 
