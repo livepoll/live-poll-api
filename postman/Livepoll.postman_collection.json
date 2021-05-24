@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a3702706-f5ee-4e7f-b11d-062f6af6c688",
+		"_postman_id": "4e9192be-d8d9-4d36-9b77-c8d3c03eddb4",
 		"name": "Livepoll",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -87,15 +87,11 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"//pm.test(\"Status code is 200\", function () {\r",
-									"//    pm.response.to.have.status(200);\r",
-									"//});\r",
-									"\r",
-									"//const urlPollId =\"localhost:8080/v1/polls/\";\r",
-									"//pm.sendRequest(urlPollId, function(error, response){\r",
-									"//    let resBody = JSON.parse(new Buffer.from(response.stream).toString())\r",
-									"//    pm.globals.set(\"poll-id\", resBody[0].id)\r",
-									"//});"
+									"const urlPollId =\"localhost:8080/v1/polls/\";\r",
+									"pm.sendRequest(urlPollId, function(error, response){\r",
+									"    let resBody = JSON.parse(new Buffer.from(response.stream).toString())\r",
+									"    pm.globals.set(\"poll-id\", resBody[0].id)\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -174,7 +170,9 @@
 								"exec": [
 									"pm.test(\"Status code is 201\", function () {\r",
 									"    pm.response.to.have.status(201);\r",
-									"});"
+									"});\r",
+									"\r",
+									"pm.globals.set(\"poll-id\", pm.response.json().id)"
 								],
 								"type": "text/javascript"
 							}
@@ -354,6 +352,26 @@
 								"v1",
 								"polls",
 								"{{poll-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Next presentation item",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base-url}}/v1/polls/{{poll-id}}/next-item",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls",
+								"{{poll-id}}",
+								"next-item"
 							]
 						}
 					},
@@ -706,10 +724,14 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"pm.globals.unset(\"poll-id\");\r",
-									"pm.globals.unset(\"poll-item-id\");\r",
-									"pm.globals.unset(\"poll-items\");\r",
-									"pm.globals.unset(\"poll-items-counter\");\r",
+									"pm.globals.unset(\"poll-id\")\r",
+									"pm.globals.unset(\"poll-item-id\")\r",
+									"pm.globals.unset(\"poll-item-id-multiple-choice\")\r",
+									"pm.globals.unset(\"poll-item-id-open-text\")\r",
+									"pm.globals.unset(\"poll-item-id-quiz\")\r",
+									"pm.globals.unset(\"poll-items\")\r",
+									"pm.globals.unset(\"poll-items-counter\")\r",
+									"pm.globals.unset(\"cookies\")\r",
 									"\r",
 									"// Just for newman since we don't have our Livepoll Dev environment there\r",
 									"pm.environment.set('base-url', 'http://localhost:8080');\r",
@@ -1115,6 +1137,51 @@
 								"polls",
 								"{{poll-id}}",
 								"poll-items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Next presentation item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.text() == \"Poll over\"){\r",
+									"    postman.setNextRequest(\"Get poll item\")\r",
+									"}else{\r",
+									"    postman.setNextRequest(\"Next presentation item\")\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{cookies}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base-url}}/v1/polls/{{poll-id}}/next-item",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"v1",
+								"polls",
+								"{{poll-id}}",
+								"next-item"
 							]
 						}
 					},
@@ -1702,13 +1769,17 @@
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
-									"/*const url = \"localhost:8080/v1/poll-items/\" + pm.globals.get(\"poll-item-id\");\r",
-									"pm.sendRequest(url, function(error, response) {\r",
+									"\r",
+									"pm.sendRequest({\r",
+									"            url: \"localhost:8080/v1/poll-items/\" + pm.globals.get(\"poll-item-id\"),\r",
+									"            method: 'GET',\r",
+									"            headers: 'Cookie:'+pm.environment.get(\"cookies\")\r",
+									"        }, function(error, response) {\r",
 									"    pm.test(\"Poll item does not exist anymore\", function() {\r",
 									"        pm.expect(response).to.have.property('code', 403)\r",
 									"        pm.expect(response).to.have.property('status', 'Forbidden')\r",
 									"    })\r",
-									"})*/"
+									"})"
 								],
 								"type": "text/javascript"
 							}
@@ -1747,16 +1818,23 @@
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
-									"/*const url = \"localhost:8080/v1/polls/\" + pm.globals.get(\"poll-id\");\r",
-									"pm.sendRequest(url, function(error, response) {\r",
+									"\r",
+									"pm.sendRequest({\r",
+									"            url: \"localhost:8080/v1/polls/\" + pm.globals.get(\"poll-id\"),\r",
+									"            method: 'GET',\r",
+									"            headers: 'Cookie:'+pm.environment.get(\"cookies\")\r",
+									"        }, function(error, response) {\r",
 									"    pm.test(\"Poll item does not exist anymore\", function() {\r",
 									"        pm.expect(response).to.have.property('code', 403)\r",
 									"        pm.expect(response).to.have.property('status', 'Forbidden')\r",
 									"    })\r",
-									"})*/\r",
+									"})\r",
 									"\r",
 									"pm.globals.unset(\"poll-id\")\r",
 									"pm.globals.unset(\"poll-item-id\")\r",
+									"pm.globals.unset(\"poll-item-id-multiple-choice\")\r",
+									"pm.globals.unset(\"poll-item-id-open-text\")\r",
+									"pm.globals.unset(\"poll-item-id-quiz\")\r",
 									"pm.globals.unset(\"poll-items\")\r",
 									"pm.globals.unset(\"poll-items-counter\")\r",
 									"pm.globals.unset(\"cookies\")"
