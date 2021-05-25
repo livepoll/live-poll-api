@@ -1,7 +1,5 @@
 package de.livepoll.api.util.websocket
 
-import de.livepoll.api.entity.db.PollItem
-import de.livepoll.api.repository.PollItemRepository
 import de.livepoll.api.repository.PollRepository
 import de.livepoll.api.service.PollItemService
 import de.livepoll.api.service.WebSocketService
@@ -27,12 +25,14 @@ class SubscribeListener(
         if (destination.contains("poll")) {
             val slug = destination.split("/").last()
             val poll = pollRepository.findBySlug(slug)
+            val url = "/v1/websocket/poll/$slug"
             if (poll == null) {
+                messagingTemplate.convertAndSendToUser(event.user!!.name, url, "{\"error\":\"Error\"}")
                 throw ResponseStatusException(HttpStatus.NOT_FOUND)
             } else {
-                val url = "/v1/websocket/poll/$slug"
                 if (poll.currentItem == null) {
-                    messagingTemplate.convertAndSendToUser(event.user!!.name, url, "{\"pollId\":${poll.id}}")
+                    messagingTemplate.convertAndSendToUser(event.user!!.name, url, "{\"error\":\"Current item is null\"}")
+                    throw ResponseStatusException(HttpStatus.NOT_FOUND)
                 } else {
                     val pollItemDto = pollItemService.getPollItem(poll.currentItem!!)
                     messagingTemplate.convertAndSendToUser(event.user!!.name, url, pollItemDto)
@@ -40,12 +40,17 @@ class SubscribeListener(
             }
         } else if (destination.contains("presentation")) {
             val pollId = destination.split("/").last().toLong()
+            val url = "/v1/websocket/presentation/${pollId}"
             pollRepository.findById(pollId).orElseThrow {
-                val url = "/v1/websocket/presentation/${pollId}"
-                messagingTemplate.convertAndSendToUser(event.user!!.name, url, "No current item")
+                messagingTemplate.convertAndSendToUser(event.user!!.name, url, "{\"error\":\"Error\"}")
                 throw ResponseStatusException(HttpStatus.NOT_FOUND)
             }.run {
-                webSocketService.sendItemWithAnswers(this.currentItem!!)
+                if (this.currentItem != null) {
+                    webSocketService.sendItemWithAnswers(this.currentItem!!)
+                } else {
+                    messagingTemplate.convertAndSendToUser(event.user!!.name, url, "{\"error\":\"Error\"}")
+                    throw ResponseStatusException(HttpStatus.NOT_FOUND)
+                }
             }
         }
     }
