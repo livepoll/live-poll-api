@@ -28,7 +28,7 @@ class PollController(
     @PostMapping
     fun createPoll(@RequestBody newPoll: PollDtoIn, @AuthenticationPrincipal user: User): ResponseEntity<*> {
         val addedPoll = pollService.createPoll(newPoll, user.id)
-        return ResponseEntity.created(URI(newPoll.name)).body(addedPoll)
+        return ResponseEntity.created(URI(addedPoll.id.toString())).body(addedPoll)
     }
 
     //--------------------------------------------- Get ----------------------------------------------------------------
