@@ -114,6 +114,7 @@ class PollService(
             ResponseStatusException(HttpStatus.NOT_FOUND, "This poll does not exist")
         }.run {
             this.name = poll.name
+            this.currentItem = poll.currentItem
             if (poll.startDate != null && poll.endDate != null) {
                 updateScheduledPoll(pollId, poll.startDate, poll.endDate)
                 this.startDate = poll.startDate
@@ -125,8 +126,10 @@ class PollService(
             }
             if (poll.slug != null && isSlugUnique(poll.slug)) {
                 this.slug = poll.slug
+            } else {
+                pollRepository.saveAndFlush(this)
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Slug already exists")
             }
-            this.currentItem = poll.currentItem
             webSocketService.sendCurrentItem(this.slug, this.id, this.currentItem)
             return pollRepository.saveAndFlush(this).toDtoOut()
         }
@@ -150,7 +153,7 @@ class PollService(
             pollRepository.saveAndFlush(this)
             return if (this.currentItem != null) {
                 pollItemService.getPollItem(this.currentItem!!)
-            }else{
+            } else {
                 null
             }
         }
@@ -182,7 +185,7 @@ class PollService(
             val triggerStop = jobScheduleCrator.createSimpleTrigger(jobNameStop, stopDate)
             val returnDate = schedulerFactory.`object`!!.rescheduleJob(TriggerKey.triggerKey(jobNameStart), triggerStart)
             schedulerFactory.`object`!!.rescheduleJob(TriggerKey.triggerKey(jobNameStop), triggerStop)
-            if(returnDate == null){
+            if (returnDate == null) {
                 schedulePoll(pollId, startDate, stopDate)
             }
         }

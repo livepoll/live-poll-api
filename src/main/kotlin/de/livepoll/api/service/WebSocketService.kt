@@ -45,7 +45,7 @@ class WebSocketService(
             }
         } else {
             simpUserRegistry.users.forEach {
-                messagingTemplate.convertAndSendToUser(it.name, url, "{\"pollId\":$pollId}")
+                messagingTemplate.convertAndSendToUser(it.name, url, "{\"error\":\"Current item is null\"}")
             }
         }
     }
