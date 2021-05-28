@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "3c5dd4db-9e4c-435a-b8fd-2a7a3dfcf778",
+		"_postman_id": "9213a57b-1917-42d3-a811-a026a8ad5a87",
 		"name": "Livepoll",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1153,7 +1153,7 @@
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
-									"if(pm.response.text() == \"Poll over\"){\r",
+									"if(pm.response.text() == \"{\\\"result\\\": \\\"Poll over\\\"}\"){\r",
 									"    postman.setNextRequest(\"Get poll item\")\r",
 									"}else{\r",
 									"    postman.setNextRequest(\"Next presentation item\")\r",

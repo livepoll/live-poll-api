@@ -62,7 +62,7 @@ class PollController(
         return if (item!=null){
             ResponseEntity.ok(item)
         }else{
-            ResponseEntity.ok("Poll over")
+            ResponseEntity.ok("{\"result\": \"Poll over\"}")
         }
     }
 
