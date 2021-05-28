@@ -124,11 +124,13 @@ class PollService(
                 this.startDate = null
                 this.endDate = null
             }
-            if (poll.slug != null && isSlugUnique(poll.slug)) {
-                this.slug = poll.slug
-            } else {
-                pollRepository.saveAndFlush(this)
-                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Slug already exists")
+            if (poll.slug != null && !this.slug.equals(poll.slug)) {
+                if (isSlugUnique(poll.slug)) {
+                    this.slug = poll.slug
+                } else {
+                    pollRepository.saveAndFlush(this)
+                    throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Slug already exists")
+                }
             }
             webSocketService.sendCurrentItem(this.slug, this.id, this.currentItem)
             return pollRepository.saveAndFlush(this).toDtoOut()
