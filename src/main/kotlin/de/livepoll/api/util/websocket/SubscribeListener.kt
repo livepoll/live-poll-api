@@ -31,7 +31,7 @@ class SubscribeListener(
                 throw ResponseStatusException(HttpStatus.NOT_FOUND)
             } else {
                 if (poll.currentItem == null) {
-                    messagingTemplate.convertAndSendToUser(event.user!!.name, url, "{\"error\":\"Current item is null\"}")
+                    messagingTemplate.convertAndSendToUser(event.user!!.name, url, "{\"pollId\":${poll.id}}")
                     throw ResponseStatusException(HttpStatus.NOT_FOUND)
                 } else {
                     val pollItemDto = pollItemService.getPollItem(poll.currentItem!!)
