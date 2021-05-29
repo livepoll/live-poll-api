@@ -132,7 +132,10 @@ class PollService(
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Slug already exists")
                 }
             }
-            webSocketService.sendCurrentItem(this.slug, this.id, this.currentItem)
+            if (this.currentItem != null) {
+                webSocketService.sendCurrentItem(this.slug, this.id, this.currentItem)
+                webSocketService.sendItemWithAnswers(this.currentItem!!)
+            }
             return pollRepository.saveAndFlush(this).toDtoOut()
         }
     }
