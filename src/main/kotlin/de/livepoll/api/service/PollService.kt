@@ -36,12 +36,24 @@ class PollService(
 
     //--------------------------------------------- Get ----------------------------------------------------------------
 
+    /**
+     * Get a poll.
+     *
+     * @param pollId the id of the poll
+     * @return poll in dto format
+     */
     fun getPoll(pollId: Long): PollDtoOut {
         return pollRepository.findById(pollId)
                 .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found") }
                 .run { this.toDtoOut() }
     }
 
+    /**
+     * Get poll items for a specific poll.
+     *
+     * @param pollId the id of the poll
+     * @return a list of poll items in dto format
+     */
     fun getPollItemsForPoll(pollId: Long): List<PollItemDtoOut> {
         pollRepository.findById(pollId)
                 .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found") }
@@ -53,6 +65,13 @@ class PollService(
 
     //-------------------------------------------- Create --------------------------------------------------------------
 
+    /**
+     * Create a new poll.
+     *
+     * @param pollDto the new poll in dto format
+     * @param userId the user who creates the new poll
+     * @return the new poll in dto format
+     */
     fun createPoll(pollDto: PollDtoIn, userId: Long): PollDtoOut {
         userRepository.findById(userId)
                 .orElseThrow {
@@ -98,9 +117,14 @@ class PollService(
 
     //-------------------------------------------- Delete --------------------------------------------------------------
 
-    fun deletePoll(id: Long) {
+    /**
+     * Delete a single poll. All items belonging to the poll are also deleted.
+     *
+     * @param pollId
+     */
+    fun deletePoll(pollId: Long) {
         try {
-            pollRepository.deleteById(id)
+            pollRepository.deleteById(pollId)
         } catch (ex: EmptyResultDataAccessException) {
             throw ResponseStatusException(HttpStatus.NO_CONTENT)
         }
@@ -109,6 +133,13 @@ class PollService(
 
     //-------------------------------------------- Update --------------------------------------------------------------
 
+    /**
+     * Update a poll.
+     *
+     * @param pollId the id of the poll which should be updated
+     * @param poll a poll in dto format that contains the new data
+     * @return the updated poll in dto format
+     */
     fun updatePoll(pollId: Long, poll: PollDtoIn): PollDtoOut {
         pollRepository.findById(pollId).orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "This poll does not exist")
@@ -140,6 +171,12 @@ class PollService(
         }
     }
 
+    /**
+     * This method sets the active item from the poll to the next following item.
+     *
+     * @param pollId the id of the poll where the active item is to be continued
+     * @return the next poll item in dto format
+     */
     fun getNextPollItem(pollId: Long): PollItemDtoOut? {
         pollRepository.findById(pollId).orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "This poll does not exist")
@@ -166,6 +203,13 @@ class PollService(
 
     fun isSlugUnique(slug: String) = pollRepository.findBySlug(slug) == null
 
+    /**
+     * This method schedules a poll.
+     *
+     * @param pollId the id of the poll that should be scheduled
+     * @param startDate the start date of the poll
+     * @param stopDate the end date of the poll
+     */
     private fun schedulePoll(pollId: Long, startDate: Date, stopDate: Date) {
         if (startDate.before(GregorianCalendar.getInstance().time) || stopDate.before(GregorianCalendar.getInstance().time)) {
             throw ResponseStatusException(HttpStatus.CONFLICT, "Poll was not planned because start or end date is in the past")
@@ -180,6 +224,13 @@ class PollService(
         }
     }
 
+    /**
+     * This method updates the start and end date of an poll which has already been planned.
+     *
+     * @param pollId the id of the poll that should be scheduled
+     * @param startDate the start date of the poll
+     * @param stopDate the end date of the poll
+     */
     fun updateScheduledPoll(pollId: Long, startDate: Date, stopDate: Date) {
         if (startDate.before(GregorianCalendar.getInstance().time) || stopDate.before(GregorianCalendar.getInstance().time)) {
             throw ResponseStatusException(HttpStatus.CONFLICT, "Poll was not planned because start or end date is in the past")
@@ -196,6 +247,11 @@ class PollService(
         }
     }
 
+    /**
+     * Start a poll.
+     *
+     * @param pollId the id of the poll which should be started
+     */
     @Transactional
     fun executeStartPoll(pollId: Long) {
         pollRepository.findById(pollId).ifPresent {
@@ -205,6 +261,11 @@ class PollService(
         }
     }
 
+    /**
+     * Stop a poll.
+     *
+     * @param pollId the id of the poll which should be stoped
+     */
     fun executeStopPoll(pollId: Long) {
         pollRepository.findById(pollId).ifPresent {
             it.currentItem = null
@@ -213,6 +274,11 @@ class PollService(
         }
     }
 
+    /**
+     * Unschedule a poll.
+     *
+     * @param pollId the id the poll which should be unscheduled
+     */
     fun stopScheduledPoll(pollId: Long) {
         schedulerFactory.`object`!!.deleteJob(JobKey("start-poll-" + pollId))
         schedulerFactory.`object`!!.deleteJob(JobKey("stop-poll-" + pollId))
