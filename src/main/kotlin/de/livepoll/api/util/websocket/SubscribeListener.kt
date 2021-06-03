@@ -27,7 +27,7 @@ class SubscribeListener(
             val poll = pollRepository.findBySlug(slug)
             val url = "/v1/websocket/poll/$slug"
             if (poll == null) {
-                messagingTemplate.convertAndSendToUser(event.user!!.name, url, "{\"error\":\"Error\"}")
+                sendErrorMessage(event.user!!.name, url, "Error in the participant endpoint")
                 throw ResponseStatusException(HttpStatus.NOT_FOUND)
             } else {
                 if (poll.currentItem == null) {
@@ -42,16 +42,20 @@ class SubscribeListener(
             val pollId = destination.split("/").last().toLong()
             val url = "/v1/websocket/presentation/${pollId}"
             pollRepository.findById(pollId).orElseThrow {
-                messagingTemplate.convertAndSendToUser(event.user!!.name, url, "{\"error\":\"Error\"}")
+                sendErrorMessage(event.user!!.name, url, "Error in the presentation endpoint")
                 throw ResponseStatusException(HttpStatus.NOT_FOUND)
             }.run {
                 if (this.currentItem != null) {
                     webSocketService.sendItemWithAnswers(this.currentItem!!)
                 } else {
-                    messagingTemplate.convertAndSendToUser(event.user!!.name, url, "{\"error\":\"Error\"}")
+                    sendErrorMessage(event.user!!.name, url, "Error in the presentation endpoint")
                     throw ResponseStatusException(HttpStatus.NOT_FOUND)
                 }
             }
         }
+    }
+
+    private fun sendErrorMessage(username: String, url: String, errorMessage: String) {
+        messagingTemplate.convertAndSendToUser(username, url, "{\"error\":\"$errorMessage\"}")
     }
 }
