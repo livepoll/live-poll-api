@@ -40,6 +40,11 @@ class AccountService(
     private val pollItemRepository: PollItemRepository<PollItem>
 ) {
 
+    /**
+     * Create a new account.
+     *
+     * @param user the new user object that should be saved in the database
+     */
     fun createAccount(user: User): User {
         return user.apply {
             if (userRepository.existsByUsername(username) || userRepository.existsByEmail(email))
@@ -52,6 +57,9 @@ class AccountService(
         }
     }
 
+    /**
+     * Create a test user for postman.
+     */
     fun createPostmanAccount() {
         if (userRepository.existsByUsername("postman")) return
         val user = User(0, "postman", "noreply@live-poll.de", passwordEncoder.encode("1234"),
@@ -59,11 +67,22 @@ class AccountService(
         userRepository.saveAndFlush(user)
     }
 
+    /**
+     * Create a verification token for account confirmation and save it in the database.
+     *
+     * @param user the user for whom the token is generated
+     * @param token the token string
+     */
     fun createVerificationToken(user: User, token: String) {
         val verificationToken = VerificationToken(0, token, user.username, calculateExpiryDate())
         verificationTokenRepository.saveAndFlush(verificationToken)
     }
 
+    /**
+     * Confirm an account.
+     *
+     * @param token the token string to confirm the new account
+     */
     fun confirmAccount(token: String): Boolean {
         val verificationToken = verificationTokenRepository.findByToken(token)
         if (verificationToken.expiryDate.after(Date())) {
@@ -79,6 +98,12 @@ class AccountService(
         .apply { add(Calendar.MINUTE, 60 * 24) }
         .time
 
+    /**
+     * Create jwt token for login. This method does not check if the password is correct. This is done with the authentication manager before this method is called.
+     *
+     * @param username the name of the user you want to login with
+     * @return a ResponseEntity object is returned with an encrypted jwt token for future authentication in the header
+     */
     fun login(username: String): ResponseEntity<*> {
         val user = userRepository.findByUsername(username) ?: userRepository.findByEmail(username)
         user?.run {
@@ -101,6 +126,11 @@ class AccountService(
         throw UsernameNotFoundException("User not found")
     }
 
+    /**
+     * Logout
+     *
+     * @param request the http request that contains the jwt token that should be blocked
+     */
     fun logout(request: HttpServletRequest): ResponseEntity<*> {
         SecurityContextHolder.getContext().authentication = null
         val accessTokenCookieName = System.getenv("LIVE_POLL_JWT_AUTH_COOKIE_NAME")
@@ -123,6 +153,12 @@ class AccountService(
         throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized")
     }
 
+    /**
+     * Check if user should have access to this poll.
+     *
+     * @param id the id of the poll
+     * @return a boolean that indicates whether access is permitted or not
+     */
     fun checkAuthorizationByPollId(id: Long): Boolean {
         try {
             if (SecurityContextHolder.getContext().authentication.name == pollRepository.getOne(id).user.username)
@@ -133,6 +169,12 @@ class AccountService(
         }
     }
 
+    /**
+     * Check if user should have access to this poll item.
+     *
+     * @param id the id of the poll item
+     * @return a boolean that indicates whether access is permitted or not
+     */
     fun checkAuthorizationByPollItemId(id: Long): Boolean {
         try {
             if (SecurityContextHolder.getContext().authentication.name == pollItemRepository.getOne(id).poll.user.username)

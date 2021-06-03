@@ -32,6 +32,13 @@ class WebSocketService(
 ) {
     private val websocketPrefix = "/v1/websocket"
 
+    /**
+     * Send the current item from a poll to all participants.
+     *
+     * @param slug the url slug for the websocket url
+     * @param pollId the id of the poll to which the current item belongs
+     * @param currentItemId the id of the current item that should be send
+     */
     fun sendCurrentItem(slug: String, pollId: Long, currentItemId: Long?) {
         val url = "${websocketPrefix}/poll/$slug"
         if (currentItemId != null) {
@@ -50,6 +57,12 @@ class WebSocketService(
         }
     }
 
+    /**
+     * Save a answer that is send from a participant.
+     *
+     * @param pollItemId the id of the poll item for which this answer is intended
+     * @param payload a json string that contains the answer item
+     */
     fun saveAnswer(pollItemId: Long, payload: String) {
         val mapper = ObjectMapper()
         when (mapper.readValue(payload, Map::class.java)["type"].toString()) {
@@ -81,6 +94,11 @@ class WebSocketService(
         }
     }
 
+    /**
+     * Send an item along with its answers to the presenter.
+     *
+     * @param itemId the id of the item that should be send to the belonging poll presentation endpoint
+     */
     @Transactional
     fun sendItemWithAnswers(itemId: Long){
         val item: PollItemDtoOut = pollItemService.getPollItem(itemId)
