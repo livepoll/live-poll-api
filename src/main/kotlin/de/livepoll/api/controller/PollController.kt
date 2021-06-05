@@ -31,6 +31,7 @@ class PollController(
         return ResponseEntity.created(URI(addedPoll.id.toString())).body(addedPoll)
     }
 
+
     //--------------------------------------------- Get ----------------------------------------------------------------
 
     @ApiOperation(value = "Get poll", tags = ["Poll"])
@@ -56,15 +57,19 @@ class PollController(
 
     @ApiOperation(value = "Get next poll item for presentation", tags = ["Poll presentation"])
     @GetMapping("/{id}/next-item")
-    fun getNextPollItem(@PathVariable(name = "id") pollId: Long, @AuthenticationPrincipal user: User): ResponseEntity<*> {
+    fun getNextPollItem(
+        @PathVariable(name = "id") pollId: Long,
+        @AuthenticationPrincipal user: User
+    ): ResponseEntity<*> {
         accountService.checkAuthorizationByPollId(pollId)
         val item = pollService.getNextPollItem(pollId)
-        return if (item!=null){
+        return if (item != null) {
             ResponseEntity.ok(item)
-        }else{
+        } else {
             ResponseEntity.ok("{\"result\": \"Poll over\"}")
         }
     }
+
 
     //-------------------------------------------- Update --------------------------------------------------------------
 
@@ -75,6 +80,7 @@ class PollController(
         return pollService.updatePoll(pollId, updatedPoll)
     }
 
+
     //-------------------------------------------- Delete --------------------------------------------------------------
 
     @ApiOperation(value = "Delete poll", tags = ["Poll"])
@@ -83,4 +89,5 @@ class PollController(
         accountService.checkAuthorizationByPollId(pollId)
         return pollService.deletePoll(pollId)
     }
+
 }
