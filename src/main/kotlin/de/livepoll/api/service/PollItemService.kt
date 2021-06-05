@@ -119,7 +119,7 @@ class PollItemService {
     }
 
     /**
-     * Create a quiz  item.
+     * Create a quiz item.
      *
      * @param item the new quiz item in dto format
      * @return the created quiz item in dto format
@@ -153,7 +153,7 @@ class PollItemService {
     }
 
     /**
-     * Create a open text  item.
+     * Create an open text item.
      *
      * @param item the new open text item in dto format
      * @return the created open text item in dto format
@@ -353,7 +353,7 @@ class PollItemService {
     }
 
     /**
-     * Update a open text item.
+     * Update an open text item.
      *
      * @param pollItemId the id of the item that should be updated
      * @param pollItem the new item in dto format
