@@ -58,10 +58,10 @@ class WebSocketService(
     }
 
     /**
-     * Save a answer that is send from a participant.
+     * Save an answer which is sent from a participant.
      *
      * @param pollItemId the id of the poll item for which this answer is intended
-     * @param payload a json string that contains the answer item
+     * @param payload a JSON string that contains the answer item
      */
     fun saveAnswer(pollItemId: Long, payload: String) {
         val mapper = ObjectMapper()
@@ -97,7 +97,7 @@ class WebSocketService(
     /**
      * Send an item along with its answers to the presenter.
      *
-     * @param itemId the id of the item that should be send to the belonging poll presentation endpoint
+     * @param itemId the id of the item that should be sent to the belonging poll presentation endpoint
      */
     @Transactional
     fun sendItemWithAnswers(itemId: Long) {
