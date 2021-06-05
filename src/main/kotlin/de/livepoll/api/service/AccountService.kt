@@ -62,8 +62,10 @@ class AccountService(
      */
     fun createPostmanAccount() {
         if (userRepository.existsByUsername("postman")) return
-        val user = User(0, "postman", "noreply@live-poll.de", passwordEncoder.encode("1234"),
-            true, "ROLE_USER", emptyList())
+        val user = User(
+            0, "postman", "noreply@live-poll.de", passwordEncoder.encode("1234"),
+            true, "ROLE_USER", emptyList()
+        )
         userRepository.saveAndFlush(user)
     }
 

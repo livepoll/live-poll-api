@@ -42,6 +42,7 @@ class PollItemController(
         return ResponseEntity.created(URI(newItem.pollId.toString())).body(addedItem)
     }
 
+
     //--------------------------------------------- Get ----------------------------------------------------------------
 
     @ApiOperation(value = "Get poll item", tags = ["Poll item"])
@@ -51,28 +52,39 @@ class PollItemController(
         return pollItemService.getPollItem(pollItemId)
     }
 
+
     //-------------------------------------------- Update --------------------------------------------------------------
 
     @ApiOperation(value = "Update multiple choice item", tags = ["Poll item"])
     @PutMapping("/multiple-choice/{pollItemId}")
-    fun updateMultipleChoiceItem(@RequestBody updatedItem: MultipleChoiceItemWithPositionDtoIn, @PathVariable(name="pollItemId") pollItemId: Long): ResponseEntity<*> {
+    fun updateMultipleChoiceItem(
+        @RequestBody updatedItem: MultipleChoiceItemWithPositionDtoIn,
+        @PathVariable(name = "pollItemId") pollItemId: Long
+    ): ResponseEntity<*> {
         accountService.checkAuthorizationByPollItemId(pollItemId)
         return ResponseEntity.ok(pollItemService.updateMultipleChoiceItem(pollItemId, updatedItem))
     }
 
     @ApiOperation(value = "Update quiz item", tags = ["Poll item"])
     @PutMapping("/quiz/{pollItemId}")
-    fun updateQuizItem(@RequestBody updatedItem: QuizItemWithPositionDtoIn, @PathVariable(name="pollItemId") pollItemId: Long): ResponseEntity<*> {
+    fun updateQuizItem(
+        @RequestBody updatedItem: QuizItemWithPositionDtoIn,
+        @PathVariable(name = "pollItemId") pollItemId: Long
+    ): ResponseEntity<*> {
         accountService.checkAuthorizationByPollItemId(pollItemId)
         return ResponseEntity.ok(pollItemService.updateQuizItem(pollItemId, updatedItem))
     }
 
     @ApiOperation(value = "Update open text item", tags = ["Poll item"])
     @PutMapping("/open-text/{pollItemId}")
-    fun updateOpenTextItem(@RequestBody updatedItem: OpenTextItemWithPositionDtoIn, @PathVariable(name="pollItemId") pollItemId: Long): ResponseEntity<*> {
+    fun updateOpenTextItem(
+        @RequestBody updatedItem: OpenTextItemWithPositionDtoIn,
+        @PathVariable(name = "pollItemId") pollItemId: Long
+    ): ResponseEntity<*> {
         accountService.checkAuthorizationByPollItemId(pollItemId)
         return ResponseEntity.ok(pollItemService.updateOpenTextItem(pollItemId, updatedItem))
     }
+
 
     //-------------------------------------------- Delete --------------------------------------------------------------
 
@@ -83,4 +95,5 @@ class PollItemController(
         pollItemService.deleteItem(pollItemId)
         return ResponseEntity.ok("Deleted poll item")
     }
+
 }

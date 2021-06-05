@@ -100,7 +100,7 @@ class WebSocketService(
      * @param itemId the id of the item that should be send to the belonging poll presentation endpoint
      */
     @Transactional
-    fun sendItemWithAnswers(itemId: Long){
+    fun sendItemWithAnswers(itemId: Long) {
         val item: PollItemDtoOut = pollItemService.getPollItem(itemId)
         val url = "$websocketPrefix/presentation/${item.pollId}"
         simpUserRegistry.users.forEach {
