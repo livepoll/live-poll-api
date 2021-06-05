@@ -70,7 +70,7 @@ class WebSocketService(
             PollItemType.MULTIPLE_CHOICE.representation -> {
                 val obj: MultipleChoiceItemParticipantAnswerDtoIn =
                     mapper.readValue(payload, MultipleChoiceItemParticipantAnswerDtoIn::class.java)
-                val multipleChoiceItemAnswer = multipleChoiceItemAnswerRepository.getOne(obj.id)
+                val multipleChoiceItemAnswer = multipleChoiceItemAnswerRepository.getById(obj.id)
                 multipleChoiceItemAnswer.answerCount++
                 multipleChoiceItemAnswerRepository.saveAndFlush(multipleChoiceItemAnswer)
             }
@@ -79,7 +79,7 @@ class WebSocketService(
             PollItemType.OPEN_TEXT.representation -> {
                 val obj: OpenTextItemParticipantAnswerDtoIn =
                     mapper.readValue(payload, OpenTextItemParticipantAnswerDtoIn::class.java)
-                val pollItem = openTextItemRepository.getOne(pollItemId)
+                val pollItem = openTextItemRepository.getById(pollItemId)
                 openTextItemAnswerRepository.saveAndFlush(obj.toDbEntity(pollItem))
             }
 
@@ -87,7 +87,7 @@ class WebSocketService(
             PollItemType.QUIZ.representation -> {
                 val obj: QuizItemParticipantAnswerDtoIn =
                     mapper.readValue(payload, QuizItemParticipantAnswerDtoIn::class.java)
-                val quizItemAnswer = quizItemAnswerRepository.getOne(obj.id)
+                val quizItemAnswer = quizItemAnswerRepository.getById(obj.id)
                 quizItemAnswer.answerCount++
                 quizItemAnswerRepository.saveAndFlush(quizItemAnswer)
             }
