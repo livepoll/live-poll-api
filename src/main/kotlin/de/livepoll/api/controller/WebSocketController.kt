@@ -10,9 +10,11 @@ import org.springframework.stereotype.Controller
 class WebSocketController(
         private val webSocketService: WebSocketService
 ) {
+
     @MessageMapping("/{pollItemId}")
     fun processAnswer(@DestinationVariable pollItemId: Long, @Payload answer: String) {
         webSocketService.saveAnswer(pollItemId, answer)
         webSocketService.sendItemWithAnswers(pollItemId)
     }
+
 }

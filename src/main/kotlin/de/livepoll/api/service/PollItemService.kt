@@ -35,6 +35,12 @@ class PollItemService {
 
     //--------------------------------------------- Get ----------------------------------------------------------------
 
+    /**
+     * Get a single poll item.
+     *
+     * @param pollItemId the id of the poll item
+     * @return the poll item in dto format
+     */
     fun getPollItem(pollItemId: Long): PollItemDtoOut {
         pollItemRepository.findById(pollItemId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
@@ -58,6 +64,11 @@ class PollItemService {
             }
     }
 
+    /**
+     * Delete a single poll item.
+     *
+     * @param itemId the id of the poll item which should be deleted
+     */
     fun deleteItem(itemId: Long) {
         pollItemRepository.findById(itemId).orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found")
@@ -73,6 +84,12 @@ class PollItemService {
 
     //-------------------------------------------- Create --------------------------------------------------------------
 
+    /**
+     * Create a multiple choice item.
+     *
+     * @param item the new multiple choice item in dto format
+     * @return the created multiplce choice item in dto format
+     */
     fun createMultipleChoiceItem(item: MultipleChoiceItemDtoIn): MultipleChoiceItemDtoOut {
         pollRepository.findById(item.pollId)
             .orElseThrow {
@@ -101,6 +118,12 @@ class PollItemService {
             }
     }
 
+    /**
+     * Create a quiz item.
+     *
+     * @param item the new quiz item in dto format
+     * @return the created quiz item in dto format
+     */
     fun createQuizItem(item: QuizItemDtoIn): QuizItemDtoOut {
         pollRepository.findById(item.pollId)
             .orElseThrow {
@@ -129,6 +152,12 @@ class PollItemService {
             }
     }
 
+    /**
+     * Create an open text item.
+     *
+     * @param item the new open text item in dto format
+     * @return the created open text item in dto format
+     */
     fun createOpenTextItem(item: OpenTextItemDtoIn): OpenTextItemDtoOut {
         pollRepository.findById(item.pollId)
             .orElseThrow {
@@ -157,6 +186,10 @@ class PollItemService {
      *
      * This method works in-place and will adjust the poll items list.<br>
      * Old and new position are counted from 1 onwards, NOT from 0!
+     *
+     * @param oldPos the old item position
+     * @param newPos the new item position
+     * @param pollItems a list of poll items
      */
     fun movePollItem(oldPos: Int, newPos: Int, pollItems: MutableList<PollItem>) {
         // Check if new position is existent
@@ -262,6 +295,13 @@ class PollItemService {
         item.answers.addAll(toAddAnswers as Collection<Nothing>)
     }
 
+    /**
+     * Update a multiple choice item.
+     *
+     * @param pollItemId the id of the item that should be updated
+     * @param pollItem the new item in dto format
+     * @return the updated item
+     */
     fun updateMultipleChoiceItem(
         pollItemId: Long,
         pollItem: MultipleChoiceItemWithPositionDtoIn
@@ -280,6 +320,13 @@ class PollItemService {
             }
     }
 
+    /**
+     * Update a quiz item.
+     *
+     * @param pollItemId the id of the item that should be updated
+     * @param pollItem the new item in dto format
+     * @return the updated item
+     */
     fun updateQuizItem(pollItemId: Long, pollItem: QuizItemWithPositionDtoIn): QuizItemDtoOut {
         if (pollItem.selectionOptions.size < 2) {
             throw ResponseStatusException(
@@ -305,6 +352,13 @@ class PollItemService {
             }
     }
 
+    /**
+     * Update an open text item.
+     *
+     * @param pollItemId the id of the item that should be updated
+     * @param pollItem the new item in dto format
+     * @return the updated item
+     */
     fun updateOpenTextItem(pollItemId: Long, pollItem: OpenTextItemWithPositionDtoIn): OpenTextItemDtoOut {
         openTextItemRepository.findById(pollItemId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
