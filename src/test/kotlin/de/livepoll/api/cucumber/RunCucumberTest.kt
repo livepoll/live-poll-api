@@ -7,7 +7,7 @@ import org.junit.runner.RunWith
 @RunWith(Cucumber::class)
 @CucumberOptions(
     features = ["src/test/resources/features/"],
-    plugin = ["pretty", "html:target/cucumber-report.html"]
+    plugin = ["pretty", "html:target/cucumber-report.html"],
+    publish = true
 )
-class RunCucumberTest {
-}
+class RunCucumberTest

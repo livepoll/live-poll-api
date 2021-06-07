@@ -1,0 +1,37 @@
+server:
+  port: 8080
+  http2.enabled: true
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml
+    min-response-size: 1024
+  error:
+    # https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#common-application-properties-server
+    # https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.3-Release-Notes#changes-to-the-default-error-pages-content
+    include-message: on-param
+    include-binding-errors: always
+    include-stacktrace: NEVER
+
+spring:
+  application.name: Live-Poll API
+  datasource:
+    url: ${LIVE_POLL_MYSQL_URL}
+    username: ${LIVE_POLL_MYSQL_USER}
+    password: ${LIVE_POLL_MYSQL_PASSWORD}
+  jpa:
+    show-sql: true
+    hibernate.ddl-auto: update
+    properties.hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: always
+      schema: classpath:quartz_tables.sql
+
+server.ssl:
+  enabled: ${LIVE_POLL_HTTPS_ENABLED:true}
+  key-store-type: PKCS12
+  key-store: classpath:cert/localhost.p12
+  key-store-password: ${LIVE_POLL_HTTPS_CERT_PASSWORD}
+
+management.endpoints.web.exposure.include: health

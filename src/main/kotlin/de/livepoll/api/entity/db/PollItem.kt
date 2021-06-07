@@ -22,17 +22,19 @@ open class PollItem(
 
     @NonNull
     @Column
-    open val question: String,
+    open var question: String,
 
     @NonNull
     @Column
-    open val position: Int,
+    open var position: Int,
 
     @NonNull
     @Column
     open val type: PollItemType
 )
 
-enum class PollItemType {
-    MULTIPLE_CHOICE, OPEN_TEXT, QUIZ
+enum class PollItemType(val representation: String) {
+    MULTIPLE_CHOICE("multiple-choice"),
+    OPEN_TEXT("open-text"),
+    QUIZ("quiz")
 }

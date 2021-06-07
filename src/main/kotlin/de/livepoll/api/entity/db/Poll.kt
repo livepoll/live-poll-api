@@ -20,16 +20,18 @@ data class Poll(
         @Column(nullable = false)
         var name: String,
 
-        var startDate: Date,
+        @Column(nullable = true)
+        var startDate: Date?,
 
-        var endDate: Date,
+        @Column(nullable = true)
+        var endDate: Date?,
 
         var slug: String,
 
         @Column(nullable = true)
-        var currentItem : Int?,
+        var currentItem : Long?,
 
         @JsonIgnore
-        @OneToMany(mappedBy = "poll", cascade = [CascadeType.ALL])
+        @OneToMany(mappedBy = "poll", cascade = [CascadeType.ALL], orphanRemoval = true)
         var pollItems: MutableList<PollItem>
 )

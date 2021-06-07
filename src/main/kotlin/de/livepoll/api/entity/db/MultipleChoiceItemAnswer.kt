@@ -12,18 +12,18 @@ class MultipleChoiceItemAnswer (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NonNull
     @Column
-    val id: Long,
+    override val id: Long,
 
     @JsonIgnore
     @NonNull
     @ManyToOne
     @JoinColumn(name = "poll_item_id")
-    val multipleChoiceItem: MultipleChoiceItem,
+    var multipleChoiceItem: MultipleChoiceItem,
 
     @Column(name = "selection_option")
-    val selectionOption: String,
+    override val selectionOption: String,
 
     @Column(name = "answer_count")
-    val answerCount: Int
+    override var answerCount: Int
 
-)
+) : SelectionOptionAnswer

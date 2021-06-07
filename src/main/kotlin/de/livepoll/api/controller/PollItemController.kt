@@ -1,9 +1,7 @@
 package de.livepoll.api.controller
 
-import de.livepoll.api.entity.dto.MultipleChoiceItemDtoIn
-import de.livepoll.api.entity.dto.OpenTextItemDtoIn
-import de.livepoll.api.entity.dto.PollItemDtoOut
-import de.livepoll.api.entity.dto.QuizItemDtoIn
+import de.livepoll.api.entity.dto.*
+import de.livepoll.api.service.AccountService
 import de.livepoll.api.service.PollItemService
 import de.livepoll.api.service.PollService
 import io.swagger.annotations.Api
@@ -17,19 +15,12 @@ import java.net.URI
 @RequestMapping("/v1/poll-items")
 class PollItemController(
     private val pollService: PollService,
-    private val pollItemService: PollItemService
+    private val pollItemService: PollItemService,
+    private val accountService: AccountService
 ) {
 
-    //--------------------------------------------- Get ----------------------------------------------------------------
-
-    @ApiOperation(value = "Get poll item", tags = ["Poll item"])
-    @GetMapping("/{id}")
-    fun getPollItem(@PathVariable(name = "id") pollItemId: Long): PollItemDtoOut {
-        return pollItemService.getPollItem(pollItemId)
-    }
-
-
     //-------------------------------------------- Create --------------------------------------------------------------
+
     @ApiOperation(value = "Create multiple choice item", tags = ["Poll item"])
     @PostMapping("/multiple-choice")
     fun createMultipleChoiceItem(@RequestBody newItem: MultipleChoiceItemDtoIn): ResponseEntity<*> {
@@ -52,15 +43,57 @@ class PollItemController(
     }
 
 
+    //--------------------------------------------- Get ----------------------------------------------------------------
+
+    @ApiOperation(value = "Get poll item", tags = ["Poll item"])
+    @GetMapping("/{id}")
+    fun getPollItem(@PathVariable(name = "id") pollItemId: Long): PollItemDtoOut {
+        accountService.checkAuthorizationByPollItemId(pollItemId)
+        return pollItemService.getPollItem(pollItemId)
+    }
+
+
+    //-------------------------------------------- Update --------------------------------------------------------------
+
+    @ApiOperation(value = "Update multiple choice item", tags = ["Poll item"])
+    @PutMapping("/multiple-choice/{pollItemId}")
+    fun updateMultipleChoiceItem(
+        @RequestBody updatedItem: MultipleChoiceItemWithPositionDtoIn,
+        @PathVariable(name = "pollItemId") pollItemId: Long
+    ): ResponseEntity<*> {
+        accountService.checkAuthorizationByPollItemId(pollItemId)
+        return ResponseEntity.ok(pollItemService.updateMultipleChoiceItem(pollItemId, updatedItem))
+    }
+
+    @ApiOperation(value = "Update quiz item", tags = ["Poll item"])
+    @PutMapping("/quiz/{pollItemId}")
+    fun updateQuizItem(
+        @RequestBody updatedItem: QuizItemWithPositionDtoIn,
+        @PathVariable(name = "pollItemId") pollItemId: Long
+    ): ResponseEntity<*> {
+        accountService.checkAuthorizationByPollItemId(pollItemId)
+        return ResponseEntity.ok(pollItemService.updateQuizItem(pollItemId, updatedItem))
+    }
+
+    @ApiOperation(value = "Update open text item", tags = ["Poll item"])
+    @PutMapping("/open-text/{pollItemId}")
+    fun updateOpenTextItem(
+        @RequestBody updatedItem: OpenTextItemWithPositionDtoIn,
+        @PathVariable(name = "pollItemId") pollItemId: Long
+    ): ResponseEntity<*> {
+        accountService.checkAuthorizationByPollItemId(pollItemId)
+        return ResponseEntity.ok(pollItemService.updateOpenTextItem(pollItemId, updatedItem))
+    }
+
+
     //-------------------------------------------- Delete --------------------------------------------------------------
 
     @ApiOperation(value = "Delete poll item", tags = ["Poll item"])
     @DeleteMapping("/{id}")
-    fun deletePollItem(@PathVariable(name = "id") itemId: Long): ResponseEntity<*> {
-        pollItemService.deleteItem(itemId)
+    fun deletePollItem(@PathVariable(name = "id") pollItemId: Long): ResponseEntity<*> {
+        accountService.checkAuthorizationByPollItemId(pollItemId)
+        pollItemService.deleteItem(pollItemId)
         return ResponseEntity.ok("Deleted poll item")
     }
-
-    //-------------------------------------------- Update --------------------------------------------------------------
 
 }

@@ -4,6 +4,7 @@ import de.livepoll.api.entity.db.User
 import de.livepoll.api.entity.dto.PollDtoIn
 import de.livepoll.api.entity.dto.PollDtoOut
 import de.livepoll.api.entity.dto.PollItemDtoOut
+import de.livepoll.api.service.AccountService
 import de.livepoll.api.service.PollService
 import de.livepoll.api.util.toDtoOut
 import io.swagger.annotations.Api
@@ -18,7 +19,27 @@ import java.net.URI
 @RequestMapping("/v1/polls")
 class PollController(
     private val pollService: PollService,
+    private val accountService: AccountService
 ) {
+
+    //-------------------------------------------- Create --------------------------------------------------------------
+
+    @ApiOperation(value = "Create poll", tags = ["Poll"])
+    @PostMapping
+    fun createPoll(@RequestBody newPoll: PollDtoIn, @AuthenticationPrincipal user: User): ResponseEntity<*> {
+        val addedPoll = pollService.createPoll(newPoll, user.id)
+        return ResponseEntity.created(URI(addedPoll.id.toString())).body(addedPoll)
+    }
+
+
+    //--------------------------------------------- Get ----------------------------------------------------------------
+
+    @ApiOperation(value = "Get poll", tags = ["Poll"])
+    @GetMapping("/{id}")
+    fun getPoll(@PathVariable(name = "id") pollId: Long, @AuthenticationPrincipal user: User): PollDtoOut {
+        accountService.checkAuthorizationByPollId(pollId)
+        return pollService.getPoll(pollId)
+    }
 
     @ApiOperation(value = "Get polls", tags = ["Poll"])
     @GetMapping
@@ -27,34 +48,46 @@ class PollController(
         return ResponseEntity.ok().body(pollsOut)
     }
 
-    @ApiOperation(value = "Create poll", tags = ["Poll"])
-    @PostMapping
-    fun createPoll(@RequestBody newPoll: PollDtoIn, @AuthenticationPrincipal user: User): ResponseEntity<*> {
-        val addedPoll = pollService.createPoll(newPoll, user.id)
-        return ResponseEntity.created(URI(newPoll.name)).body(addedPoll)
+    @ApiOperation(value = "Get poll items", tags = ["Poll item"])
+    @GetMapping("/{id}/poll-items")
+    fun getPollItems(@PathVariable(name = "id") pollId: Long): List<PollItemDtoOut> {
+        accountService.checkAuthorizationByPollId(pollId)
+        return pollService.getPollItemsForPoll(pollId)
     }
 
-    @ApiOperation(value = "Get poll", tags = ["Poll"])
-    @GetMapping("/{id}")
-    fun getPoll(@PathVariable(name = "id") pollId: Long, @AuthenticationPrincipal user: User): PollDtoOut {
-        return pollService.getPoll(pollId)
+    @ApiOperation(value = "Get next poll item for presentation", tags = ["Poll presentation"])
+    @GetMapping("/{id}/next-item")
+    fun getNextPollItem(
+        @PathVariable(name = "id") pollId: Long,
+        @AuthenticationPrincipal user: User
+    ): ResponseEntity<*> {
+        accountService.checkAuthorizationByPollId(pollId)
+        val item = pollService.getNextPollItem(pollId)
+        return if (item != null) {
+            ResponseEntity.ok(item)
+        } else {
+            ResponseEntity.ok("{\"result\": \"Poll over\"}")
+        }
     }
 
-    @ApiOperation(value = "Delete poll", tags = ["Poll"])
-    @DeleteMapping("/{id}")
-    fun deletePoll(@PathVariable(name = "id") pollId: Long) {
-        return pollService.deletePoll(pollId)
-    }
+
+    //-------------------------------------------- Update --------------------------------------------------------------
 
     @ApiOperation(value = "Update slug", tags = ["Poll"])
     @PutMapping("/{id}")
     fun updatePoll(@PathVariable(name = "id") pollId: Long, @RequestBody updatedPoll: PollDtoIn): PollDtoOut {
+        accountService.checkAuthorizationByPollId(pollId)
         return pollService.updatePoll(pollId, updatedPoll)
     }
 
-    @ApiOperation(value = "Get poll items", tags = ["Poll item"])
-    @GetMapping("/{id}/poll-items")
-    fun getPollItems(@PathVariable(name = "id") pollId: Long): List<PollItemDtoOut> {
-        return pollService.getPollItemsForPoll(pollId)
+
+    //-------------------------------------------- Delete --------------------------------------------------------------
+
+    @ApiOperation(value = "Delete poll", tags = ["Poll"])
+    @DeleteMapping("/{id}")
+    fun deletePoll(@PathVariable(name = "id") pollId: Long) {
+        accountService.checkAuthorizationByPollId(pollId)
+        return pollService.deletePoll(pollId)
     }
+
 }

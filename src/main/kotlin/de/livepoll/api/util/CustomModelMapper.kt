@@ -9,6 +9,7 @@ fun Poll.toDtoOut(): PollDtoOut {
     return PollDtoOut(this.id, this.name, this.startDate, this.endDate, this.slug, this.currentItem)
 }
 
+
 // --------------------------------------------------- User mappers ----------------------------------------------------
 
 fun User.toDtoOut(): UserDtoOut {
@@ -49,4 +50,8 @@ fun OpenTextItem.toDtoOut(): OpenTextItemDtoOut {
 
 fun OpenTextItemAnswer.toDtoOut(): OpenTextItemAnswerDtoOut {
     return OpenTextItemAnswerDtoOut(this.id, this.answer)
+}
+
+fun OpenTextItemParticipantAnswerDtoIn.toDbEntity(item: OpenTextItem): OpenTextItemAnswer {
+    return OpenTextItemAnswer(0, item, this.answer)
 }

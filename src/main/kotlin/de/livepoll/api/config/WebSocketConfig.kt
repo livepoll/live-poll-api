@@ -1,5 +1,7 @@
 package de.livepoll.api.config
 
+import de.livepoll.api.util.websocket.CustomWebSocketHandshakeHandler
+import de.livepoll.api.util.websocket.HttpHandshakeInterceptor
 import org.springframework.context.annotation.Configuration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
@@ -9,16 +11,20 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
-class WebSocketConfig : WebSocketMessageBrokerConfigurer {
-
+class WebSocketConfig(
+        private val corsConfig: CorsConfig
+) : WebSocketMessageBrokerConfigurer {
 
     override fun configureMessageBroker(registry: MessageBrokerRegistry) {
-        registry.enableSimpleBroker("/websocket-poll/")
-        registry.setApplicationDestinationPrefixes("/websocket-answer/")
+        registry.enableSimpleBroker("/v1/websocket/poll", "/v1/websocket/presentation")
+        registry.setApplicationDestinationPrefixes("/v1/websocket/answer")
     }
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
-        registry.addEndpoint("/websocket-enter-poll")
+        registry.addEndpoint("/v1/websocket/enter-poll")
+                .addInterceptors(HttpHandshakeInterceptor())
+                .setHandshakeHandler(CustomWebSocketHandshakeHandler())
+                .setAllowedOrigins("*")
     }
 
 }

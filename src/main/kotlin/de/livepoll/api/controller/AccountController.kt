@@ -52,9 +52,9 @@ class AccountController(
             return accountService.login(authRequest.username)
         } catch (err: EmailNotConfirmedException) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Please confirm your email")
-        } catch (_: UsernameNotFoundException) {
+        } catch (ex: UsernameNotFoundException) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong username or password")
-        } catch (_: Exception) {
+        } catch (ex: Exception) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong username or password")
         }
     }
@@ -64,5 +64,4 @@ class AccountController(
     fun logout(httpServletRequest: HttpServletRequest): ResponseEntity<*> {
         return accountService.logout(httpServletRequest)
     }
-
 }
