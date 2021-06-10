@@ -63,7 +63,7 @@ jobs:
       - name: Install Newman
         run: sudo npm i -g newman
 
-      - name: Test
+      - name: Test Docker Container listing
         run: docker ps
       
       - name: API healthcheck
