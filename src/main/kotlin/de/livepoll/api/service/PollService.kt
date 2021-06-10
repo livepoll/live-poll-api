@@ -152,6 +152,7 @@ class PollService(
             try {
                 if (poll.startDate == null) {
                     this.startDate = null
+                    stopScheduledPoll("start-poll-$pollId")
                 } else {
                     updateScheduledPollStart(pollId, poll.startDate)
                     this.startDate = poll.startDate
@@ -159,6 +160,7 @@ class PollService(
 
                 if (poll.endDate == null) {
                     this.endDate = null
+                    stopScheduledPoll("stop-poll-$pollId")
                 } else {
                     updateScheduledPollEnd(pollId, poll.endDate)
                     this.endDate = poll.endDate
@@ -345,9 +347,8 @@ class PollService(
      *
      * @param pollId the id the poll which should be unscheduled
      */
-    fun stopScheduledPoll(pollId: Long) {
-        schedulerFactory.`object`!!.deleteJob(JobKey("start-poll-$pollId"))
-        schedulerFactory.`object`!!.deleteJob(JobKey("stop-poll-$pollId"))
+    fun stopScheduledPoll(jobkey: String) {
+        schedulerFactory.`object`!!.deleteJob(JobKey(jobkey))
     }
 
 }
