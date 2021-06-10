@@ -303,7 +303,7 @@ class PollService(
      * @throws ResponseStatusException an exception is thrown if the date is in the past
      */
     private fun checkIfDateIsValid(date: Date) {
-        if (!date.before(GregorianCalendar.getInstance().time)) {
+        if (date.before(GregorianCalendar.getInstance().time)) {
             throw ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Poll was not planned because start or end date is in the past"
