@@ -154,12 +154,14 @@ class PollService(
                     this.startDate = null
                 } else {
                     updateScheduledPollStart(pollId, poll.startDate)
+                    this.startDate = poll.startDate
                 }
 
                 if (poll.endDate == null) {
                     this.endDate = null
                 } else {
                     updateScheduledPollEnd(pollId, poll.endDate)
+                    this.endDate = poll.endDate
                 }
             } catch (ex: ResponseStatusException) {
                 pollRepository.saveAndFlush(this)
