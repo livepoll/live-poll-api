@@ -255,7 +255,7 @@ class PollService(
     /**
      * Internal method to create end event.
      *
-     * @param pollId the id of the poll that should be scheduled
+     * @param pollId the id of the poll whose ending should be scheduled
      * @param endDate the end date of the poll
      */
     private fun schedulePollEnd(pollId: Long, endDate: Date) {
