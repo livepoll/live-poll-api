@@ -1,8 +1,6 @@
 package de.livepoll.api.util.quartz
 
-import de.livepoll.api.repository.PollRepository
 import de.livepoll.api.service.PollService
-import de.livepoll.api.service.WebSocketService
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.springframework.beans.factory.annotation.Autowired

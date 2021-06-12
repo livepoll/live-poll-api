@@ -12,7 +12,7 @@ import java.util.*
 
 
 @Component
-class JobScheduleCrator(
+class JobScheduleCreator(
         private val applicationContext: ApplicationContext
 ) {
 
