@@ -7,7 +7,7 @@ import de.livepoll.api.entity.dto.PollDtoOut
 import de.livepoll.api.entity.dto.PollItemDtoOut
 import de.livepoll.api.repository.PollRepository
 import de.livepoll.api.repository.UserRepository
-import de.livepoll.api.util.quartz.JobScheduleCrator
+import de.livepoll.api.util.quartz.JobScheduleCreator
 import de.livepoll.api.util.quartz.StartPollPresentationJob
 import de.livepoll.api.util.quartz.StopPollPresentationJob
 import de.livepoll.api.util.toDtoOut
@@ -29,7 +29,7 @@ class PollService(
     private val pollItemService: PollItemService,
     private val webSocketService: WebSocketService,
     private val schedulerFactory: SchedulerFactoryBean,
-    private val jobScheduleCrator: JobScheduleCrator
+    private val jobScheduleCreator: JobScheduleCreator
 ) {
 
 
@@ -226,7 +226,7 @@ class PollService(
      *
      * @param pollId the id of the poll that should be scheduled
      * @param startDate the start date of the poll
-     * @param stopDate the end date of the poll
+     * @param endDate the end date of the poll
      */
     private fun schedulePoll(pollId: Long, startDate: Date, endDate: Date) {
         checkIfDateIsValid(startDate)
@@ -242,13 +242,13 @@ class PollService(
      * @param startDate the start date of the poll
      */
     private fun schedulePollStart(pollId: Long, startDate: Date) {
-        val jobDetailStart = jobScheduleCrator.createJob(
+        val jobDetailStart = jobScheduleCreator.createJob(
             StartPollPresentationJob::class.java,
             "start-poll-$pollId",
             pollId
         )
         val triggerStart =
-            jobScheduleCrator.createSimpleTrigger("start-poll-trigger-$pollId", startDate)
+            jobScheduleCreator.createSimpleTrigger("start-poll-trigger-$pollId", startDate)
         schedulerFactory.`object`!!.scheduleJob(jobDetailStart, triggerStart)
     }
 
@@ -259,17 +259,17 @@ class PollService(
      * @param endDate the end date of the poll
      */
     private fun schedulePollEnd(pollId: Long, endDate: Date) {
-        val jobDetailStop = jobScheduleCrator.createJob(
+        val jobDetailStop = jobScheduleCreator.createJob(
             StopPollPresentationJob::class.java,
             "stop-poll-$pollId",
             pollId
         )
-        val triggerStop = jobScheduleCrator.createSimpleTrigger("stop-poll-trigger-$pollId", endDate)
+        val triggerStop = jobScheduleCreator.createSimpleTrigger("stop-poll-trigger-$pollId", endDate)
         schedulerFactory.`object`!!.scheduleJob(jobDetailStop, triggerStop)
     }
 
     /**
-     * Update the start date of an poll which has already been planned.
+     * Update the start date of a poll which has already been planned.
      *
      * @param pollId the id of the poll that should be scheduled
      * @param startDate the new start date of the poll
@@ -277,7 +277,7 @@ class PollService(
     private fun updateScheduledPollStart(pollId: Long, startDate: Date) {
         checkIfDateIsValid(startDate)
         val jobNameStart = "start-poll-trigger-$pollId"
-        val triggerStart = jobScheduleCrator.createSimpleTrigger(jobNameStart, startDate)
+        val triggerStart = jobScheduleCreator.createSimpleTrigger(jobNameStart, startDate)
         val returnDate = schedulerFactory.`object`!!.rescheduleJob(TriggerKey.triggerKey(jobNameStart), triggerStart)
         if (returnDate == null) {
             schedulePollStart(pollId, startDate)
@@ -285,7 +285,7 @@ class PollService(
     }
 
     /**
-     * Update the end date of an poll which has already been planned.
+     * Update the end date of a poll which has already been planned.
      *
      * @param pollId the id of the poll that should be scheduled
      * @param endDate the new end date of the poll
@@ -293,7 +293,7 @@ class PollService(
     private fun updateScheduledPollEnd(pollId: Long, endDate: Date) {
         checkIfDateIsValid(endDate)
         val jobNameStop = "stop-poll-trigger-$pollId"
-        val triggerStop = jobScheduleCrator.createSimpleTrigger(jobNameStop, endDate)
+        val triggerStop = jobScheduleCreator.createSimpleTrigger(jobNameStop, endDate)
         val returnDate = schedulerFactory.`object`!!.rescheduleJob(TriggerKey.triggerKey(jobNameStop), triggerStop)
         if (returnDate == null) {
             schedulePollEnd(pollId, endDate)
@@ -345,7 +345,7 @@ class PollService(
     /**
      * Unschedule a poll.
      *
-     * @param pollId the id the poll which should be unscheduled
+     * @param jobkey the name of the job responsible for stopping the scheduled poll
      */
     fun stopScheduledPoll(jobkey: String) {
         schedulerFactory.`object`!!.deleteJob(JobKey(jobkey))
