@@ -24,12 +24,12 @@ import java.util.*
 
 @Service
 class PollService(
-        private val userRepository: UserRepository,
-        private val pollRepository: PollRepository,
-        private val pollItemService: PollItemService,
-        private val webSocketService: WebSocketService,
-        private val schedulerFactory: SchedulerFactoryBean,
-        private val jobScheduleCrator: JobScheduleCrator
+    private val userRepository: UserRepository,
+    private val pollRepository: PollRepository,
+    private val pollItemService: PollItemService,
+    private val webSocketService: WebSocketService,
+    private val schedulerFactory: SchedulerFactoryBean,
+    private val jobScheduleCrator: JobScheduleCrator
 ) {
 
 
@@ -43,8 +43,8 @@ class PollService(
      */
     fun getPoll(pollId: Long): PollDtoOut {
         return pollRepository.findById(pollId)
-                .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found") }
-                .run { this.toDtoOut() }
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found") }
+            .run { this.toDtoOut() }
     }
 
     /**
@@ -55,10 +55,10 @@ class PollService(
      */
     fun getPollItemsForPoll(pollId: Long): List<PollItemDtoOut> {
         pollRepository.findById(pollId)
-                .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found") }
-                .run {
-                    return this.pollItems.map { pollItemService.getPollItem(it.id) }
-                }
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found") }
+            .run {
+                return this.pollItems.map { pollItemService.getPollItem(it.id) }
+            }
     }
 
 
@@ -73,47 +73,47 @@ class PollService(
      */
     fun createPoll(pollDto: PollDtoIn, userId: Long): PollDtoOut {
         userRepository.findById(userId)
-                .orElseThrow {
-                    ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
-                }
-                .run {
-                    // Generate random slug
-                    val r = Random()
-                    var slug: String
-                    do {
-                        slug = ""
-                        for (i in 1..6) {
-                            slug += r.nextInt(16)
-                        }
-                    } while (!isSlugUnique(slug))
+            .orElseThrow {
+                ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
+            }
+            .run {
+                // Generate random slug
+                val r = Random()
+                var slug: String
+                do {
+                    slug = ""
+                    for (i in 1..6) {
+                        slug += r.nextInt(16)
+                    }
+                } while (!isSlugUnique(slug))
 
-                    val poll = Poll(
-                            0,
-                            this,
-                            pollDto.name,
-                            pollDto.startDate,
-                            pollDto.endDate,
-                            slug,
-                            null,
-                            emptyList<PollItem>().toMutableList()
-                    )
-                    val pollFromDb = pollRepository.saveAndFlush(poll)
+                val poll = Poll(
+                    0,
+                    this,
+                    pollDto.name,
+                    pollDto.startDate,
+                    pollDto.endDate,
+                    slug,
+                    null,
+                    emptyList<PollItem>().toMutableList()
+                )
+                val pollFromDb = pollRepository.saveAndFlush(poll)
 
-                    return try {
-                        if (pollFromDb.startDate != null && pollFromDb.endDate != null) {
-                            schedulePoll(pollFromDb.id, pollFromDb.startDate!!, pollFromDb.endDate!!)
-                            pollFromDb.toDtoOut()
-                        } else {
-                            pollFromDb.startDate = null
-                            pollFromDb.endDate = null
-                            pollRepository.saveAndFlush(pollFromDb).toDtoOut()
-                        }
-                    } catch (ex: ResponseStatusException) {
+                return try {
+                    if (pollFromDb.startDate != null && pollFromDb.endDate != null) {
+                        schedulePoll(pollFromDb.id, pollFromDb.startDate!!, pollFromDb.endDate!!)
+                        pollFromDb.toDtoOut()
+                    } else {
                         pollFromDb.startDate = null
                         pollFromDb.endDate = null
                         pollRepository.saveAndFlush(pollFromDb).toDtoOut()
                     }
+                } catch (ex: ResponseStatusException) {
+                    pollFromDb.startDate = null
+                    pollFromDb.endDate = null
+                    pollRepository.saveAndFlush(pollFromDb).toDtoOut()
                 }
+            }
     }
 
 
@@ -243,12 +243,12 @@ class PollService(
      */
     private fun schedulePollStart(pollId: Long, startDate: Date) {
         val jobDetailStart = jobScheduleCrator.createJob(
-                StartPollPresentationJob::class.java,
-                "start-poll-$pollId",
-                pollId
+            StartPollPresentationJob::class.java,
+            "start-poll-$pollId",
+            pollId
         )
         val triggerStart =
-                jobScheduleCrator.createSimpleTrigger("start-poll-trigger-$pollId", startDate)
+            jobScheduleCrator.createSimpleTrigger("start-poll-trigger-$pollId", startDate)
         schedulerFactory.`object`!!.scheduleJob(jobDetailStart, triggerStart)
     }
 
@@ -260,9 +260,9 @@ class PollService(
      */
     private fun schedulePollEnd(pollId: Long, endDate: Date) {
         val jobDetailStop = jobScheduleCrator.createJob(
-                StopPollPresentationJob::class.java,
-                "stop-poll-$pollId",
-                pollId
+            StopPollPresentationJob::class.java,
+            "stop-poll-$pollId",
+            pollId
         )
         val triggerStop = jobScheduleCrator.createSimpleTrigger("stop-poll-trigger-$pollId", endDate)
         schedulerFactory.`object`!!.scheduleJob(jobDetailStop, triggerStop)
@@ -309,8 +309,8 @@ class PollService(
     private fun checkIfDateIsValid(date: Date) {
         if (date.before(GregorianCalendar.getInstance().time)) {
             throw ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Poll was not planned because start or end date is in the past"
+                HttpStatus.CONFLICT,
+                "Poll was not planned because start or end date is in the past"
             )
         }
     }
