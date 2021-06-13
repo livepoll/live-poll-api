@@ -223,7 +223,6 @@ class PollItemService {
     /**
      * Update the answers of a poll item according to an update list of selection options (strings).
      * This method works in-place and will adjust the poll item answers list. The order is guaranteed.
-     * Note that after having called this method, all answers are false.
      *
      * Requirements this algorithm has to fulfill:
      *
