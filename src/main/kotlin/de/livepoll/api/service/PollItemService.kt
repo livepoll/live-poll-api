@@ -335,8 +335,8 @@ class PollItemService {
                 this.allowMultipleAnswers = pollItem.allowMultipleAnswers
                 this.allowBlankField = pollItem.allowBlankField
                 movePollItem(this.position, pollItem.position, this.poll.pollItems)
-                pollRepository.saveAndFlush(this.poll)
 
+                pollRepository.saveAndFlush(this.poll)
                 return pollItemRepository.saveAndFlush(this).toDtoOut()
             }
     }
@@ -362,8 +362,9 @@ class PollItemService {
                 updateAnswers(this, pollItem.selectionOptions)
                 this.question = pollItem.question
                 movePollItem(this.position, pollItem.position, this.poll.pollItems)
+
                 pollRepository.saveAndFlush(this.poll)
-                return quizItemRepository.saveAndFlush(this).toDtoOut()
+                return pollItemRepository.saveAndFlush(this).toDtoOut()
             }
     }
 
@@ -383,9 +384,9 @@ class PollItemService {
                 }
                 this.question = pollItem.question
                 movePollItem(this.position, pollItem.position, this.poll.pollItems)
-                pollRepository.saveAndFlush(this.poll)
 
-                return openTextItemRepository.saveAndFlush(this).toDtoOut()
+                pollRepository.saveAndFlush(this.poll)
+                return pollItemRepository.saveAndFlush(this).toDtoOut()
             }
     }
 
