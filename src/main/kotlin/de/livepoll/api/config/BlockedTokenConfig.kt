@@ -9,7 +9,7 @@ import java.util.*
 @Configuration
 @EnableScheduling
 class BlockedTokenConfig(
-        val blockedTokenRepository: BlockedTokenRepository
+    val blockedTokenRepository: BlockedTokenRepository
 ) {
 
     @Scheduled(cron = "0 0 12 * * ?")

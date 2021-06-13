@@ -19,8 +19,8 @@ import java.util.*
 private const val LOGOUT_ENDPOINT = "/v1/account/logout"
 
 class UserStepDefinitions(
-        private val pollRepository: PollRepository,
-        private val userRepository: UserRepository
+    private val pollRepository: PollRepository,
+    private val userRepository: UserRepository
 ) : CucumberIntegrationTest(userRepository) {
 
     private val USER_ENDPOINT = "/v1/user"
@@ -60,11 +60,32 @@ class UserStepDefinitions(
 
     @And("I am not authorized to retrieve information about a different user")
     fun getInfoAboutDifferentUser() {
-        if(userRepository.findByUsername("different_user") == null){
-         userRepository.saveAndFlush(User(1,"different_user", "different_email", passwordEncoder.encode("12345"), true, "ROLE_USER", emptyList()))
+        if (userRepository.findByUsername("different_user") == null) {
+            userRepository.saveAndFlush(
+                User(
+                    1,
+                    "different_user",
+                    "different_email",
+                    passwordEncoder.encode("12345"),
+                    true,
+                    "ROLE_USER",
+                    emptyList()
+                )
+            )
         }
-        if(pollRepository.findBySlug("different_user_test_slug") == null){
-            pollRepository.saveAndFlush(Poll(0, userRepository.findByUsername("different_user")!!, "different_user_test_poll", GregorianCalendar(2021, 5, 2).time, GregorianCalendar(2021, 5, 2).time, "different_user_test_slug", null, emptyList<PollItem>().toMutableList()))
+        if (pollRepository.findBySlug("different_user_test_slug") == null) {
+            pollRepository.saveAndFlush(
+                Poll(
+                    0,
+                    userRepository.findByUsername("different_user")!!,
+                    "different_user_test_poll",
+                    GregorianCalendar(2021, 5, 2).time,
+                    GregorianCalendar(2021, 5, 2).time,
+                    "different_user_test_slug",
+                    null,
+                    emptyList<PollItem>().toMutableList()
+                )
+            )
         }
         val id = pollRepository.findBySlug("different_user_test_slug")!!.id
         val url = "${SERVER_URL}:$port$POLL_ENDPOINT/${id}"
@@ -86,9 +107,9 @@ class UserStepDefinitions(
 
         // make request
         val logOutResponseEntity: ResponseEntity<Any> = restTemplate.exchange(
-                url,
-                HttpMethod.PUT,
-                logOutRequestEntity
+            url,
+            HttpMethod.PUT,
+            logOutRequestEntity
         )
         assertThat(logOutResponseEntity.statusCode).isEqualTo(HttpStatus.OK)
     }

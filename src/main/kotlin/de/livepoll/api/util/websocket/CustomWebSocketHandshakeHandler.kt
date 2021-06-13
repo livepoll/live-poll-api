@@ -10,7 +10,11 @@ private const val ATTR_PRINCIPAL = "_principal_"
 
 class CustomWebSocketHandshakeHandler : DefaultHandshakeHandler() {
 
-    override fun determineUser(request: ServerHttpRequest, wsHandler: WebSocketHandler, attributes: MutableMap<String, Any>): Principal {
+    override fun determineUser(
+        request: ServerHttpRequest,
+        wsHandler: WebSocketHandler,
+        attributes: MutableMap<String, Any>
+    ): Principal {
         val name: String
         if (!attributes.containsKey(ATTR_PRINCIPAL)) {
             name = UUID.randomUUID().toString()

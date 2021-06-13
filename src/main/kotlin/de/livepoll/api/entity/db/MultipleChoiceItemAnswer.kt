@@ -6,7 +6,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "multiple_choice_item_answer")
-class MultipleChoiceItemAnswer (
+class MultipleChoiceItemAnswer(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

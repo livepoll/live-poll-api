@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse
 
 @Component
 class JwtRequestFilter(
-        private val cookieCipher: CookieCipher
+    private val cookieCipher: CookieCipher
 ) : OncePerRequestFilter() {
 
     @Autowired
@@ -27,7 +27,11 @@ class JwtRequestFilter(
 
     private val accessTokenCookieName = System.getenv("LIVE_POLL_JWT_AUTH_COOKIE_NAME")
 
-    override fun doFilterInternal(httpServletRequest: HttpServletRequest, httpServletResponse: HttpServletResponse, filterChain: FilterChain) {
+    override fun doFilterInternal(
+        httpServletRequest: HttpServletRequest,
+        httpServletResponse: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
         var token: String? = null
         var userName: String? = null
 
@@ -45,9 +49,9 @@ class JwtRequestFilter(
             val userDetails: UserDetails = jwtUserDetailsService.loadUserByUsername(userName)
             if (jwtUtil.validateToken(token, userDetails)) {
                 SecurityContextHolder.getContext().authentication =
-                        UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities).apply {
-                            details = WebAuthenticationDetailsSource().buildDetails(httpServletRequest)
-                        }
+                    UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities).apply {
+                        details = WebAuthenticationDetailsSource().buildDetails(httpServletRequest)
+                    }
             }
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse)

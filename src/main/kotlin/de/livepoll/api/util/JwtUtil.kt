@@ -11,7 +11,7 @@ import java.util.function.Function
 
 @Service
 class JwtUtil(
-        val blockedTokenRepository: BlockedTokenRepository
+    val blockedTokenRepository: BlockedTokenRepository
 ) {
 
     private val secret = System.getenv("LIVE_POLL_JWT_SECRET")
@@ -20,12 +20,13 @@ class JwtUtil(
 
     fun extractExpiration(token: String?): Date = extractClaim(token) { obj: Claims -> obj.expiration }
 
-    fun <T> extractClaim(token: String?, claimsResolver: Function<Claims, T>) = claimsResolver.apply(extractAllClaims(token))
+    fun <T> extractClaim(token: String?, claimsResolver: Function<Claims, T>) =
+        claimsResolver.apply(extractAllClaims(token))
 
     private fun extractAllClaims(token: String?): Claims {
         return Jwts.parser().setSigningKey(secret)
-                .parseClaimsJws(token)
-                .body
+            .parseClaimsJws(token)
+            .body
     }
 
     private fun isTokenExpired(token: String?) = extractExpiration(token).before(Date())
@@ -34,14 +35,14 @@ class JwtUtil(
 
     private fun createToken(claims: Map<String, Any>, subject: String): String {
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject).setIssuedAt(Date(System.currentTimeMillis()))
-                .setExpiration(Date(System.currentTimeMillis() + TOKEN_DURATION * 1000))
-                .signWith(SignatureAlgorithm.HS256, secret).compact()
+            .setClaims(claims)
+            .setSubject(subject).setIssuedAt(Date(System.currentTimeMillis()))
+            .setExpiration(Date(System.currentTimeMillis() + TOKEN_DURATION * 1000))
+            .signWith(SignatureAlgorithm.HS256, secret).compact()
     }
 
-    fun validateToken(token: String?, userDetails: UserDetails)
-            = extractUsername(token) == userDetails.username && !isTokenExpired(token) && !isTokenBlocked(token)
+    fun validateToken(token: String?, userDetails: UserDetails) =
+        extractUsername(token) == userDetails.username && !isTokenExpired(token) && !isTokenBlocked(token)
 
     private fun isTokenBlocked(token: String?): Boolean {
         blockedTokenRepository.findByToken(token)?.run {
