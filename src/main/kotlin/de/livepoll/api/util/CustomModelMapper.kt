@@ -2,6 +2,8 @@ package de.livepoll.api.util
 
 import de.livepoll.api.entity.db.*
 import de.livepoll.api.entity.dto.*
+import org.springframework.http.HttpStatus
+import org.springframework.web.server.ResponseStatusException
 
 // --------------------------------------------------- Poll mappers ----------------------------------------------------
 
@@ -34,8 +36,22 @@ fun MultipleChoiceItemAnswer.toDtoOut(): MultipleChoiceItemAnswerDtoOut {
 }
 
 fun QuizItem.toDtoOut(): QuizItemDtoOut {
+    // Guarantee that first item is the correct one
+    val answersSorted: MutableList<QuizItemAnswer> = this.answers
+    val correctItemIndex = answersSorted.indexOfFirst { it.isCorrect }
+    if (correctItemIndex == -1) {
+        // Should never happen
+        val msg = "There was no correct item in the list -> data inconsistency (should NEVER happen !!!)"
+        throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, msg)
+    }
+
+    if (answersSorted.size > 1) {
+        // Swap
+        answersSorted[0] = answersSorted[correctItemIndex].also { answersSorted[correctItemIndex] = answersSorted[0] }
+    }
+
     return QuizItemDtoOut(this.id, this.poll.id, this.question, this.position,
-        "quiz", this.answers.map { it.toDtoOut() }
+        "quiz", answersSorted.map { it.toDtoOut() }
     )
 }
 
