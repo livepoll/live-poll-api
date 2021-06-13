@@ -12,7 +12,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 class WebSocketConfig(
-        private val corsConfig: CorsConfig
+    private val corsConfig: CorsConfig
 ) : WebSocketMessageBrokerConfigurer {
 
     override fun configureMessageBroker(registry: MessageBrokerRegistry) {
@@ -22,9 +22,9 @@ class WebSocketConfig(
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
         registry.addEndpoint("/v1/websocket/enter-poll")
-                .addInterceptors(HttpHandshakeInterceptor())
-                .setHandshakeHandler(CustomWebSocketHandshakeHandler())
-                .setAllowedOrigins("*")
+            .addInterceptors(HttpHandshakeInterceptor())
+            .setHandshakeHandler(CustomWebSocketHandshakeHandler())
+            .setAllowedOrigins("*")
     }
 
 }

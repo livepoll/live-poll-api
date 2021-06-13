@@ -16,7 +16,6 @@ import org.springframework.http.*
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.TestPropertySource
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
 import java.security.cert.X509Certificate
@@ -28,7 +27,7 @@ import javax.net.ssl.SSLContext
 @SpringBootTest(classes = [LivePollApplication::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class CucumberIntegrationTest(
-        private val userRepository: UserRepository
+    private val userRepository: UserRepository
 ) {
 
     @Autowired
@@ -62,14 +61,14 @@ class CucumberIntegrationTest(
         val acceptingTrustStrategy = { chain: Array<X509Certificate?>?, authType: String? -> true }
 
         val sslContext: SSLContext = org.apache.http.ssl.SSLContexts.custom()
-                .loadTrustMaterial(null, acceptingTrustStrategy)
-                .build()
+            .loadTrustMaterial(null, acceptingTrustStrategy)
+            .build()
 
         val csf = SSLConnectionSocketFactory(sslContext)
 
         val httpClient: CloseableHttpClient = HttpClients.custom()
-                .setSSLSocketFactory(csf)
-                .build()
+            .setSSLSocketFactory(csf)
+            .build()
 
         val requestFactory = HttpComponentsClientHttpRequestFactory()
 
@@ -79,7 +78,17 @@ class CucumberIntegrationTest(
 
     protected fun logInWithTestUser(): Pair<HttpStatus, String> {
         if (userRepository.findByUsername(testUserName) == null) {
-            userRepository.saveAndFlush(User(0, testUserName, "email", passwordEncoder.encode(testUserPassword), true, "ROLE_USER", emptyList()))
+            userRepository.saveAndFlush(
+                User(
+                    0,
+                    testUserName,
+                    "email",
+                    passwordEncoder.encode(testUserPassword),
+                    true,
+                    "ROLE_USER",
+                    emptyList()
+                )
+            )
             testUser = userRepository.findByUsername(testUserName)
         }
         // https://springbootdev.com/2017/11/21/spring-resttemplate-exchange-method/
@@ -92,9 +101,9 @@ class CucumberIntegrationTest(
 
         // make request
         val responseEntity: ResponseEntity<Any> = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                requestEntity
+            url,
+            HttpMethod.POST,
+            requestEntity
         )
 
         // store session cookie (which includes the JWT token)
@@ -103,7 +112,10 @@ class CucumberIntegrationTest(
         return Pair(responseEntity.statusCode, setCookie!!)
     }
 
-    protected final inline fun <reified T> makeGetRequestWithSessionCookie(url: String, sessionCookie: String): ResponseEntity<T> {
+    protected final inline fun <reified T> makeGetRequestWithSessionCookie(
+        url: String,
+        sessionCookie: String
+    ): ResponseEntity<T> {
         // request body params & headers
         val headers = HttpHeaders()
         headers["Cookie"] = sessionCookie
@@ -111,9 +123,9 @@ class CucumberIntegrationTest(
 
         // make request
         return restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                requestEntity
+            url,
+            HttpMethod.GET,
+            requestEntity
         )
     }
 

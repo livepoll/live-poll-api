@@ -17,28 +17,28 @@ class SwaggerConfig {
 
     @Bean
     fun api(): Docket = Docket(DocumentationType.OAS_30)
-            .ignoredParameterTypes(AuthenticationPrincipal::class.java)
-            .host("api.live-poll.de")
-            .enableUrlTemplating(true)
-            .select()
-            .apis(RequestHandlerSelectors.basePackage("de.livepoll.api"))
-            .paths(PathSelectors.any())
-            .build()
-            .apiInfo(apiInfo())
+        .ignoredParameterTypes(AuthenticationPrincipal::class.java)
+        .host("api.live-poll.de")
+        .enableUrlTemplating(true)
+        .select()
+        .apis(RequestHandlerSelectors.basePackage("de.livepoll.api"))
+        .paths(PathSelectors.any())
+        .build()
+        .apiInfo(apiInfo())
 
     @Bean
     fun uiConfig(): UiConfiguration = UiConfigurationBuilder.builder()
-            .defaultModelsExpandDepth(-1)
-            .build()
+        .defaultModelsExpandDepth(-1)
+        .build()
 
     private fun apiInfo() = ApiInfo(
-            "Live-Poll API",
-            "Platform for providing surveys with live display features",
-            "1.0.1",
-            "https://chillibits.com/pmapp?p=privacy",
-            Contact("ChilliBits", "https://www.chillibits.com", "contact@chillibits.com"),
-            "ODC DbCL v1.0 License",
-            "https://opendatacommons.org/licenses/dbcl/1.0/",
-            emptyList()
+        "Live-Poll API",
+        "Platform for providing surveys with live display features",
+        "1.0.1",
+        "https://chillibits.com/pmapp?p=privacy",
+        Contact("ChilliBits", "https://www.chillibits.com", "contact@chillibits.com"),
+        "ODC DbCL v1.0 License",
+        "https://opendatacommons.org/licenses/dbcl/1.0/",
+        emptyList()
     )
 }

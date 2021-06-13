@@ -13,7 +13,7 @@ import java.util.*
 
 @Component
 class JobScheduleCreator(
-        private val applicationContext: ApplicationContext
+    private val applicationContext: ApplicationContext
 ) {
 
     fun createJob(jobClass: Class<out Job>, jobName: String, pollId: Long): JobDetail {

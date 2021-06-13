@@ -15,8 +15,8 @@ import org.springframework.web.client.exchange
 import java.sql.Date
 
 class PollStepDefinitions(
-        userRepository: UserRepository,
-        private val pollRepository: PollRepository
+    userRepository: UserRepository,
+    private val pollRepository: PollRepository
 ) : CucumberIntegrationTest(userRepository) {
     private val POLL_ENDPOINT = "/v1/polls"
 
@@ -48,9 +48,9 @@ class PollStepDefinitions(
 
         // make request
         val responseEntity: ResponseEntity<Any> = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                requestEntity
+            url,
+            HttpMethod.POST,
+            requestEntity
         )
 
         assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.CREATED)
@@ -65,7 +65,7 @@ class PollStepDefinitions(
     fun retrieveMyPolls() {
         val url = "${SERVER_URL}:$port$POLL_ENDPOINT"
         val pollResponseEntity =
-                makeGetRequestWithSessionCookie<Array<PollDtoOut>>(url, SessionCookieUtil.sessionCookie)
+            makeGetRequestWithSessionCookie<Array<PollDtoOut>>(url, SessionCookieUtil.sessionCookie)
         assertThat(pollResponseEntity.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(pollResponseEntity.body).isNotNull
         for (poll in pollResponseEntity.body!!) {

@@ -8,7 +8,12 @@ import org.springframework.web.socket.server.HandshakeInterceptor
 
 
 class HttpHandshakeInterceptor : HandshakeInterceptor {
-    override fun beforeHandshake(request: ServerHttpRequest, response: ServerHttpResponse, webSocketHandler: WebSocketHandler, attributes: MutableMap<String, Any>): Boolean {
+    override fun beforeHandshake(
+        request: ServerHttpRequest,
+        response: ServerHttpResponse,
+        webSocketHandler: WebSocketHandler,
+        attributes: MutableMap<String, Any>
+    ): Boolean {
         if (request is ServletServerHttpRequest) {
             val session = request.servletRequest.session
             attributes["sessionId"] = session.id

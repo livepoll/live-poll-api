@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller
 
 @Controller
 class WebSocketController(
-        private val webSocketService: WebSocketService
+    private val webSocketService: WebSocketService
 ) {
 
     @MessageMapping("/{pollItemId}")

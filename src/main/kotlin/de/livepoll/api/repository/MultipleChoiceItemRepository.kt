@@ -4,4 +4,4 @@ import de.livepoll.api.entity.db.MultipleChoiceItem
 import javax.transaction.Transactional
 
 @Transactional
-interface MultipleChoiceItemRepository: PollItemRepository<MultipleChoiceItem>
+interface MultipleChoiceItemRepository : PollItemRepository<MultipleChoiceItem>
