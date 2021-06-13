@@ -18,11 +18,8 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Bean
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import java.util.*
-
-
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = [LivePollApplication::class])
@@ -55,7 +52,7 @@ class PollItemServiceTest {
     @MockBean
     private lateinit var quizItemAnswerRepository: QuizItemAnswerRepository
 
-    init{
+    init {
 
     }
 
@@ -133,7 +130,7 @@ class PollItemServiceTest {
             0,
             mockPoll,
             0,
-            "Multiple Choice Question1",
+            "Multiple Choice Question 1",
             allowMultipleAnswers = false,
             allowBlankField = false,
             answers = mutableListOf()
@@ -178,7 +175,7 @@ class PollItemServiceTest {
         val multipleChoice1 = MultipleChoiceItemDtoOut(
             0,
             mockPoll.id,
-            "Multiple Choice Question1",
+            "Multiple Choice Question 1",
             0,
             PollItemType.MULTIPLE_CHOICE.representation,
             answers1
@@ -252,7 +249,7 @@ class PollItemServiceTest {
 
         val answer21 = QuizItemAnswerDtoOut(4, "Option 2-1", false, 0)
         val answer22 = QuizItemAnswerDtoOut(5, "Option 2-2", true, 0)
-        val answers2 = listOf(answer21, answer22)
+        val answers2 = listOf(answer22, answer21)
 
         // Shell
         val quiz1 = QuizItemDtoOut(
