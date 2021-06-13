@@ -222,7 +222,8 @@ class PollItemService {
 
     /**
      * Update the answers of a poll item according to an update list of selection options (strings).
-     * This method works in-place and will adjust the poll item answers list.
+     * This method works in-place and will adjust the poll item answers list. The order is guaranteed.
+     * Note that after having called this method, all answers are false.
      *
      * Requirements this algorithm has to fulfill:
      *
@@ -236,13 +237,12 @@ class PollItemService {
      * -> Remove the answer that contained this selection option
      */
     fun updateAnswers(item: PollItemAnswerable, selectionOptionsUpdate: List<String>) {
-        val selectionOptionsExisting = item.answers.map { it.selectionOption }
         // --- Example
         // e indicates: "existing"
         // u indicates: "update"
         // selection_option_existing  ["Ae", "Be", "Ce"]
-        // selection_option_update    ["Au", "Bu", "Du"]
-        // selection_option_result    ["Ae", "Be", "Du"]
+        // selection_option_update    ["Au", "Du", "Bu"]
+        // selection_option_result    ["Ae", "Du", "Be"]
         // note that Ce is gone
         // note that Ae/Be are used in favor of Au/Bu since Ae/Be might include answer counts > 0
 
@@ -264,35 +264,57 @@ class PollItemService {
             }
         }
 
-        // --- Removing
-        // Remove answer in db whose whose selection option is not included in the selection options from the update
-        // Remove (selection_option_existing \ selection_option_update)
-        // in the example: remove Ce
-        item.answers.removeIf { !selectionOptionsUpdate.contains(it.selectionOption) }
+        // --- Build hash map for answers
+        val existingAnswers: HashMap<String, SelectionOptionAnswer> = HashMap()
+        for (answer in item.answers) {
+            // if we deal with a quiz item:
+            // make sure that correct options are all false here (they get updated later)
+            if (item is QuizItem) {
+                (answer as QuizItemAnswer).isCorrect = false
+            }
 
-        // --- Adding
-        // Add selection option (wrapped as an answer) to db if it is not included in any answer from the db
-        // Add (selection_option_update \ selection_option_existing)
-        // in the example: add Du
-        val toAddAnswers = selectionOptionsUpdate
-            .filter { !selectionOptionsExisting.contains(it) }
-            // wrap selection option string as answerable poll item
-            .map {
-                if (item is MultipleChoiceItem) {
-                    MultipleChoiceItemAnswer(0, item, it, 0)
-                } else if (item is QuizItem) {
-                    QuizItemAnswer(0, item, it, false, 0) // the correct item is updated later
-                } else {
-                    // Should never happen
-                    throw ResponseStatusException(
-                        HttpStatus.INTERNAL_SERVER_ERROR,
-                        "Only multiple choice and quiz items allow for answers"
-                    )
+            existingAnswers[answer.selectionOption] = answer
+        }
+
+        // --- Build updated answer list
+        val answersUpdated: MutableList<SelectionOptionAnswer> = mutableListOf()
+        for (selectionOption in selectionOptionsUpdate) {
+            if (existingAnswers.containsKey(selectionOption)) {
+                // Take the existing answer
+                answersUpdated.add(existingAnswers[selectionOption]!!)
+            } else {
+                // Construct a new answer (depending on the item type)
+                when (item) {
+                    is MultipleChoiceItem -> {
+                        answersUpdated.add(MultipleChoiceItemAnswer(0, item, selectionOption, 0))
+                    }
+                    is QuizItem -> {
+                        // the correct item is updated later
+                        answersUpdated.add(QuizItemAnswer(0, item, selectionOption, false, 0))
+                    }
+                    else -> {
+                        // Should never happen
+                        throw ResponseStatusException(
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            "Only multiple choice and quiz items allow for answers"
+                        )
+                    }
                 }
             }
+        }
+
+        // --- Quiz item: First item should be correct one
+        if (answersUpdated.size > 0) {
+            if (item is QuizItem) {
+                (answersUpdated[0] as QuizItemAnswer).isCorrect = true
+            }
+        }
+
+        // --- Override poll item answer list
+        item.answers.clear()
         // Don't know why Kotlin wants a Collection<Nothing> here. Might be a bug in Kotlin.
         // If you know a better approach, please fix this.
-        item.answers.addAll(toAddAnswers as Collection<Nothing>)
+        item.answers.addAll(answersUpdated as Collection<Nothing>)
     }
 
     /**
@@ -339,15 +361,9 @@ class PollItemService {
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Poll item not found") }
             .run {
                 updateAnswers(this, pollItem.selectionOptions)
-
-                // Update correct answer
-                val newCorrectIndex = this.answers.indexOfFirst { it.selectionOption == pollItem.selectionOptions[0] }
-                this.answers[newCorrectIndex].isCorrect = true
-
                 this.question = pollItem.question
                 movePollItem(this.position, pollItem.position, this.poll.pollItems)
                 pollRepository.saveAndFlush(this.poll)
-
                 return quizItemRepository.saveAndFlush(this).toDtoOut()
             }
     }
