@@ -92,8 +92,7 @@ class UserStepDefinitions(
             )
         }
         val poll = pollRepository.findBySlug("different_user_test_slug")!!
-        openTextItemRepository.saveAndFlush(OpenTextItem(0, poll, "question", 0, mutableListOf()))
-        val id = pollRepository.findBySlug("different_user_test_slug")!!.pollItems[0].id
+        val id = openTextItemRepository.saveAndFlush(OpenTextItem(0, poll, "question", 0, mutableListOf())).id
         val url = "${SERVER_URL}:$port$POLL_ITEM_ENDPOINT/${id}"
         try {
             val pollResponseEntity = makeGetRequestWithSessionCookie<Any>(url, SessionCookieUtil.sessionCookie)
