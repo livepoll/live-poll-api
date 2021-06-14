@@ -13,6 +13,7 @@ import de.livepoll.api.util.jwtCookie.CookieCipher
 import de.livepoll.api.util.jwtCookie.CookieUtil
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.DataAccessException
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -86,14 +87,19 @@ class AccountService(
      * @param token the token string to confirm the new account
      */
     fun confirmAccount(token: String): Boolean {
-        val verificationToken = verificationTokenRepository.findByToken(token)
-        if (verificationToken.expiryDate.after(Date())) {
-            val user = userRepository.findByUsername(verificationToken.username)
-            user?.isAccountEnabled = true
-            verificationTokenRepository.delete(verificationToken)
-            return true
+        try {
+            val verificationToken = verificationTokenRepository.findByToken(token)
+            if (verificationToken.expiryDate.after(Date())) {
+                val user = userRepository.findByUsername(verificationToken.username)
+                user?.isAccountEnabled = true
+                verificationTokenRepository.delete(verificationToken)
+                return true
+            }
+            return false
+        } catch (ex:EmptyResultDataAccessException) {
+            return false
         }
-        return false
+
     }
 
     private fun calculateExpiryDate() = Calendar.getInstance()
