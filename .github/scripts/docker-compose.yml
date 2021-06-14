@@ -26,6 +26,7 @@ services:
       LIVE_POLL_MYSQL_USER: livepoll
       LIVE_POLL_MYSQL_PASSWORD: M3uBcPLbM7RmgX4C3wAUej6WPzq886
       LIVE_POLL_DEV_URL: localhost:4200
+      LIVE_POLL_FRONTEND_URL: localhost:4200
       LIVE_POLL_SERVER_URL: localhost:8080
       LIVE_POLL_MAIL_HOST: ${LIVE_POLL_MAIL_HOST}
       LIVE_POLL_MAIL_PORT: ${LIVE_POLL_MAIL_PORT}
@@ -41,12 +42,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    healthcheck:
-      test: "curl --fail --silent localhost:8080/actuator/health | grep UP || exit 1"
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 40s
 
 networks:
   app-db: {}

@@ -4,8 +4,8 @@ services:
         image: mysql:8.0
         container_name: live-poll-dev-environment-db-mysql
         volumes:
-            - ./volumes/mysql-data:/var/lib/mysql
-            - ./volumes/mysql-logs:/var/log/mysql
+            - ~/volumes/mysql-data:/var/lib/mysql
+            - ~/volumes/mysql-logs:/var/log/mysql
         networks:
             - mysql-phpmyadmin
         ports:

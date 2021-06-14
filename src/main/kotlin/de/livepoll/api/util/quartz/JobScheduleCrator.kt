@@ -12,8 +12,8 @@ import java.util.*
 
 
 @Component
-class JobScheduleCrator(
-        private val applicationContext: ApplicationContext
+class JobScheduleCreator(
+    private val applicationContext: ApplicationContext
 ) {
 
     fun createJob(jobClass: Class<out Job>, jobName: String, pollId: Long): JobDetail {

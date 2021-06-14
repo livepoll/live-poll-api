@@ -36,8 +36,7 @@ class PollController(
 
     @ApiOperation(value = "Get poll", tags = ["Poll"])
     @GetMapping("/{id}")
-    fun getPoll(@PathVariable(name = "id") pollId: Long, @AuthenticationPrincipal user: User): PollDtoOut {
-        accountService.checkAuthorizationByPollId(pollId)
+    fun getPoll(@PathVariable(name = "id") pollId: Long): PollDtoOut {
         return pollService.getPoll(pollId)
     }
 

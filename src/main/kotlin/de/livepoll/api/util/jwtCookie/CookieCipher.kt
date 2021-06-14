@@ -29,7 +29,8 @@ class CookieCipher {
         try {
             val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
             cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-            return Base64.getEncoder().encodeToString(cipher.doFinal(stringToEncrypt.toByteArray(StandardCharsets.UTF_8)))
+            return Base64.getEncoder()
+                .encodeToString(cipher.doFinal(stringToEncrypt.toByteArray(StandardCharsets.UTF_8)))
         } catch (e: Exception) {
             e.printStackTrace()
             throw Exception("Error in cookieCipher")

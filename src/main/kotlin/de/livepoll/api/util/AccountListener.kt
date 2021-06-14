@@ -3,10 +3,10 @@ package de.livepoll.api.util
 import de.livepoll.api.service.AccountService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationListener
+import org.springframework.core.io.ClassPathResource
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Component
-import org.springframework.util.ResourceUtils
 import java.util.*
 import javax.mail.internet.MimeMessage
 
@@ -60,7 +60,7 @@ class AccountListener : ApplicationListener<OnCreateAccountEvent> {
         )
         helper.addInline(
             "logo",
-            ResourceUtils.getFile("classpath:logo.png")
+            ClassPathResource("logo.png")
         )
 
         javaMailSender.send(mimeMessage)

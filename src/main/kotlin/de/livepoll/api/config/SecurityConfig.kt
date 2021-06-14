@@ -4,6 +4,7 @@ import de.livepoll.api.service.JwtUserDetailsService
 import de.livepoll.api.util.JwtRequestFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
@@ -12,7 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import org.springframework.security.authentication.AuthenticationManager
 
 @Configuration
 @EnableWebSecurity
@@ -24,14 +24,15 @@ class SecurityConfig(
     override fun configure(http: HttpSecurity) {
         http.cors().and().csrf().disable()
             .authorizeRequests()
-                .antMatchers("/v1/account/register").permitAll()
-                .antMatchers("/v1/account/confirm").permitAll()
-                .antMatchers("/v1/account/login").permitAll()
-                .antMatchers("/v1/websocket/**").permitAll()
-                .antMatchers("/actuator/**").permitAll()
-                //.antMatchers("/admin").hasRole("ADMIN") // TODO: introduce ROLE_ADMIN authority later on
-                .anyRequest().authenticated()
-                .and()
+            .antMatchers("/v1/account/register").permitAll()
+            .antMatchers("/v1/account/confirm").permitAll()
+            .antMatchers("/v1/account/login").permitAll()
+            .antMatchers("/v1/polls/{id:[\\d]+}").permitAll()
+            .antMatchers("/v1/websocket/**").permitAll()
+            .antMatchers("/actuator/**").permitAll()
+            //.antMatchers("/admin").hasRole("ADMIN") // TODO: introduce ROLE_ADMIN authority later on
+            .anyRequest().authenticated()
+            .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter::class.java)

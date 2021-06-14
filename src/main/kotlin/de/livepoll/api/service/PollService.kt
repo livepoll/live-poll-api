@@ -7,7 +7,7 @@ import de.livepoll.api.entity.dto.PollDtoOut
 import de.livepoll.api.entity.dto.PollItemDtoOut
 import de.livepoll.api.repository.PollRepository
 import de.livepoll.api.repository.UserRepository
-import de.livepoll.api.util.quartz.JobScheduleCrator
+import de.livepoll.api.util.quartz.JobScheduleCreator
 import de.livepoll.api.util.quartz.StartPollPresentationJob
 import de.livepoll.api.util.quartz.StopPollPresentationJob
 import de.livepoll.api.util.toDtoOut
@@ -29,7 +29,7 @@ class PollService(
     private val pollItemService: PollItemService,
     private val webSocketService: WebSocketService,
     private val schedulerFactory: SchedulerFactoryBean,
-    private val jobScheduleCrator: JobScheduleCrator
+    private val jobScheduleCreator: JobScheduleCreator
 ) {
 
 
@@ -149,14 +149,25 @@ class PollService(
             this.name = poll.name
             this.currentItem = poll.currentItem
 
-            if (poll.startDate != null && poll.endDate != null) {
-                updateScheduledPoll(pollId, poll.startDate, poll.endDate)
-                this.startDate = poll.startDate
-                this.endDate = poll.endDate
-            } else if (poll.startDate == null && poll.endDate == null) {
-                stopScheduledPoll(pollId)
-                this.startDate = null
-                this.endDate = null
+            try {
+                if (poll.startDate == null) {
+                    this.startDate = null
+                    stopScheduledPoll("start-poll-$pollId")
+                } else {
+                    updateScheduledPollStart(pollId, poll.startDate)
+                    this.startDate = poll.startDate
+                }
+
+                if (poll.endDate == null) {
+                    this.endDate = null
+                    stopScheduledPoll("stop-poll-$pollId")
+                } else {
+                    updateScheduledPollEnd(pollId, poll.endDate)
+                    this.endDate = poll.endDate
+                }
+            } catch (ex: ResponseStatusException) {
+                pollRepository.saveAndFlush(this)
+                throw ResponseStatusException(HttpStatus.CONFLICT, ex.message)
             }
 
             if (poll.slug != null && this.slug != poll.slug) {
@@ -169,10 +180,10 @@ class PollService(
             }
 
             if (this.currentItem != null) {
-                webSocketService.sendCurrentItem(this.slug, this.id, this.currentItem)
                 webSocketService.sendItemWithAnswers(this.currentItem!!)
             }
 
+            webSocketService.sendCurrentItem(this.slug, this.id, this.currentItem)
             return pollRepository.saveAndFlush(this).toDtoOut()
         }
     }
@@ -215,58 +226,92 @@ class PollService(
      *
      * @param pollId the id of the poll that should be scheduled
      * @param startDate the start date of the poll
-     * @param stopDate the end date of the poll
+     * @param endDate the end date of the poll
      */
-    private fun schedulePoll(pollId: Long, startDate: Date, stopDate: Date) {
-        if (startDate.before(GregorianCalendar.getInstance().time) || stopDate.before(GregorianCalendar.getInstance().time)) {
-            throw ResponseStatusException(
-                HttpStatus.CONFLICT,
-                "Poll was not planned because start or end date is in the past"
-            )
-        } else {
-            val jobDetailStart = jobScheduleCrator.createJob(
-                StartPollPresentationJob::class.java,
-                "start-poll-$pollId",
-                pollId
-            )
-            val triggerStart =
-                jobScheduleCrator.createSimpleTrigger("start-poll-trigger-$pollId", startDate)
-            schedulerFactory.`object`!!.scheduleJob(jobDetailStart, triggerStart)
+    private fun schedulePoll(pollId: Long, startDate: Date, endDate: Date) {
+        checkIfDateIsValid(startDate)
+        checkIfDateIsValid(endDate)
+        schedulePollStart(pollId, startDate)
+        schedulePollEnd(pollId, endDate)
+    }
 
-            val jobDetailStop = jobScheduleCrator.createJob(
-                StopPollPresentationJob::class.java,
-                "stop-poll-$pollId",
-                pollId
-            )
-            val triggerStop = jobScheduleCrator.createSimpleTrigger("stop-poll-trigger-$pollId", stopDate)
-            schedulerFactory.`object`!!.scheduleJob(jobDetailStop, triggerStop)
+    /**
+     * Internal method to create start event.
+     *
+     * @param pollId the id of the poll that should be scheduled
+     * @param startDate the start date of the poll
+     */
+    private fun schedulePollStart(pollId: Long, startDate: Date) {
+        val jobDetailStart = jobScheduleCreator.createJob(
+            StartPollPresentationJob::class.java,
+            "start-poll-$pollId",
+            pollId
+        )
+        val triggerStart =
+            jobScheduleCreator.createSimpleTrigger("start-poll-trigger-$pollId", startDate)
+        schedulerFactory.`object`!!.scheduleJob(jobDetailStart, triggerStart)
+    }
+
+    /**
+     * Internal method to create end event.
+     *
+     * @param pollId the id of the poll whose ending should be scheduled
+     * @param endDate the end date of the poll
+     */
+    private fun schedulePollEnd(pollId: Long, endDate: Date) {
+        val jobDetailStop = jobScheduleCreator.createJob(
+            StopPollPresentationJob::class.java,
+            "stop-poll-$pollId",
+            pollId
+        )
+        val triggerStop = jobScheduleCreator.createSimpleTrigger("stop-poll-trigger-$pollId", endDate)
+        schedulerFactory.`object`!!.scheduleJob(jobDetailStop, triggerStop)
+    }
+
+    /**
+     * Update the start date of a poll which has already been planned.
+     *
+     * @param pollId the id of the poll that should be scheduled
+     * @param startDate the new start date of the poll
+     */
+    private fun updateScheduledPollStart(pollId: Long, startDate: Date) {
+        checkIfDateIsValid(startDate)
+        val jobNameStart = "start-poll-trigger-$pollId"
+        val triggerStart = jobScheduleCreator.createSimpleTrigger(jobNameStart, startDate)
+        val returnDate = schedulerFactory.`object`!!.rescheduleJob(TriggerKey.triggerKey(jobNameStart), triggerStart)
+        if (returnDate == null) {
+            schedulePollStart(pollId, startDate)
         }
     }
 
     /**
-     * Update the start and end date of an poll which has already been planned.
+     * Update the end date of a poll which has already been planned.
      *
      * @param pollId the id of the poll that should be scheduled
-     * @param startDate the start date of the poll
-     * @param stopDate the end date of the poll
+     * @param endDate the new end date of the poll
      */
-    fun updateScheduledPoll(pollId: Long, startDate: Date, stopDate: Date) {
-        if (startDate.before(GregorianCalendar.getInstance().time) || stopDate.before(GregorianCalendar.getInstance().time)) {
+    private fun updateScheduledPollEnd(pollId: Long, endDate: Date) {
+        checkIfDateIsValid(endDate)
+        val jobNameStop = "stop-poll-trigger-$pollId"
+        val triggerStop = jobScheduleCreator.createSimpleTrigger(jobNameStop, endDate)
+        val returnDate = schedulerFactory.`object`!!.rescheduleJob(TriggerKey.triggerKey(jobNameStop), triggerStop)
+        if (returnDate == null) {
+            schedulePollEnd(pollId, endDate)
+        }
+    }
+
+    /**
+     * Check that the date is in the future.
+     *
+     * @param date the date
+     * @throws ResponseStatusException an exception is thrown if the date is in the past
+     */
+    private fun checkIfDateIsValid(date: Date) {
+        if (date.before(GregorianCalendar.getInstance().time)) {
             throw ResponseStatusException(
                 HttpStatus.CONFLICT,
                 "Poll was not planned because start or end date is in the past"
             )
-        } else {
-            val jobNameStart = "start-poll-trigger-$pollId"
-            val jobNameStop = "stop-poll-trigger-$pollId"
-            val triggerStart = jobScheduleCrator.createSimpleTrigger(jobNameStart, startDate)
-            val triggerStop = jobScheduleCrator.createSimpleTrigger(jobNameStop, stopDate)
-            val returnDate =
-                schedulerFactory.`object`!!.rescheduleJob(TriggerKey.triggerKey(jobNameStart), triggerStart)
-            schedulerFactory.`object`!!.rescheduleJob(TriggerKey.triggerKey(jobNameStop), triggerStop)
-            if (returnDate == null) {
-                schedulePoll(pollId, startDate, stopDate)
-            }
         }
     }
 
@@ -300,11 +345,10 @@ class PollService(
     /**
      * Unschedule a poll.
      *
-     * @param pollId the id the poll which should be unscheduled
+     * @param jobkey the name of the job responsible for stopping the scheduled poll
      */
-    fun stopScheduledPoll(pollId: Long) {
-        schedulerFactory.`object`!!.deleteJob(JobKey("start-poll-$pollId"))
-        schedulerFactory.`object`!!.deleteJob(JobKey("stop-poll-$pollId"))
+    fun stopScheduledPoll(jobkey: String) {
+        schedulerFactory.`object`!!.deleteJob(JobKey(jobkey))
     }
 
 }

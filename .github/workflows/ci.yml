@@ -29,6 +29,7 @@ jobs:
           LIVE_POLL_MYSQL_USER: ${{ secrets.API_LIVE_POLL_MYSQL_USER }}
           LIVE_POLL_MYSQL_PASSWORD: ${{ secrets.API_LIVE_POLL_MYSQL_PASSWORD }}
           LIVE_POLL_DEV_URL: ${{ secrets.API_LIVE_POLL_DEV_URL }}
+          LIVE_POLL_FRONTEND_URL: ${{ secrets.API_LIVE_POLL_FRONTEND_URL }}
           LIVE_POLL_SERVER_URL: ${{ secrets.API_LIVE_POLL_SERVER_URL }}
           LIVE_POLL_MAIL_HOST: ${{ secrets.API_LIVE_POLL_MAIL_HOST }}
           LIVE_POLL_MAIL_PORT: ${{ secrets.API_LIVE_POLL_MAIL_PORT }}
@@ -61,9 +62,12 @@ jobs:
 
       - name: Install Newman
         run: sudo npm i -g newman
-      
-      - name: API healthcheck
-        run: curl -sSLf --retry-delay 5 --retry 5 --retry-connrefused --insecure http://example.org > /dev/null
+
+      - name: Test Docker Container listing
+        run: docker ps
+
+      - name: Wait for API to come online
+        run: sleep 20s
 
       - name: Run Newman tests
         run: newman run ./postman/Livepoll.postman_collection.json --iteration-count 3 --folder "Integration Test" --insecure
