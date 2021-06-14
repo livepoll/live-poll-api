@@ -1,9 +1,11 @@
 package de.livepoll.api.cucumber.stepdefinitions
 
 import de.livepoll.api.cucumber.CucumberIntegrationTest
+import de.livepoll.api.entity.db.OpenTextItem
 import de.livepoll.api.entity.db.Poll
 import de.livepoll.api.entity.db.PollItem
 import de.livepoll.api.entity.db.User
+import de.livepoll.api.repository.OpenTextItemRepository
 import de.livepoll.api.repository.PollRepository
 import de.livepoll.api.repository.UserRepository
 import io.cucumber.java.en.And
@@ -20,11 +22,13 @@ private const val LOGOUT_ENDPOINT = "/v1/account/logout"
 
 class UserStepDefinitions(
     private val pollRepository: PollRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val openTextItemRepository: OpenTextItemRepository
 ) : CucumberIntegrationTest(userRepository) {
 
     private val USER_ENDPOINT = "/v1/user"
     private val POLL_ENDPOINT = "/v1/polls"
+    private val POLL_ITEM_ENDPOINT = "/v1/poll-items"
 
     lateinit var status: HttpStatus
     var alreadyConfirmed = false
@@ -87,8 +91,9 @@ class UserStepDefinitions(
                 )
             )
         }
-        val id = pollRepository.findBySlug("different_user_test_slug")!!.id
-        val url = "${SERVER_URL}:$port$POLL_ENDPOINT/${id}"
+        val poll = pollRepository.findBySlug("different_user_test_slug")!!
+        val id = openTextItemRepository.saveAndFlush(OpenTextItem(0, poll, "question", 0, mutableListOf())).id
+        val url = "${SERVER_URL}:$port$POLL_ITEM_ENDPOINT/${id}"
         try {
             val pollResponseEntity = makeGetRequestWithSessionCookie<Any>(url, SessionCookieUtil.sessionCookie)
             assertThat(pollResponseEntity.statusCode).isEqualTo(HttpStatus.FORBIDDEN)

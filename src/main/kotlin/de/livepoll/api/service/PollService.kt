@@ -180,10 +180,10 @@ class PollService(
             }
 
             if (this.currentItem != null) {
-                webSocketService.sendCurrentItem(this.slug, this.id, this.currentItem)
                 webSocketService.sendItemWithAnswers(this.currentItem!!)
             }
 
+            webSocketService.sendCurrentItem(this.slug, this.id, this.currentItem)
             return pollRepository.saveAndFlush(this).toDtoOut()
         }
     }

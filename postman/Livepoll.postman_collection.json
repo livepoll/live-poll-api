@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "98a6fefc-8013-405c-ac74-c578a47251b5",
+		"_postman_id": "b83df12e-5482-4bc6-baa9-c95b38afdbb2",
 		"name": "Livepoll",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -2199,8 +2199,8 @@
 									"            headers: 'Cookie:'+pm.environment.get(\"cookies\")\r",
 									"        }, function(error, response) {\r",
 									"    pm.test(\"Poll item does not exist anymore\", function() {\r",
-									"        pm.expect(response).to.have.property('code', 403)\r",
-									"        pm.expect(response).to.have.property('status', 'Forbidden')\r",
+									"        pm.expect(response).to.have.property('code', 404)\r",
+									"        pm.expect(response).to.have.property('status', 'Not Found')\r",
 									"    })\r",
 									"})\r",
 									"\r",
