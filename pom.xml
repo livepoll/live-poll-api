@@ -10,7 +10,7 @@
     </parent>
     <groupId>de.live-poll</groupId>
     <artifactId>api</artifactId>
-    <version>0.7.0</version>
+    <version>0.8.0</version>
     <name>Live-Poll</name>
     <description>API Backend for Live-Poll</description>
 
