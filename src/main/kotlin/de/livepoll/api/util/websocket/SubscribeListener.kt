@@ -3,6 +3,7 @@ package de.livepoll.api.util.websocket
 import de.livepoll.api.repository.PollRepository
 import de.livepoll.api.service.PollItemService
 import de.livepoll.api.service.WebSocketService
+import de.livepoll.api.util.toPollItemWithPollName
 import org.springframework.context.ApplicationListener
 import org.springframework.http.HttpStatus
 import org.springframework.messaging.simp.SimpMessageSendingOperations
@@ -34,8 +35,8 @@ class SubscribeListener(
                     messagingTemplate.convertAndSendToUser(event.user!!.name, url, "{\"pollId\":${poll.id}}")
                     throw ResponseStatusException(HttpStatus.NOT_FOUND)
                 } else {
-                    val pollItemDto = pollItemService.getPollItem(poll.currentItem!!)
-                    messagingTemplate.convertAndSendToUser(event.user!!.name, url, pollItemDto)
+                    val pollItemOut = pollItemService.getPollItem(poll.currentItem!!).toPollItemWithPollName(poll.name)
+                    messagingTemplate.convertAndSendToUser(event.user!!.name, url, pollItemOut)
                 }
             }
         } else if (destination.contains("presentation")) {

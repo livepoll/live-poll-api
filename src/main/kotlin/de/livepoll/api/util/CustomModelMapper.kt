@@ -71,3 +71,7 @@ fun OpenTextItemAnswer.toDtoOut(): OpenTextItemAnswerDtoOut {
 fun OpenTextItemParticipantAnswerDtoIn.toDbEntity(item: OpenTextItem): OpenTextItemAnswer {
     return OpenTextItemAnswer(0, item, this.answer)
 }
+
+fun PollItemDtoOut.toPollItemWithPollName(pollName: String): PollItemWithPollNameDtoOut {
+    return PollItemWithPollNameDtoOut(this.itemId, this.pollId, this.question, this.position, this.type, pollName)
+}

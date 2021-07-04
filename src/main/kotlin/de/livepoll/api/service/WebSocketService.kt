@@ -9,9 +9,11 @@ import de.livepoll.api.entity.dto.PollItemDtoOut
 import de.livepoll.api.entity.dto.QuizItemParticipantAnswerDtoIn
 import de.livepoll.api.repository.MultipleChoiceItemAnswerRepository
 import de.livepoll.api.repository.OpenTextItemAnswerRepository
-import de.livepoll.api.repository.OpenTextItemRepository
 import de.livepoll.api.repository.QuizItemAnswerRepository
+import de.livepoll.api.repository.OpenTextItemRepository
+import de.livepoll.api.repository.PollRepository
 import de.livepoll.api.util.toDbEntity
+import de.livepoll.api.util.toPollItemWithPollName
 import org.springframework.http.HttpStatus
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.messaging.simp.user.SimpUserRegistry
@@ -28,7 +30,8 @@ class WebSocketService(
     private val simpUserRegistry: SimpUserRegistry,
     private val multipleChoiceItemAnswerRepository: MultipleChoiceItemAnswerRepository,
     private val quizItemAnswerRepository: QuizItemAnswerRepository,
-    private val openTextItemRepository: OpenTextItemRepository
+    private val openTextItemRepository: OpenTextItemRepository,
+    private val pollRepository: PollRepository
 ) {
     private val websocketPrefix = "/v1/websocket"
 
@@ -44,8 +47,13 @@ class WebSocketService(
         if (currentItemId != null) {
             val item: PollItemDtoOut = pollItemService.getPollItem(currentItemId)
             if (pollId == item.pollId) {
-                simpUserRegistry.users.forEach {
-                    messagingTemplate.convertAndSendToUser(it.name, url, item)
+                pollRepository.findById(pollId).orElseThrow {
+                    throw ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found")
+                }.run {
+                    val itemWithPollName = item.toPollItemWithPollName(this.name)
+                    simpUserRegistry.users.forEach {
+                        messagingTemplate.convertAndSendToUser(it.name, url, itemWithPollName)
+                    }
                 }
             } else {
                 throw ResponseStatusException(HttpStatus.CONFLICT, "Item is not part of poll")
