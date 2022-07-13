@@ -17,7 +17,7 @@
     <properties>
         <java.version>11</java.version>
         <kotlin.version>1.5.31</kotlin.version>
-        <dokka.version>1.5.30</dokka.version>
+        <dokka.version>1.7.10</dokka.version>
     </properties>
 
     <dependencies>
